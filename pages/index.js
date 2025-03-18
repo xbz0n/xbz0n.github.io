@@ -9,7 +9,6 @@ import { format } from 'date-fns';
 export default function Home({ latestPosts }) {
   return (
     <div className="space-y-16">
-      {/* Hero Section */}
       <section className="py-8">
         <div className="grid md:grid-cols-2 gap-8 items-center">
           <div className="space-y-6">
@@ -38,7 +37,6 @@ export default function Home({ latestPosts }) {
         </div>
       </section>
 
-      {/* Services Section */}
       <section className="py-8">
         <h2 className="text-2xl font-bold mb-8 flex items-center">
           <FaShieldAlt className="mr-2 text-accent" />
@@ -69,7 +67,6 @@ export default function Home({ latestPosts }) {
         </div>
       </section>
 
-      {/* Featured Content */}
       <section className="py-8">
         <div className="flex justify-between items-center mb-8">
           <h2 className="text-2xl font-bold">Latest Research</h2>
@@ -111,20 +108,15 @@ export async function getStaticProps() {
   const fileNames = fs.readdirSync(postsDirectory);
   
   const allPosts = fileNames.map(fileName => {
-    // Remove ".md" from file name to get slug
     const slug = fileName.replace(/\.md$/, '');
     
-    // Read markdown file as string
     const fullPath = path.join(postsDirectory, fileName);
     const fileContents = fs.readFileSync(fullPath, 'utf8');
     
-    // Use gray-matter to parse the post metadata section
     const matterResult = matter(fileContents);
     
-    // Create excerpt
     const excerpt = matterResult.content.trim().split('\n\n')[0].replace(/^#+\s+.*$/m, '').trim();
     
-    // Combine the data
     return {
       slug,
       title: matterResult.data.title,
@@ -134,12 +126,10 @@ export async function getStaticProps() {
     };
   });
   
-  // Sort posts by date
   const sortedPosts = allPosts.sort((a, b) => {
     return new Date(b.date) - new Date(a.date);
   });
   
-  // Get the latest 3 posts
   const latestPosts = sortedPosts.slice(0, 3);
   
   return {

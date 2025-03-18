@@ -42,10 +42,9 @@ export async function getStaticProps() {
       const fileContents = fs.readFileSync(fullPath, 'utf8');
       const { data, content } = matter(fileContents);
       
-      // Generate excerpt - remove headings from the beginning if present
       let excerpt = content
-        .replace(/^#+\s.*$/m, '') // Remove heading markers at the beginning
-        .replace(/\n+/g, ' ')     // Replace newlines with spaces
+        .replace(/^#+\s.*$/m, '')
+        .replace(/\n+/g, ' ')
         .trim()
         .slice(0, 200) + '...';
       
@@ -56,7 +55,6 @@ export async function getStaticProps() {
       };
     });
     
-    // Sort posts by date
     posts = posts.sort((a, b) => {
       if (a.date < b.date) {
         return 1;

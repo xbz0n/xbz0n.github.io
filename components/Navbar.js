@@ -65,7 +65,6 @@ export default function Navbar() {
           </button>
         </div>
         
-        {/* Mobile menu */}
         {isMenuOpen && (
           <div className="md:hidden mt-4 pb-2 space-y-4">
             <Link 
