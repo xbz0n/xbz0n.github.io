@@ -35,7 +35,8 @@ export default function Tools() {
     <>
       <Head>
         <title>xbz0n@sh:~# Security Tools</title>
-        <meta name="description" content="Security tools developed by Ivan Spiridonov for penetration testing and security assessments" />
+        <meta name="description" content="Open-source security tools for penetration testing created by Ivan Spiridonov (xbz0n), including GoPhish Deploy for phishing campaigns and AutoMSF for payload generation." />
+        <link rel="canonical" href="https://xbz0n.github.io/tools" />
       </Head>
     
       <div className="space-y-8">

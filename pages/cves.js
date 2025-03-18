@@ -54,7 +54,8 @@ export default function CVEs() {
     <>
       <Head>
         <title>xbz0n@sh:~# Discovered CVEs</title>
-        <meta name="description" content="Security vulnerabilities discovered by Ivan Spiridonov with assigned CVE identifiers" />
+        <meta name="description" content="Security vulnerabilities discovered by Ivan Spiridonov (xbz0n) with assigned CVE identifiers. SQL injection, authentication bypass, and other critical security findings." />
+        <link rel="canonical" href="https://xbz0n.github.io/cves" />
       </Head>
       
       <div className="space-y-8">

@@ -64,6 +64,9 @@ export default function BlogPost({ postData }) {
         {/* LinkedIn specific */}
         {firstImage && <meta property="image" content={firstImage.startsWith('http') ? firstImage : `${siteUrl}${firstImage}`} />}
         <meta property="author" content="Ivan Spiridonov" />
+        
+        {/* Canonical URL */}
+        <link rel="canonical" href={`${siteUrl}/blog/${postData.slug}`} />
       </Head>
       
       <article className="max-w-3xl mx-auto">
