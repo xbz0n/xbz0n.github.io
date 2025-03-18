@@ -1,6 +1,6 @@
 ---
 title: 'GraphQL Security Flaws and Exploitation'
-date: '2025-03-18'
+date: '2023-01-10'
 tags: ['security', 'graphql', 'penetration testing', 'api']
 ---
 

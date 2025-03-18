@@ -1,6 +1,6 @@
 ---
 title: 'An In-Depth Look at PEN-300 and OSEP: Succeeding in the Offensive Security Path'
-date: '2025-03-18'
+date: '2023-07-09'
 tags: ['certification', 'offensive security', 'penetration testing', 'OSEP']
 ---
 
