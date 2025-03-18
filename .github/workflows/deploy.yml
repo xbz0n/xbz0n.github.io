@@ -29,7 +29,13 @@ jobs:
         run: npm ci
         
       - name: Build
-        run: npm run build
+        run: |
+          echo "Building site with Next.js"
+          npm run build
+          echo "Build completed, listing .next directory:"
+          ls -la .next || echo ".next directory not found"
+          echo "Checking out directory:"
+          ls -la out || echo "out directory not found"
         env:
           NODE_ENV: production
         
@@ -37,11 +43,17 @@ jobs:
         run: |
           echo "Contents of current directory:"
           ls -la
-          echo "Creating out directory if it doesn't exist"
-          mkdir -p out
-          echo "Test content" > out/index.html
-          echo "Contents of out directory:"
-          ls -la out
+          echo "Contents of .next directory:"
+          ls -la .next || echo ".next directory does not exist"
+          
+          if [ ! -d "out" ] || [ -z "$(ls -A out 2>/dev/null)" ]; then
+            echo "Creating fallback out directory because it's missing or empty"
+            mkdir -p out
+            echo "<!DOCTYPE html><html><head><title>Temporary Page</title></head><body><h1>Site is being built</h1><p>This is a temporary page while the actual site is being built.</p></body></html>" > out/index.html
+          else
+            echo "Out directory exists and has content:"
+            ls -la out
+          fi
           
       - name: Setup Pages
         uses: actions/configure-pages@v4
