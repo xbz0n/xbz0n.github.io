@@ -6,6 +6,8 @@ tags: ["Shellcode", "Assembly", "Windows", "Exploit Development"]
 
 # Mastering x86 Shellcode: A Deep Dive into Calculator-Launching Payload Development
 
+![Assembly code showing shellcode implementation](/images/Shellcode.png)
+
 ## Introduction
 
 In the realm of cybersecurity, shellcode represents one of the most fundamental building blocks for both offensive security practitioners and defensive analysts. These compact machine code sequences, traditionally designed to spawn command shells (hence the name), have evolved to perform virtually any programmatic action on a target system.
@@ -440,16 +442,16 @@ sub   eax, ecx                  # Calculate space for PROCESS_INFORMATION
 push  eax                       # lpProcessInformation
 push  esi                       # lpStartupInfo
 xor   eax, eax                  # Clear EAX
-push  eax                       # lpCurrentDirectory = NULL
-push  eax                       # lpEnvironment = NULL
-push  eax                       # dwCreationFlags = 0
+push  eax                       # lpCurrentDirectory
+push  eax                       # lpEnvironment
+push  eax                       # dwCreationFlags
 inc   eax                       # EAX = 1
-push  eax                       # bInheritHandles = TRUE
+push  eax                       # bInheritHandles
 dec   eax                       # EAX = 0
-push  eax                       # lpThreadAttributes = NULL
-push  eax                       # lpProcessAttributes = NULL
+push  eax                       # lpThreadAttributes
+push  eax                       # lpProcessAttributes
 push  ebx                       # lpCommandLine = "calc.exe"
-push  eax                       # lpApplicationName = NULL
+push  eax                       # lpApplicationName
 ```
 
 This segment prepares the stack with the 10 parameters required by CreateProcessA:
