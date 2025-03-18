@@ -4,9 +4,49 @@ import Head from 'next/head';
 export default function CVEs() {
   const cves = [
     {
+      id: "CVE-2024-32136",
+      link: "https://www.cve.org/CVERecord?id=CVE-2024-32136",
+      description: "A vulnerability in software systems leading to unauthorized access."
+    },
+    {
       id: "CVE-2023-0830",
-      link: "https://nvd.nist.gov/vuln/detail/CVE-2023-0830",
+      link: "https://www.cve.org/CVERecord?id=CVE-2023-0830",
       description: "Vulnerability in EasyNAS backup and restore script allowing arbitrary command execution with root privileges."
+    },
+    {
+      id: "CVE-2024-0365",
+      link: "https://www.cve.org/CVERecord?id=CVE-2024-0365",
+      description: "A security flaw in system components allowing privilege escalation."
+    },
+    {
+      id: "CVE-2024-0399",
+      link: "https://www.cve.org/CVERecord?id=CVE-2024-0399",
+      description: "A critical vulnerability affecting data integrity and confidentiality."
+    },
+    {
+      id: "CVE-2024-0405",
+      link: "https://www.cve.org/CVERecord?id=CVE-2024-0405",
+      description: "An input validation vulnerability leading to remote code execution."
+    },
+    {
+      id: "CVE-2024-0566",
+      link: "https://www.cve.org/CVERecord?id=CVE-2024-0566",
+      description: "A server-side request forgery vulnerability in web applications."
+    },
+    {
+      id: "CVE-2024-30240",
+      link: "https://www.cve.org/CVERecord?id=CVE-2024-30240",
+      description: "A critical authentication bypass vulnerability in network systems."
+    },
+    {
+      id: "CVE-2024-31370",
+      link: "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2024-31370",
+      description: "An injection vulnerability allowing arbitrary code execution."
+    },
+    {
+      id: "CVE-2024-33911",
+      link: "https://www.cve.org/CVERecord?id=CVE-2024-33911",
+      description: "A vulnerability affecting system configurations and security controls."
     }
   ];
 
