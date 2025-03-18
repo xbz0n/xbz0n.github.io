@@ -96,21 +96,26 @@ export default function Navbar() {
               Blog
             </Link>
             
-            <div className="flex items-center space-x-4 py-2">
-              <a href="mailto:ivanspiridonov@gmail.com" className="text-gray-300 hover:text-accent" aria-label="Email">
-                <FaEnvelope className="w-5 h-5" />
+            <div className="flex justify-between items-center pt-4 pb-2 border-t border-gray-700">
+              <a href="mailto:ivanspiridonov@gmail.com" className="flex flex-col items-center text-gray-300 hover:text-accent" aria-label="Email">
+                <FaEnvelope className="w-6 h-6 mb-1" />
+                <span className="text-xs">Email</span>
               </a>
-              <a href="tel:+359876143085" className="text-gray-300 hover:text-accent" aria-label="Phone">
-                <FaPhone className="w-5 h-5" />
+              <a href="tel:+359876143085" className="flex flex-col items-center text-gray-300 hover:text-accent" aria-label="Phone">
+                <FaPhone className="w-6 h-6 mb-1" />
+                <span className="text-xs">Phone</span>
               </a>
-              <a href="https://github.com/xbz0n" target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-accent" aria-label="GitHub">
-                <FaGithub className="w-5 h-5" />
+              <a href="https://github.com/xbz0n" target="_blank" rel="noopener noreferrer" className="flex flex-col items-center text-gray-300 hover:text-accent" aria-label="GitHub">
+                <FaGithub className="w-6 h-6 mb-1" />
+                <span className="text-xs">GitHub</span>
               </a>
-              <a href="https://twitter.com/xbz0n" target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-accent" aria-label="Twitter">
-                <FaTwitter className="w-5 h-5" />
+              <a href="https://twitter.com/xbz0n" target="_blank" rel="noopener noreferrer" className="flex flex-col items-center text-gray-300 hover:text-accent" aria-label="Twitter">
+                <FaTwitter className="w-6 h-6 mb-1" />
+                <span className="text-xs">Twitter</span>
               </a>
-              <span className="text-gray-300" aria-label="Location">
-                <FaMapMarkerAlt className="w-5 h-5" />
+              <span className="flex flex-col items-center text-gray-300" aria-label="Location">
+                <FaMapMarkerAlt className="w-6 h-6 mb-1" />
+                <span className="text-xs">Bulgaria</span>
               </span>
             </div>
           </div>
