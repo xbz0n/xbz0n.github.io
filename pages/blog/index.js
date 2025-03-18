@@ -15,6 +15,9 @@ export default function Blog({ posts }) {
       
       <div className="space-y-8">
         <h1 className="text-3xl font-bold">Blog</h1>
+        <p className="text-gray-400">
+          Security research, exploit development, and technical write-ups covering various aspects of offensive security and penetration testing.
+        </p>
         
         <div className="space-y-8">
           {posts.map((post) => (
