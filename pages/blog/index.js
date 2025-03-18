@@ -29,6 +29,38 @@ export default function Blog({ posts }) {
   );
 }
 
+// Function to clean markdown formatting from excerpt
+function cleanExcerpt(content) {
+  // Remove headers (any number of # followed by a space)
+  let clean = content.replace(/^#+\s.*$/gm, '');
+  
+  // Remove inline code formatting (backticks)
+  clean = clean.replace(/`([^`]+)`/g, '$1');
+  
+  // Remove bold/italic formatting
+  clean = clean.replace(/\*\*([^*]+)\*\*/g, '$1'); // Bold
+  clean = clean.replace(/\*([^*]+)\*/g, '$1');     // Italic
+  clean = clean.replace(/__([^_]+)__/g, '$1');     // Bold
+  clean = clean.replace(/_([^_]+)_/g, '$1');       // Italic
+  
+  // Remove links
+  clean = clean.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1');
+  
+  // Remove images
+  clean = clean.replace(/!\[([^\]]+)\]\([^)]+\)/g, '');
+  
+  // Remove blockquotes
+  clean = clean.replace(/^>\s(.*)$/gm, '$1');
+  
+  // Remove horizontal rules
+  clean = clean.replace(/^---$|^\*\*\*$|^___$/gm, '');
+  
+  // Normalize whitespace
+  clean = clean.replace(/\n+/g, ' ').trim();
+  
+  return clean;
+}
+
 export async function getStaticProps() {
   const postsDirectory = path.join(process.cwd(), 'posts');
   let posts = [];
@@ -42,11 +74,11 @@ export async function getStaticProps() {
       const fileContents = fs.readFileSync(fullPath, 'utf8');
       const { data, content } = matter(fileContents);
       
-      let excerpt = content
-        .replace(/^#+\s.*$/m, '')
-        .replace(/\n+/g, ' ')
-        .trim()
-        .slice(0, 200) + '...';
+      // Clean the content of markdown formatting
+      const cleanContent = cleanExcerpt(content);
+      
+      // Create the excerpt
+      const excerpt = cleanContent.slice(0, 200) + '...';
       
       return {
         slug,
