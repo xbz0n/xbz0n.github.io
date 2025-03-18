@@ -1,8 +1,12 @@
 import Link from 'next/link';
 import { FaShieldAlt, FaCode, FaBug, FaFileAlt } from 'react-icons/fa';
 import TerminalHero from '../components/TerminalHero';
+import path from 'path';
+import fs from 'fs';
+import matter from 'gray-matter';
+import { format } from 'date-fns';
 
-export default function Home() {
+export default function Home({ latestPost }) {
   return (
     <div className="space-y-16">
       {/* Hero Section */}
@@ -75,20 +79,74 @@ export default function Home() {
         </div>
         <div className="bg-secondary/30 rounded-lg p-6 border border-gray-700">
           <div className="mb-2">
-            <span className="badge badge-cve">CVE</span>
-            <span className="text-sm text-gray-400 ml-2">Published</span>
+            {latestPost.tags && latestPost.tags.map(tag => (
+              <span key={tag} className={`badge ${tag.toLowerCase().includes('cve') ? 'badge-cve' : 'badge-certification'} mr-2`}>
+                {tag}
+              </span>
+            ))}
+            <span className="text-sm text-gray-400 ml-2">
+              {format(new Date(latestPost.date), 'MMM d, yyyy')}
+            </span>
           </div>
           <h3 className="text-xl font-semibold mb-2">
-            Exploiting the vulnerability and gaining root privileges (CVE-2023–0830)
+            {latestPost.title}
           </h3>
           <p className="text-gray-400 mb-4">
-            A vulnerability in EasyNAS backup and restore script allowing arbitrary command execution with root privileges.
+            {latestPost.excerpt}
           </p>
-          <Link href="/blog/cve-2023-0830" className="text-accent hover:text-accent/80">
+          <Link href={`/blog/${latestPost.slug}`} className="text-accent hover:text-accent/80">
             Read full analysis →
           </Link>
         </div>
       </section>
     </div>
   );
+}
+
+export async function getStaticProps() {
+  const postsDirectory = path.join(process.cwd(), 'posts');
+  const fileNames = fs.readdirSync(postsDirectory);
+  
+  const allPosts = fileNames.map(fileName => {
+    // Remove ".md" from file name to get slug
+    const slug = fileName.replace(/\.md$/, '');
+    
+    // Read markdown file as string
+    const fullPath = path.join(postsDirectory, fileName);
+    const fileContents = fs.readFileSync(fullPath, 'utf8');
+    
+    // Use gray-matter to parse the post metadata section
+    const matterResult = matter(fileContents);
+    
+    // Create excerpt
+    const excerpt = matterResult.content.trim().split('\n\n')[0].replace(/^#+\s+.*$/m, '').trim();
+    
+    // Combine the data
+    return {
+      slug,
+      title: matterResult.data.title,
+      date: matterResult.data.date,
+      tags: matterResult.data.tags,
+      excerpt: excerpt.substring(0, 150) + (excerpt.length > 150 ? '...' : '')
+    };
+  });
+  
+  // Sort posts by date
+  const sortedPosts = allPosts.sort((a, b) => {
+    return new Date(b.date) - new Date(a.date);
+  });
+  
+  const latestPost = sortedPosts.length > 0 ? sortedPosts[0] : {
+    title: 'No posts available',
+    date: new Date().toISOString(),
+    slug: '',
+    excerpt: 'There are currently no blog posts available.',
+    tags: []
+  };
+  
+  return {
+    props: {
+      latestPost
+    }
+  };
 } 
