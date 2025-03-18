@@ -1,0 +1,62 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  @apply bg-primary text-gray-100;
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply font-mono antialiased;
+}
+
+a {
+  @apply text-accent hover:text-accent/80 transition-colors;
+}
+
+.container {
+  @apply max-w-5xl mx-auto px-4 sm:px-6;
+}
+
+.terminal {
+  @apply bg-black/80 p-4 rounded-md border border-accent/50 overflow-auto;
+}
+
+.blog-content {
+  @apply prose prose-invert max-w-none prose-headings:text-accent prose-a:text-accent prose-code:text-white prose-code:bg-secondary prose-code:px-1 prose-code:py-0.5 prose-code:rounded;
+}
+
+@layer components {
+  .btn {
+    @apply px-4 py-2 rounded font-medium transition-colors;
+  }
+  
+  .btn-primary {
+    @apply bg-accent text-white hover:bg-accent/80;
+  }
+  
+  .btn-outline {
+    @apply border border-accent text-accent hover:bg-accent/10;
+  }
+  
+  .nav-link {
+    @apply text-gray-300 hover:text-accent transition-colors;
+  }
+
+  .nav-link-active {
+    @apply text-accent;
+  }
+  
+  .badge {
+    @apply inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset;
+  }
+  
+  .badge-certification {
+    @apply bg-blue-400/10 text-blue-400 ring-blue-400/30;
+  }
+  
+  .badge-cve {
+    @apply bg-red-400/10 text-red-400 ring-red-400/30;
+  }
+} 
