@@ -30,7 +30,19 @@ jobs:
         
       - name: Build
         run: npm run build
+        env:
+          NODE_ENV: production
         
+      - name: Debug output directory
+        run: |
+          echo "Contents of current directory:"
+          ls -la
+          echo "Creating out directory if it doesn't exist"
+          mkdir -p out
+          echo "Test content" > out/index.html
+          echo "Contents of out directory:"
+          ls -la out
+          
       - name: Setup Pages
         uses: actions/configure-pages@v4
         

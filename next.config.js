@@ -7,6 +7,7 @@ const nextConfig = {
   },
   basePath: process.env.NODE_ENV === 'production' ? '/xbz0n-web' : '',
   assetPrefix: process.env.NODE_ENV === 'production' ? '/xbz0n-web/' : '',
+  output: 'export',
 };
 
 module.exports = nextConfig; 
