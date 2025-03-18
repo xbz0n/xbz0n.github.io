@@ -2,9 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
 import { remark } from 'remark';
-import remarkRehype from 'remark-rehype';
-import rehypeRaw from 'rehype-raw';
-import rehypeStringify from 'rehype-stringify';
+import html from 'remark-html';
 import { format } from 'date-fns';
 import Link from 'next/link';
 import Head from 'next/head';
@@ -77,9 +75,7 @@ export async function getStaticProps({ params }) {
     
     // Use remark to convert markdown into HTML string
     const processedContent = await remark()
-      .use(remarkRehype, { allowDangerousHtml: true })
-      .use(rehypeRaw)
-      .use(rehypeStringify)
+      .use(html, { sanitize: false })
       .process(content);
     const contentHtml = processedContent.toString();
     

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { FaGithub, FaTwitter, FaBars, FaTimes } from 'react-icons/fa';
+import { FaGithub, FaTwitter, FaBars, FaTimes, FaEnvelope, FaPhone, FaMapMarkerAlt } from 'react-icons/fa';
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -35,12 +35,21 @@ export default function Navbar() {
           </div>
           
           <div className="hidden md:flex items-center space-x-4">
+            <a href="mailto:ivanspiridonov@gmail.com" className="text-gray-300 hover:text-accent" aria-label="Email">
+              <FaEnvelope className="w-5 h-5" />
+            </a>
+            <a href="tel:+359876143085" className="text-gray-300 hover:text-accent" aria-label="Phone">
+              <FaPhone className="w-5 h-5" />
+            </a>
             <a href="https://github.com/xbz0n" target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-accent" aria-label="GitHub">
               <FaGithub className="w-5 h-5" />
             </a>
             <a href="https://twitter.com/xbz0n" target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-accent" aria-label="Twitter">
               <FaTwitter className="w-5 h-5" />
             </a>
+            <span className="text-gray-300 hover:text-accent" aria-label="Location">
+              <FaMapMarkerAlt className="w-5 h-5" />
+            </span>
           </div>
           
           <button 
@@ -89,12 +98,21 @@ export default function Navbar() {
             </Link>
             
             <div className="flex items-center space-x-4 py-2">
+              <a href="mailto:ivanspiridonov@gmail.com" className="text-gray-300 hover:text-accent" aria-label="Email">
+                <FaEnvelope className="w-5 h-5" />
+              </a>
+              <a href="tel:+359876143085" className="text-gray-300 hover:text-accent" aria-label="Phone">
+                <FaPhone className="w-5 h-5" />
+              </a>
               <a href="https://github.com/xbz0n" target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-accent" aria-label="GitHub">
                 <FaGithub className="w-5 h-5" />
               </a>
               <a href="https://twitter.com/xbz0n" target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-accent" aria-label="Twitter">
                 <FaTwitter className="w-5 h-5" />
               </a>
+              <span className="text-gray-300" aria-label="Location">
+                <FaMapMarkerAlt className="w-5 h-5" />
+              </span>
             </div>
           </div>
         )}

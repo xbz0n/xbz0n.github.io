@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { FaShieldAlt, FaCode, FaBug, FaFileAlt, FaEnvelope, FaPhone, FaTwitter, FaMapMarkerAlt, FaCopyright } from 'react-icons/fa';
+import { FaShieldAlt, FaCode, FaBug, FaFileAlt, FaCopyright } from 'react-icons/fa';
 import TerminalHero from '../components/TerminalHero';
 import path from 'path';
 import fs from 'fs';
@@ -9,22 +9,6 @@ import { format } from 'date-fns';
 export default function Home({ latestPosts }) {
   return (
     <div className="space-y-16">
-      {/* Header Social Icons */}
-      <div className="flex justify-end space-x-4 py-2">
-        <a href="mailto:ivanspiridonov@gmail.com" className="text-gray-400 hover:text-accent">
-          <FaEnvelope />
-        </a>
-        <a href="tel:+359876143085" className="text-gray-400 hover:text-accent">
-          <FaPhone />
-        </a>
-        <a href="https://twitter.com/xbz0n" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-accent">
-          <FaTwitter />
-        </a>
-        <a className="text-gray-400 hover:text-accent">
-          <FaMapMarkerAlt />
-        </a>
-      </div>
-
       {/* Hero Section */}
       <section className="py-8">
         <div className="grid md:grid-cols-2 gap-8 items-center">
