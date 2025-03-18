@@ -20,7 +20,7 @@ export default function BlogPost({ postData }) {
   return (
     <>
       <Head>
-        <title>{postData.title} | Ivan Spiridonov</title>
+        <title>xbz0n@sh:~# {postData.title}</title>
         <meta name="description" content={postData.excerpt} />
       </Head>
       
@@ -127,6 +127,9 @@ export async function getStaticProps({ params }) {
     
     // Clean up the HTML content (fix code blocks and inline code)
     contentHtml = cleanHtml(contentHtml);
+    
+    // Remove the first h1 header from the content to avoid duplicate titles
+    contentHtml = contentHtml.replace(/<h1[^>]*>.*?<\/h1>/, '');
     
     return {
       props: {

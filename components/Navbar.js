@@ -22,6 +22,9 @@ export default function Navbar() {
               <Link href="/" className={isActive('/') ? 'nav-link-active' : 'nav-link'}>
                 Home
               </Link>
+              <Link href="/about" className={isActive('/about') ? 'nav-link-active' : 'nav-link'}>
+                About
+              </Link>
               <Link href="/blog" className={isActive('/blog') ? 'nav-link-active' : 'nav-link'}>
                 Blog
               </Link>
@@ -75,6 +78,13 @@ export default function Navbar() {
               onClick={() => setIsMenuOpen(false)}
             >
               Home
+            </Link>
+            <Link 
+              href="/about" 
+              className={`block py-2 ${isActive('/about') ? 'nav-link-active' : 'nav-link'}`}
+              onClick={() => setIsMenuOpen(false)}
+            >
+              About
             </Link>
             <Link 
               href="/blog" 

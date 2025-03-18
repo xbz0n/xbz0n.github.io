@@ -1,74 +1,78 @@
-import CVECard from '../components/CVECard';
+import { FaBug, FaCalendar, FaExternalLinkAlt } from 'react-icons/fa';
+import Link from 'next/link';
+import Head from 'next/head';
 
 export default function CVEs() {
   const cves = [
     {
-      id: "CVE-2024-32136",
-      link: "https://www.cve.org/CVERecord?id=CVE-2024-32136",
-      description: "A vulnerability in software systems leading to unauthorized access."
-    },
-    {
       id: "CVE-2023-0830",
-      link: "https://www.cve.org/CVERecord?id=CVE-2023-0830",
-      description: "Vulnerability in EasyNAS backup and restore script allowing arbitrary command execution with root privileges."
-    },
-    {
-      id: "CVE-2024-0365",
-      link: "https://www.cve.org/CVERecord?id=CVE-2024-0365",
-      description: "A security flaw in system components allowing privilege escalation."
-    },
-    {
-      id: "CVE-2024-0399",
-      link: "https://www.cve.org/CVERecord?id=CVE-2024-0399",
-      description: "A critical vulnerability affecting data integrity and confidentiality."
-    },
-    {
-      id: "CVE-2024-0405",
-      link: "https://www.cve.org/CVERecord?id=CVE-2024-0405",
-      description: "An input validation vulnerability leading to remote code execution."
-    },
-    {
-      id: "CVE-2024-0566",
-      link: "https://www.cve.org/CVERecord?id=CVE-2024-0566",
-      description: "A server-side request forgery vulnerability in web applications."
-    },
-    {
-      id: "CVE-2024-30240",
-      link: "https://www.cve.org/CVERecord?id=CVE-2024-30240",
-      description: "A critical authentication bypass vulnerability in network systems."
-    },
-    {
-      id: "CVE-2024-31370",
-      link: "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2024-31370",
-      description: "An injection vulnerability allowing arbitrary code execution."
-    },
-    {
-      id: "CVE-2024-33911",
-      link: "https://www.cve.org/CVERecord?id=CVE-2024-33911",
-      description: "A vulnerability affecting system configurations and security controls."
+      name: "EasyNAS 1.1.0 - Authenticated Remote Code Execution",
+      description: "EasyNAS 1.1.0 allows authenticated users to execute arbitrary code via shell metacharacters in certain file operations.",
+      date: "March 2023",
+      cveLink: "https://nvd.nist.gov/vuln/detail/CVE-2023-0830",
+      blogLink: "/blog/cve-2023-0830",
+      severity: "High"
     }
   ];
 
   return (
-    <div className="space-y-8">
-      <div className="space-y-4">
-        <h1 className="text-3xl font-bold">CVEs</h1>
-        <p className="text-gray-400">
-          Common Vulnerabilities and Exposures (CVEs) discovered and responsibly disclosed
-          as part of security research and penetration testing efforts.
-        </p>
-      </div>
+    <>
+      <Head>
+        <title>xbz0n@sh:~# Discovered CVEs</title>
+        <meta name="description" content="Security vulnerabilities discovered by Ivan Spiridonov with assigned CVE identifiers" />
+      </Head>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {cves.map((cve, index) => (
-          <CVECard 
-            key={index}
-            id={cve.id}
-            link={cve.link}
-            description={cve.description}
-          />
-        ))}
+      <div className="space-y-8">
+        <div className="space-y-4">
+          <h1 className="text-3xl font-bold">CVE Discoveries</h1>
+          <p className="text-gray-400">
+            Security vulnerabilities that I've discovered, responsibly disclosed, and been acknowledged for through the Common Vulnerabilities and Exposures (CVE) program.
+          </p>
+        </div>
+        
+        <div className="space-y-6">
+          {cves.map((cve, index) => (
+            <div key={index} className="bg-secondary/50 rounded-lg border border-gray-700 p-5 hover:border-accent/40 transition-all">
+              <div className="flex items-start justify-between">
+                <h2 className="text-xl font-semibold text-accent">{cve.id}</h2>
+                <span className={`badge ${cve.severity === 'Critical' ? 'badge-critical' : cve.severity === 'High' ? 'badge-high' : 'badge-medium'}`}>
+                  {cve.severity}
+                </span>
+              </div>
+              
+              <h3 className="text-lg font-medium mt-2">{cve.name}</h3>
+              
+              <p className="mt-3 text-gray-300">
+                {cve.description}
+              </p>
+              
+              <div className="mt-4 flex items-center text-sm text-gray-400">
+                <FaCalendar className="mr-1" />
+                <span>{cve.date}</span>
+              </div>
+              
+              <div className="mt-4 flex space-x-4">
+                <a 
+                  href={cve.cveLink} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="flex items-center text-sm text-accent hover:text-accent/80"
+                >
+                  <FaExternalLinkAlt className="mr-1 h-3 w-3" />
+                  <span>CVE Database</span>
+                </a>
+                
+                {cve.blogLink && (
+                  <Link href={cve.blogLink} className="flex items-center text-sm text-accent hover:text-accent/80">
+                    <FaBug className="mr-1" />
+                    <span>Read Analysis</span>
+                  </Link>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
-    </div>
+    </>
   );
 } 

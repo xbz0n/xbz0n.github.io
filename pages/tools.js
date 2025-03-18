@@ -1,4 +1,5 @@
 import ToolCard from '../components/ToolCard';
+import Head from 'next/head';
 
 export default function Tools() {
   const tools = [
@@ -31,27 +32,34 @@ export default function Tools() {
   ];
 
   return (
-    <div className="space-y-8">
-      <div className="space-y-4">
-        <h1 className="text-3xl font-bold">Tools</h1>
-        <p className="text-gray-400">
-          Open-source security tools and utilities developed to assist with penetration testing, 
-          vulnerability research, and security assessments.
-        </p>
+    <>
+      <Head>
+        <title>xbz0n@sh:~# Security Tools</title>
+        <meta name="description" content="Security tools developed by Ivan Spiridonov for penetration testing and security assessments" />
+      </Head>
+    
+      <div className="space-y-8">
+        <div className="space-y-4">
+          <h1 className="text-3xl font-bold">Tools</h1>
+          <p className="text-gray-400">
+            Open-source security tools and utilities developed to assist with penetration testing, 
+            vulnerability research, and security assessments.
+          </p>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {tools.map((tool, index) => (
+            <ToolCard 
+              key={index}
+              name={tool.name}
+              repo={tool.repo}
+              description={tool.description}
+              features={tool.features}
+              liveLink={tool.liveLink}
+            />
+          ))}
+        </div>
       </div>
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {tools.map((tool, index) => (
-          <ToolCard 
-            key={index}
-            name={tool.name}
-            repo={tool.repo}
-            description={tool.description}
-            features={tool.features}
-            liveLink={tool.liveLink}
-          />
-        ))}
-      </div>
-    </div>
+    </>
   );
 } 

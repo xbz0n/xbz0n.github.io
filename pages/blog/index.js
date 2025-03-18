@@ -1,31 +1,49 @@
 import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
-import BlogPostCard from '../../components/BlogPostCard';
+import Link from 'next/link';
+import { format } from 'date-fns';
+import Head from 'next/head';
 
 export default function Blog({ posts }) {
   return (
-    <div className="space-y-8">
-      <div className="space-y-4">
-        <h1 className="text-3xl font-bold">Security Research Blog</h1>
-        <p className="text-gray-400">
-          Articles, tutorials, and insights on penetration testing, vulnerability research, 
-          and offensive security techniques.
-        </p>
-      </div>
+    <>
+      <Head>
+        <title>xbz0n@sh:~# Blog</title>
+        <meta name="description" content="Security research, exploit development, and technical write-ups by Ivan Spiridonov" />
+      </Head>
       
-      <div className="grid grid-cols-1 gap-6">
-        {posts.map((post) => (
-          <BlogPostCard
-            key={post.slug}
-            title={post.title}
-            excerpt={post.excerpt}
-            date={post.date}
-            slug={post.slug}
-          />
-        ))}
+      <div className="space-y-8">
+        <h1 className="text-3xl font-bold">Blog</h1>
+        
+        <div className="space-y-8">
+          {posts.map((post) => (
+            <article key={post.slug} className="bg-secondary/50 rounded-lg border border-gray-700 p-5 transition-all hover:border-accent/40">
+              <Link href={`/blog/${post.slug}`}>
+                <h2 className="text-xl font-semibold mb-2 hover:text-accent">{post.title}</h2>
+              </Link>
+              
+              <div className="mb-3">
+                {post.tags && post.tags.map(tag => (
+                  <span key={tag} className={`badge ${tag.toLowerCase().includes('cve') ? 'badge-cve' : 'badge-certification'} mr-2`}>
+                    {tag}
+                  </span>
+                ))}
+                <time className="text-sm text-gray-400 ml-2" dateTime={post.date}>
+                  {format(new Date(post.date), 'MMMM d, yyyy')}
+                </time>
+              </div>
+              
+              <p className="text-gray-300">{post.excerpt}</p>
+              
+              <Link href={`/blog/${post.slug}`} className="inline-block mt-4 text-accent hover:text-accent/80">
+                Read full post →
+              </Link>
+            </article>
+          ))}
+        </div>
       </div>
-    </div>
+    </>
   );
 }
 
