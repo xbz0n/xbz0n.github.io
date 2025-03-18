@@ -70,6 +70,43 @@ export async function getStaticPaths() {
   }
 }
 
+// Function to clean up the rendered HTML content
+function cleanHtml(html) {
+  let cleaned = html;
+  
+  // Apply language-specific syntax highlighting to code blocks
+  // First transformation: Add language class based on info string
+  cleaned = cleaned.replace(
+    /<pre><code>```(\w+)([\s\S]*?)```<\/code><\/pre>/g,
+    function(match, lang, code) {
+      return `<pre class="language-${lang}"><code class="language-${lang}">${code}</code></pre>`;
+    }
+  );
+  
+  // Second transformation: Fix properly formatted code blocks with language classes
+  cleaned = cleaned.replace(
+    /<pre><code class="language-(\w+)">([\s\S]*?)<\/code><\/pre>/g,
+    '<pre class="language-$1"><code class="language-$1">$2</code></pre>'
+  );
+
+  // Third transformation: Handle remaining code blocks without specified language
+  cleaned = cleaned.replace(
+    /<pre><code>([\s\S]*?)<\/code><\/pre>/g,
+    function(match, code) {
+      if (!code.startsWith('<pre class="language-')) {
+        return `<pre class="language-none"><code class="language-none">${code}</code></pre>`;
+      }
+      return match;
+    }
+  );
+  
+  // Fix the issue with backtick symbols showing in rendered inline code
+  // This replaces any remaining visible backticks with proper inline code formatting
+  cleaned = cleaned.replace(/`([^`]+)`/g, '<code>$1</code>');
+  
+  return cleaned;
+}
+
 export async function getStaticProps({ params }) {
   try {
     const postsDirectory = path.join(process.cwd(), 'posts');
@@ -88,31 +125,8 @@ export async function getStaticProps({ params }) {
     // Get the HTML as a string
     let contentHtml = processedContent.toString();
     
-    // Apply language-specific syntax highlighting to code blocks
-    // First transformation: Add language class based on info string
-    contentHtml = contentHtml.replace(
-      /<pre><code>```(\w+)([\s\S]*?)```<\/code><\/pre>/g,
-      function(match, lang, code) {
-        return `<pre class="language-${lang}"><code class="language-${lang}">${code}</code></pre>`;
-      }
-    );
-    
-    // Second transformation: Fix properly formatted code blocks with language classes
-    contentHtml = contentHtml.replace(
-      /<pre><code class="language-(\w+)">([\s\S]*?)<\/code><\/pre>/g,
-      '<pre class="language-$1"><code class="language-$1">$2</code></pre>'
-    );
-
-    // Third transformation: Handle remaining code blocks without specified language
-    contentHtml = contentHtml.replace(
-      /<pre><code>([\s\S]*?)<\/code><\/pre>/g,
-      function(match, code) {
-        if (!code.startsWith('<pre class="language-')) {
-          return `<pre class="language-none"><code class="language-none">${code}</code></pre>`;
-        }
-        return match;
-      }
-    );
+    // Clean up the HTML content (fix code blocks and inline code)
+    contentHtml = cleanHtml(contentHtml);
     
     return {
       props: {
