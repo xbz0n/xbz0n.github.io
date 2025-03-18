@@ -9,6 +9,22 @@ import { format } from 'date-fns';
 export default function Home({ latestPosts }) {
   return (
     <div className="space-y-16">
+      {/* Header Social Icons */}
+      <div className="flex justify-end space-x-4 py-2">
+        <a href="mailto:ivanspiridonov@gmail.com" className="text-gray-400 hover:text-accent">
+          <FaEnvelope />
+        </a>
+        <a href="tel:+359876143085" className="text-gray-400 hover:text-accent">
+          <FaPhone />
+        </a>
+        <a href="https://twitter.com/xbz0n" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-accent">
+          <FaTwitter />
+        </a>
+        <span className="text-gray-400 flex items-center">
+          <FaMapMarkerAlt className="mr-1" /> Sofia, Bulgaria
+        </span>
+      </div>
+
       {/* Hero Section */}
       <section className="py-8">
         <div className="grid md:grid-cols-2 gap-8 items-center">
@@ -69,44 +85,6 @@ export default function Home({ latestPosts }) {
         </div>
       </section>
 
-      {/* Contact Information */}
-      <section className="py-8">
-        <h2 className="text-2xl font-bold mb-8 flex items-center">
-          <FaEnvelope className="mr-2 text-accent" />
-          Get in Touch
-        </h2>
-        <div className="grid md:grid-cols-2 gap-6">
-          <div className="bg-secondary/30 rounded-lg p-6 border border-gray-700">
-            <div className="flex flex-col space-y-4">
-              <div className="flex items-center">
-                <FaEnvelope className="text-accent mr-3" />
-                <a href="mailto:ivanspiridonov@gmail.com" className="hover:text-accent">ivanspiridonov@gmail.com</a>
-              </div>
-              <div className="flex items-center">
-                <FaPhone className="text-accent mr-3" />
-                <a href="tel:+359876143085" className="hover:text-accent">+359 876 143 085</a>
-              </div>
-              <div className="flex items-center">
-                <FaTwitter className="text-accent mr-3" />
-                <a href="https://twitter.com/xbz0n" target="_blank" rel="noopener noreferrer" className="hover:text-accent">@xbz0n</a>
-              </div>
-              <div className="flex items-center">
-                <FaMapMarkerAlt className="text-accent mr-3" />
-                <span>Sofia, Bulgaria</span>
-              </div>
-            </div>
-          </div>
-          <div className="bg-secondary/30 rounded-lg p-6 border border-gray-700">
-            <p className="text-gray-300 mb-4">
-              Need help with security testing or vulnerability assessment? I'm available for consulting and penetration testing projects.
-            </p>
-            <p className="text-gray-300">
-              Feel free to reach out for collaboration on security research or to discuss potential security concerns in your infrastructure.
-            </p>
-          </div>
-        </div>
-      </section>
-
       {/* Featured Content */}
       <section className="py-8">
         <div className="flex justify-between items-center mb-8">
@@ -115,32 +93,49 @@ export default function Home({ latestPosts }) {
             View all posts →
           </Link>
         </div>
-        <div className="grid md:grid-cols-3 gap-6">
-          {latestPosts.map(post => (
-            <div key={post.slug} className="bg-secondary/30 rounded-lg p-6 border border-gray-700">
-              <div className="mb-2">
-                {post.tags && post.tags.map(tag => (
-                  <span key={tag} className={`badge ${tag.toLowerCase().includes('cve') ? 'badge-cve' : 'badge-certification'} mr-2`}>
-                    {tag}
-                  </span>
-                ))}
-                <span className="text-sm text-gray-400 block mt-1">
-                  {format(new Date(post.date), 'MMM d, yyyy')}
+        
+        {latestPosts.map((post, index) => (
+          <div key={post.slug} className={`bg-secondary/30 rounded-lg p-6 border border-gray-700 ${index > 0 ? 'mt-6' : ''}`}>
+            <div className="mb-2">
+              {post.tags && post.tags.map(tag => (
+                <span key={tag} className={`badge ${tag.toLowerCase().includes('cve') ? 'badge-cve' : 'badge-certification'} mr-2`}>
+                  {tag}
                 </span>
-              </div>
-              <h3 className="text-xl font-semibold mb-2">
-                {post.title}
-              </h3>
-              <p className="text-gray-400 mb-4">
-                {post.excerpt}
-              </p>
-              <Link href={`/blog/${post.slug}`} className="text-accent hover:text-accent/80">
-                Read full analysis →
-              </Link>
+              ))}
+              <span className="text-sm text-gray-400 ml-2">
+                {format(new Date(post.date), 'MMM d, yyyy')}
+              </span>
             </div>
-          ))}
-        </div>
+            <h3 className="text-xl font-semibold mb-2">
+              {post.title}
+            </h3>
+            <p className="text-gray-400 mb-4">
+              {post.excerpt}
+            </p>
+            <Link href={`/blog/${post.slug}`} className="text-accent hover:text-accent/80">
+              Read full analysis →
+            </Link>
+          </div>
+        ))}
       </section>
+
+      {/* Footer Social Links */}
+      <footer className="py-8 border-t border-gray-800">
+        <div className="flex justify-center space-x-8 py-4">
+          <a href="mailto:ivanspiridonov@gmail.com" className="text-gray-400 hover:text-accent flex items-center">
+            <FaEnvelope className="mr-2" /> ivanspiridonov@gmail.com
+          </a>
+          <a href="tel:+359876143085" className="text-gray-400 hover:text-accent flex items-center">
+            <FaPhone className="mr-2" /> +359 876 143 085
+          </a>
+          <a href="https://twitter.com/xbz0n" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-accent flex items-center">
+            <FaTwitter className="mr-2" /> @xbz0n
+          </a>
+          <div className="text-gray-400 flex items-center">
+            <FaMapMarkerAlt className="mr-2" /> Sofia, Bulgaria
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
