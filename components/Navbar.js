@@ -31,9 +31,11 @@ export default function Navbar() {
               <Link href="/cves" className={isActive('/cves') ? 'nav-link-active' : 'nav-link'}>
                 CVEs
               </Link>
+              {/* Certs link temporarily hidden
               <Link href="/certifications" className={isActive('/certifications') ? 'nav-link-active' : 'nav-link'}>
                 Certs
               </Link>
+              */}
             </div>
           </div>
           
@@ -95,6 +97,7 @@ export default function Navbar() {
             >
               CVEs
             </Link>
+            {/* Certs link temporarily hidden
             <Link 
               href="/certifications" 
               className={`block py-2 ${isActive('/certifications') ? 'nav-link-active' : 'nav-link'}`}
@@ -102,6 +105,7 @@ export default function Navbar() {
             >
               Certs
             </Link>
+            */}
             
             <div className="flex justify-evenly items-center pt-4 pb-2 border-t border-gray-700">
               <a href="mailto:ivanspiridonov@gmail.com" className="flex flex-col items-center text-gray-300 hover:text-accent" aria-label="Email">
