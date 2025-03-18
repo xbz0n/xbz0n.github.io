@@ -6,8 +6,17 @@ import html from 'remark-html';
 import { format } from 'date-fns';
 import Link from 'next/link';
 import Head from 'next/head';
+import { useEffect } from 'react';
+import Prism from 'prismjs';
 
 export default function BlogPost({ postData }) {
+  useEffect(() => {
+    // Re-highlight code blocks when content changes
+    if (typeof window !== 'undefined') {
+      Prism.highlightAll();
+    }
+  }, [postData]);
+
   return (
     <>
       <Head>
@@ -71,10 +80,39 @@ export async function getStaticProps({ params }) {
     
     const excerpt = content.slice(0, 160).trim() + '...';
     
+    // Process the content to convert markdown to HTML
     const processedContent = await remark()
       .use(html, { sanitize: false })
       .process(content);
-    const contentHtml = processedContent.toString();
+    
+    // Get the HTML as a string
+    let contentHtml = processedContent.toString();
+    
+    // Apply language-specific syntax highlighting to code blocks
+    // First transformation: Add language class based on info string
+    contentHtml = contentHtml.replace(
+      /<pre><code>```(\w+)([\s\S]*?)```<\/code><\/pre>/g,
+      function(match, lang, code) {
+        return `<pre class="language-${lang}"><code class="language-${lang}">${code}</code></pre>`;
+      }
+    );
+    
+    // Second transformation: Fix properly formatted code blocks with language classes
+    contentHtml = contentHtml.replace(
+      /<pre><code class="language-(\w+)">([\s\S]*?)<\/code><\/pre>/g,
+      '<pre class="language-$1"><code class="language-$1">$2</code></pre>'
+    );
+
+    // Third transformation: Handle remaining code blocks without specified language
+    contentHtml = contentHtml.replace(
+      /<pre><code>([\s\S]*?)<\/code><\/pre>/g,
+      function(match, code) {
+        if (!code.startsWith('<pre class="language-')) {
+          return `<pre class="language-none"><code class="language-none">${code}</code></pre>`;
+        }
+        return match;
+      }
+    );
     
     return {
       props: {
