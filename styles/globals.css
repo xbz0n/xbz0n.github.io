@@ -24,7 +24,13 @@ a {
 }
 
 .blog-content {
-  @apply prose prose-invert max-w-none prose-headings:text-accent prose-a:text-accent prose-code:text-white prose-code:bg-secondary prose-code:px-1 prose-code:py-0.5 prose-code:rounded;
+  @apply prose prose-invert max-w-none prose-headings:text-accent prose-a:text-accent prose-code:text-white prose-code:bg-transparent prose-code:px-0 prose-code:py-0 prose-code:rounded-none;
+}
+
+/* Override any Tailwind prose styles for code to let our Prism styles take precedence */
+.blog-content pre,
+.blog-content code {
+  @apply p-0 m-0 bg-transparent text-inherit;
 }
 
 @layer components {
