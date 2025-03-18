@@ -12,6 +12,8 @@ tags: ["Shellcode", "Assembly", "Windows", "Exploit Development"]
 
 In the realm of cybersecurity, shellcode represents one of the most fundamental building blocks for both offensive security practitioners and defensive analysts. These compact machine code sequences, traditionally designed to spawn command shells (hence the name), have evolved to perform virtually any programmatic action on a target system.
 
+I developed this analysis as part of my learning journey through the Offensive Security Exploit Developer (OSED) certification, where shellcoding is a core component of the curriculum. This article represents my practical exploration of these techniques and serves as a reference for others on a similar path.
+
 In this comprehensive analysis, we'll dissect a classic Windows shellcode example that launches the calculator application. While seemingly simple, this example serves as an excellent educational tool, demonstrating critical low-level programming techniques applicable to both security research and software development.
 
 ```
