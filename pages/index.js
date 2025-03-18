@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { FaShieldAlt, FaCode, FaBug, FaFileAlt, FaCopyright } from 'react-icons/fa';
+import { FaShieldAlt, FaCode, FaBug, FaFileAlt } from 'react-icons/fa';
 import TerminalHero from '../components/TerminalHero';
 import path from 'path';
 import fs from 'fs';
@@ -102,13 +102,6 @@ export default function Home({ latestPosts }) {
           </div>
         ))}
       </section>
-
-      {/* Footer */}
-      <footer className="py-6 border-t border-gray-800">
-        <div className="flex justify-center items-center text-gray-400">
-          <FaCopyright className="mr-2" /> {new Date().getFullYear()} Ivan Spiridonov. All rights reserved.
-        </div>
-      </footer>
     </div>
   );
 }
