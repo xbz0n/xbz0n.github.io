@@ -1,6 +1,6 @@
 ---
 title: "Mastering x86 Shellcode: A Deep Dive into Calculator-Launching Payload Development"
-date: "2024-03-18"
+date: "2025-03-18"
 tags: ["Shellcode", "Assembly", "Windows", "Exploit Development"]
 ---
 
