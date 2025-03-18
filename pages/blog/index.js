@@ -64,8 +64,8 @@ function cleanExcerpt(content) {
   // Remove links
   clean = clean.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1');
   
-  // Remove images
-  clean = clean.replace(/!\[([^\]]+)\]\([^)]+\)/g, '');
+  // Remove images - fix the regex to match both with and without alt text
+  clean = clean.replace(/!\[[^\]]*\]\([^)]+\)/g, '');
   
   // Remove blockquotes
   clean = clean.replace(/^>\s(.*)$/gm, '$1');
@@ -95,8 +95,9 @@ export async function getStaticProps() {
       // Clean the content of markdown formatting
       const cleanContent = cleanExcerpt(content);
       
-      // Create the excerpt
-      const excerpt = cleanContent.slice(0, 200) + '...';
+      // Create the excerpt - start from a position after the title/image area
+      const startPosition = Math.min(150, cleanContent.length / 3);
+      const excerpt = cleanContent.slice(startPosition, startPosition + 200) + '...';
       
       return {
         slug,
