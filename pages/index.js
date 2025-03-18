@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { FaShieldAlt, FaCode, FaBug, FaFileAlt, FaEnvelope, FaPhone, FaTwitter, FaMapMarkerAlt } from 'react-icons/fa';
+import { FaShieldAlt, FaCode, FaBug, FaFileAlt, FaEnvelope, FaPhone, FaTwitter, FaMapMarkerAlt, FaCopyright } from 'react-icons/fa';
 import TerminalHero from '../components/TerminalHero';
 import path from 'path';
 import fs from 'fs';
@@ -20,9 +20,9 @@ export default function Home({ latestPosts }) {
         <a href="https://twitter.com/xbz0n" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-accent">
           <FaTwitter />
         </a>
-        <span className="text-gray-400 flex items-center">
-          <FaMapMarkerAlt className="mr-1" /> Sofia, Bulgaria
-        </span>
+        <a className="text-gray-400 hover:text-accent">
+          <FaMapMarkerAlt />
+        </a>
       </div>
 
       {/* Hero Section */}
@@ -119,21 +119,10 @@ export default function Home({ latestPosts }) {
         ))}
       </section>
 
-      {/* Footer Social Links */}
-      <footer className="py-8 border-t border-gray-800">
-        <div className="flex justify-center space-x-8 py-4">
-          <a href="mailto:ivanspiridonov@gmail.com" className="text-gray-400 hover:text-accent flex items-center">
-            <FaEnvelope className="mr-2" /> ivanspiridonov@gmail.com
-          </a>
-          <a href="tel:+359876143085" className="text-gray-400 hover:text-accent flex items-center">
-            <FaPhone className="mr-2" /> +359 876 143 085
-          </a>
-          <a href="https://twitter.com/xbz0n" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-accent flex items-center">
-            <FaTwitter className="mr-2" /> @xbz0n
-          </a>
-          <div className="text-gray-400 flex items-center">
-            <FaMapMarkerAlt className="mr-2" /> Sofia, Bulgaria
-          </div>
+      {/* Footer */}
+      <footer className="py-6 border-t border-gray-800">
+        <div className="flex justify-center items-center text-gray-400">
+          <FaCopyright className="mr-2" /> {new Date().getFullYear()} Ivan Spiridonov. All rights reserved.
         </div>
       </footer>
     </div>
