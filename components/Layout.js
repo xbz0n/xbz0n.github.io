@@ -2,7 +2,7 @@ import Head from 'next/head';
 import Navbar from './Navbar';
 import Footer from './Footer';
 
-export default function Layout({ children, title = 'Ivan Spiridonov | Professional Penetration Tester' }) {
+export default function Layout({ children, title = 'xbz0n@sh:~# Command Line to Front Line' }) {
   return (
     <>
       <Head>
