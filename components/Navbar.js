@@ -22,14 +22,17 @@ export default function Navbar() {
               <Link href="/" className={isActive('/') ? 'nav-link-active' : 'nav-link'}>
                 Home
               </Link>
-              <Link href="/certifications" className={isActive('/certifications') ? 'nav-link-active' : 'nav-link'}>
-                Certifications
+              <Link href="/blog" className={isActive('/blog') ? 'nav-link-active' : 'nav-link'}>
+                Blog
+              </Link>
+              <Link href="/tools" className={isActive('/tools') ? 'nav-link-active' : 'nav-link'}>
+                Tools
               </Link>
               <Link href="/cves" className={isActive('/cves') ? 'nav-link-active' : 'nav-link'}>
                 CVEs
               </Link>
-              <Link href="/blog" className={isActive('/blog') ? 'nav-link-active' : 'nav-link'}>
-                Blog
+              <Link href="/certifications" className={isActive('/certifications') ? 'nav-link-active' : 'nav-link'}>
+                Certs
               </Link>
             </div>
           </div>
@@ -72,11 +75,18 @@ export default function Navbar() {
               Home
             </Link>
             <Link 
-              href="/certifications" 
-              className={`block py-2 ${isActive('/certifications') ? 'nav-link-active' : 'nav-link'}`}
+              href="/blog" 
+              className={`block py-2 ${isActive('/blog') ? 'nav-link-active' : 'nav-link'}`}
               onClick={() => setIsMenuOpen(false)}
             >
-              Certifications
+              Blog
+            </Link>
+            <Link 
+              href="/tools" 
+              className={`block py-2 ${isActive('/tools') ? 'nav-link-active' : 'nav-link'}`}
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Tools
             </Link>
             <Link 
               href="/cves" 
@@ -86,11 +96,11 @@ export default function Navbar() {
               CVEs
             </Link>
             <Link 
-              href="/blog" 
-              className={`block py-2 ${isActive('/blog') ? 'nav-link-active' : 'nav-link'}`}
+              href="/certifications" 
+              className={`block py-2 ${isActive('/certifications') ? 'nav-link-active' : 'nav-link'}`}
               onClick={() => setIsMenuOpen(false)}
             >
-              Blog
+              Certs
             </Link>
             
             <div className="flex justify-evenly items-center pt-4 pb-2 border-t border-gray-700">
