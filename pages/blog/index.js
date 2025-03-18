@@ -73,10 +73,50 @@ function cleanExcerpt(content) {
   // Remove horizontal rules
   clean = clean.replace(/^---$|^\*\*\*$|^___$/gm, '');
   
-  // Normalize whitespace
-  clean = clean.replace(/\n+/g, ' ').trim();
-  
   return clean;
+}
+
+// New function to extract a meaningful excerpt
+function generateExcerpt(content) {
+  // First clean the markdown syntax
+  let cleaned = cleanExcerpt(content);
+  
+  // Split into paragraphs (sequences of non-empty lines)
+  const paragraphs = cleaned.split(/\n{2,}/).map(p => p.trim()).filter(p => p.length > 0);
+  
+  // Find the first real paragraph (skip potential titles and short phrases)
+  let startParagraph = 0;
+  // Skip paragraphs that are likely titles or just image captions
+  while (startParagraph < paragraphs.length && 
+         (paragraphs[startParagraph].length < 40 || 
+          paragraphs[startParagraph].includes('# ') || 
+          paragraphs[startParagraph].includes('## '))) {
+    startParagraph++;
+  }
+  
+  // If we've gone through all paragraphs, go back to the longest one we found
+  if (startParagraph >= paragraphs.length) {
+    const lengths = paragraphs.map(p => p.length);
+    startParagraph = lengths.indexOf(Math.max(...lengths));
+  }
+  
+  // Get the selected paragraph and ensure it's not too long for an excerpt
+  let excerpt = paragraphs[startParagraph] || '';
+  
+  // Truncate if necessary and add ellipsis
+  if (excerpt.length > 200) {
+    // Try to truncate at a sentence boundary
+    const sentenceEnd = excerpt.slice(150, 200).search(/[.!?]\s/);
+    if (sentenceEnd !== -1) {
+      excerpt = excerpt.slice(0, 150 + sentenceEnd + 1) + '...';
+    } else {
+      // If no sentence boundary found, truncate at a word boundary
+      const lastSpace = excerpt.slice(0, 200).lastIndexOf(' ');
+      excerpt = excerpt.slice(0, lastSpace) + '...';
+    }
+  }
+  
+  return excerpt;
 }
 
 export async function getStaticProps() {
@@ -92,12 +132,8 @@ export async function getStaticProps() {
       const fileContents = fs.readFileSync(fullPath, 'utf8');
       const { data, content } = matter(fileContents);
       
-      // Clean the content of markdown formatting
-      const cleanContent = cleanExcerpt(content);
-      
-      // Create the excerpt - start from a position after the title/image area
-      const startPosition = Math.min(150, cleanContent.length / 3);
-      const excerpt = cleanContent.slice(startPosition, startPosition + 200) + '...';
+      // Generate a meaningful excerpt
+      const excerpt = generateExcerpt(content);
       
       return {
         slug,
