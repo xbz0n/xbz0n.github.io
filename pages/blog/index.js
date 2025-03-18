@@ -52,6 +52,12 @@ function cleanExcerpt(content) {
   // Remove headers (any number of # followed by a space)
   let clean = content.replace(/^#+\s.*$/gm, '');
   
+  // Remove entire lines that contain image markdown
+  clean = clean.replace(/^.*!\[.*\].*$/gm, '');
+  
+  // Also remove any remaining image markdown
+  clean = clean.replace(/!\[.*?\]\(.*?\)/g, '');
+  
   // Remove inline code formatting (backticks)
   clean = clean.replace(/`([^`]+)`/g, '$1');
   
@@ -63,9 +69,6 @@ function cleanExcerpt(content) {
   
   // Remove links
   clean = clean.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1');
-  
-  // Remove images - fix the regex to match both with and without alt text
-  clean = clean.replace(/!\[[^\]]*\]\([^)]+\)/g, '');
   
   // Remove blockquotes
   clean = clean.replace(/^>\s(.*)$/gm, '$1');
@@ -82,26 +85,31 @@ function generateExcerpt(content) {
   let cleaned = cleanExcerpt(content);
   
   // Split into paragraphs (sequences of non-empty lines)
-  const paragraphs = cleaned.split(/\n{2,}/).map(p => p.trim()).filter(p => p.length > 0);
+  const paragraphs = cleaned.split(/\n{2,}/)
+    .map(p => p.trim())
+    .filter(p => p.length > 0 && !p.includes('!['));
   
-  // Find the first real paragraph (skip potential titles and short phrases)
-  let startParagraph = 0;
-  // Skip paragraphs that are likely titles or just image captions
-  while (startParagraph < paragraphs.length && 
-         (paragraphs[startParagraph].length < 40 || 
-          paragraphs[startParagraph].includes('# ') || 
-          paragraphs[startParagraph].includes('## '))) {
-    startParagraph++;
+  // Skip the first paragraph for shellcode article as it's empty due to image
+  // Start from second actual paragraph for more meaningful text
+  let startParagraph = 1;
+  
+  // If we don't have enough paragraphs, use the first non-empty one
+  if (paragraphs.length <= 1) {
+    startParagraph = 0;
   }
   
-  // If we've gone through all paragraphs, go back to the longest one we found
+  // Safety check - make sure we have a paragraph
   if (startParagraph >= paragraphs.length) {
-    const lengths = paragraphs.map(p => p.length);
-    startParagraph = lengths.indexOf(Math.max(...lengths));
+    startParagraph = 0;
   }
   
-  // Get the selected paragraph and ensure it's not too long for an excerpt
-  let excerpt = paragraphs[startParagraph] || '';
+  // Get the selected paragraph
+  let excerpt = paragraphs[startParagraph] || 'Read more...';
+  
+  // Make sure excerpt isn't too short
+  if (excerpt.length < 40 && paragraphs.length > startParagraph + 1) {
+    excerpt = paragraphs[startParagraph + 1];
+  }
   
   // Truncate if necessary and add ellipsis
   if (excerpt.length > 200) {
@@ -112,7 +120,7 @@ function generateExcerpt(content) {
     } else {
       // If no sentence boundary found, truncate at a word boundary
       const lastSpace = excerpt.slice(0, 200).lastIndexOf(' ');
-      excerpt = excerpt.slice(0, lastSpace) + '...';
+      excerpt = excerpt.slice(0, lastSpace || 200) + '...';
     }
   }
   
