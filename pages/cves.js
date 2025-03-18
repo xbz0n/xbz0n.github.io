@@ -6,7 +6,7 @@ export default function CVEs() {
     {
       id: "CVE-2024-32136",
       link: "https://www.cve.org/CVERecord?id=CVE-2024-32136",
-      description: "A vulnerability in software systems leading to unauthorized access."
+      description: "A SQL injection vulnerability in database systems leading to unauthorized access."
     },
     {
       id: "CVE-2023-0830",
@@ -31,12 +31,12 @@ export default function CVEs() {
     {
       id: "CVE-2024-0566",
       link: "https://www.cve.org/CVERecord?id=CVE-2024-0566",
-      description: "A server-side request forgery vulnerability in web applications."
+      description: "A SQL injection vulnerability allowing data exfiltration in web applications."
     },
     {
       id: "CVE-2024-30240",
       link: "https://www.cve.org/CVERecord?id=CVE-2024-30240",
-      description: "A critical authentication bypass vulnerability in network systems."
+      description: "A critical SQL injection vulnerability allowing authentication bypass in systems."
     },
     {
       id: "CVE-2024-31370",
