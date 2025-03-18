@@ -17,11 +17,35 @@ export default function BlogPost({ postData }) {
     }
   }, [postData]);
 
+  // Extract the first image from the post content
+  const getFirstImage = (html) => {
+    const imgRegex = /<img[^>]+src="([^">]+)"/;
+    const match = html.match(imgRegex);
+    return match ? match[1] : null;
+  };
+
+  const firstImage = getFirstImage(postData.contentHtml);
+  const siteUrl = 'https://xbz0n.github.io'; // Replace with your actual site URL
+
   return (
     <>
       <Head>
         <title>xbz0n@sh:~# {postData.title}</title>
         <meta name="description" content={postData.excerpt} />
+        
+        {/* Open Graph / Facebook */}
+        <meta property="og:type" content="article" />
+        <meta property="og:url" content={`${siteUrl}/blog/${postData.slug}`} />
+        <meta property="og:title" content={postData.title} />
+        <meta property="og:description" content={postData.excerpt} />
+        {firstImage && <meta property="og:image" content={firstImage.startsWith('http') ? firstImage : `${siteUrl}${firstImage}`} />}
+        
+        {/* Twitter */}
+        <meta property="twitter:card" content="summary_large_image" />
+        <meta property="twitter:url" content={`${siteUrl}/blog/${postData.slug}`} />
+        <meta property="twitter:title" content={postData.title} />
+        <meta property="twitter:description" content={postData.excerpt} />
+        {firstImage && <meta property="twitter:image" content={firstImage.startsWith('http') ? firstImage : `${siteUrl}${firstImage}`} />}
       </Head>
       
       <article className="max-w-3xl mx-auto">
