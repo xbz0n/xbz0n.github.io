@@ -157,7 +157,50 @@ export async function getStaticProps({ params }) {
     
     const { data, content } = matter(fileContents);
     
-    const excerpt = content.slice(0, 160).trim() + '...';
+    // Better excerpt generation - find the second paragraph of actual text
+    // Skip title, image references, and headings
+    const getProperExcerpt = (mdContent) => {
+      // Remove front matter if it exists
+      const contentWithoutFrontMatter = mdContent.replace(/^---[\s\S]*?---/m, '').trim();
+      
+      // Split by lines
+      const lines = contentWithoutFrontMatter.split('\n');
+      
+      // Filter out empty lines, headings, and image references
+      const textLines = lines.filter(line => {
+        const trimmedLine = line.trim();
+        return trimmedLine.length > 0 && 
+               !trimmedLine.startsWith('#') && 
+               !trimmedLine.startsWith('![') &&
+               !trimmedLine.startsWith('<img');
+      });
+      
+      // Group into paragraphs (consecutive non-empty lines)
+      const paragraphs = [];
+      let currentParagraph = [];
+      
+      for (const line of textLines) {
+        if (line.trim().length === 0 && currentParagraph.length > 0) {
+          paragraphs.push(currentParagraph.join(' '));
+          currentParagraph = [];
+        } else if (line.trim().length > 0) {
+          currentParagraph.push(line.trim());
+        }
+      }
+      
+      // Add the last paragraph if there's content
+      if (currentParagraph.length > 0) {
+        paragraphs.push(currentParagraph.join(' '));
+      }
+      
+      // Get the second paragraph if available, otherwise the first
+      const excerpt = paragraphs.length > 1 ? paragraphs[1] : (paragraphs.length > 0 ? paragraphs[0] : '');
+      
+      // Truncate if too long
+      return excerpt.length > 160 ? excerpt.slice(0, 157) + '...' : excerpt;
+    };
+    
+    const excerpt = getProperExcerpt(content);
     
     // Process the content to convert markdown to HTML
     const processedContent = await remark()
