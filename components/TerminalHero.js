@@ -8,8 +8,10 @@ export default function TerminalHero() {
   
   const lines = [
     'Hello, I am Ivan Spiridonov (xbz0n)',
-    'Professional Penetration Tester & Security Researcher',
-    'Specialized in Web Application Security, Active Directory, and Red Team Operations',
+    'Penetration Tester & Security Researcher',
+    'Discovering vulnerabilities others miss since 2015',
+    'Specialties: Web Apps, API Security, Zero-Days',
+    'Responsible for multiple CVE discoveries',
     'Type "help" for available commands...'
   ];
   

@@ -1,12 +1,12 @@
 import Link from 'next/link';
-import { FaShieldAlt, FaCode, FaBug, FaFileAlt } from 'react-icons/fa';
+import { FaShieldAlt, FaCode, FaBug, FaFileAlt, FaEnvelope, FaPhone, FaTwitter, FaMapMarkerAlt } from 'react-icons/fa';
 import TerminalHero from '../components/TerminalHero';
 import path from 'path';
 import fs from 'fs';
 import matter from 'gray-matter';
 import { format } from 'date-fns';
 
-export default function Home({ latestPost }) {
+export default function Home({ latestPosts }) {
   return (
     <div className="space-y-16">
       {/* Hero Section */}
@@ -17,7 +17,7 @@ export default function Home({ latestPost }) {
               <span className="bg-gradient-to-r from-accent to-blue-500 bg-clip-text text-transparent">
                 Ivan Spiridonov
               </span>
-              <span className="block text-gray-100 mt-2">Professional Penetration Tester</span>
+              <span className="block text-gray-100 mt-2">Penetration Tester</span>
             </h1>
             <p className="text-gray-400 text-lg">
               Specialized in discovering and exploiting security vulnerabilities in web applications, 
@@ -54,9 +54,9 @@ export default function Home({ latestPost }) {
           </div>
           <div className="bg-secondary/30 rounded-lg p-6 border border-gray-700">
             <FaBug className="text-accent text-2xl mb-4" />
-            <h3 className="text-xl font-semibold mb-2">Advanced Threat Detection</h3>
+            <h3 className="text-xl font-semibold mb-2">Exploit Development</h3>
             <p className="text-gray-400">
-              Red teaming and adversary emulation to test defenses against sophisticated attack techniques.
+              Creating proof-of-concept exploits for discovered vulnerabilities and developing custom security tools for specialized testing scenarios.
             </p>
           </div>
           <div className="bg-secondary/30 rounded-lg p-6 border border-gray-700">
@@ -64,6 +64,44 @@ export default function Home({ latestPost }) {
             <h3 className="text-xl font-semibold mb-2">Security Research</h3>
             <p className="text-gray-400">
               Discovering and responsibly disclosing vulnerabilities in software and systems with published CVEs.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Contact Information */}
+      <section className="py-8">
+        <h2 className="text-2xl font-bold mb-8 flex items-center">
+          <FaEnvelope className="mr-2 text-accent" />
+          Get in Touch
+        </h2>
+        <div className="grid md:grid-cols-2 gap-6">
+          <div className="bg-secondary/30 rounded-lg p-6 border border-gray-700">
+            <div className="flex flex-col space-y-4">
+              <div className="flex items-center">
+                <FaEnvelope className="text-accent mr-3" />
+                <a href="mailto:ivanspiridonov@gmail.com" className="hover:text-accent">ivanspiridonov@gmail.com</a>
+              </div>
+              <div className="flex items-center">
+                <FaPhone className="text-accent mr-3" />
+                <a href="tel:+359876143085" className="hover:text-accent">+359 876 143 085</a>
+              </div>
+              <div className="flex items-center">
+                <FaTwitter className="text-accent mr-3" />
+                <a href="https://twitter.com/xbz0n" target="_blank" rel="noopener noreferrer" className="hover:text-accent">@xbz0n</a>
+              </div>
+              <div className="flex items-center">
+                <FaMapMarkerAlt className="text-accent mr-3" />
+                <span>Sofia, Bulgaria</span>
+              </div>
+            </div>
+          </div>
+          <div className="bg-secondary/30 rounded-lg p-6 border border-gray-700">
+            <p className="text-gray-300 mb-4">
+              Need help with security testing or vulnerability assessment? I'm available for consulting and penetration testing projects.
+            </p>
+            <p className="text-gray-300">
+              Feel free to reach out for collaboration on security research or to discuss potential security concerns in your infrastructure.
             </p>
           </div>
         </div>
@@ -77,26 +115,30 @@ export default function Home({ latestPost }) {
             View all posts →
           </Link>
         </div>
-        <div className="bg-secondary/30 rounded-lg p-6 border border-gray-700">
-          <div className="mb-2">
-            {latestPost.tags && latestPost.tags.map(tag => (
-              <span key={tag} className={`badge ${tag.toLowerCase().includes('cve') ? 'badge-cve' : 'badge-certification'} mr-2`}>
-                {tag}
-              </span>
-            ))}
-            <span className="text-sm text-gray-400 ml-2">
-              {format(new Date(latestPost.date), 'MMM d, yyyy')}
-            </span>
-          </div>
-          <h3 className="text-xl font-semibold mb-2">
-            {latestPost.title}
-          </h3>
-          <p className="text-gray-400 mb-4">
-            {latestPost.excerpt}
-          </p>
-          <Link href={`/blog/${latestPost.slug}`} className="text-accent hover:text-accent/80">
-            Read full analysis →
-          </Link>
+        <div className="grid md:grid-cols-3 gap-6">
+          {latestPosts.map(post => (
+            <div key={post.slug} className="bg-secondary/30 rounded-lg p-6 border border-gray-700">
+              <div className="mb-2">
+                {post.tags && post.tags.map(tag => (
+                  <span key={tag} className={`badge ${tag.toLowerCase().includes('cve') ? 'badge-cve' : 'badge-certification'} mr-2`}>
+                    {tag}
+                  </span>
+                ))}
+                <span className="text-sm text-gray-400 block mt-1">
+                  {format(new Date(post.date), 'MMM d, yyyy')}
+                </span>
+              </div>
+              <h3 className="text-xl font-semibold mb-2">
+                {post.title}
+              </h3>
+              <p className="text-gray-400 mb-4">
+                {post.excerpt}
+              </p>
+              <Link href={`/blog/${post.slug}`} className="text-accent hover:text-accent/80">
+                Read full analysis →
+              </Link>
+            </div>
+          ))}
         </div>
       </section>
     </div>
@@ -136,17 +178,12 @@ export async function getStaticProps() {
     return new Date(b.date) - new Date(a.date);
   });
   
-  const latestPost = sortedPosts.length > 0 ? sortedPosts[0] : {
-    title: 'No posts available',
-    date: new Date().toISOString(),
-    slug: '',
-    excerpt: 'There are currently no blog posts available.',
-    tags: []
-  };
+  // Get the latest 3 posts
+  const latestPosts = sortedPosts.slice(0, 3);
   
   return {
     props: {
-      latestPost
+      latestPosts
     }
   };
 } 
