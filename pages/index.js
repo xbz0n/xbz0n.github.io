@@ -13,7 +13,7 @@ export default function Home({ latestPosts }) {
       <Head>
         <title>xbz0n@sh:~# Command Line to Front Line</title>
         <meta name="description" content="Ivan Spiridonov (xbz0n) - Offensive security professional specializing in Red Teaming, Web/Mobile/AD Pentesting, and vulnerability research. Discover pentesting insights, exploit techniques, and security tools." />
-        <link rel="canonical" href="https://xbz0n.github.io/" />
+        <link rel="canonical" href="https://xbz0n.sh/" />
       </Head>
       
       <div className="space-y-16">

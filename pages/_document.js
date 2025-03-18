@@ -6,8 +6,7 @@ export default function Document() {
       <Head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        {/* Default meta description - will be overridden on specific pages */}
-        <meta name="description" content="Ivan Spiridonov (xbz0n) - Offensive security professional specializing in Red Teaming, Web/Mobile/AD Pentesting, and vulnerability research. Discover pentesting insights, exploit techniques, and security tools." />
+        {/* Remove meta description from here - it should only exist in individual pages */}
       </Head>
       <body>
         <Main />

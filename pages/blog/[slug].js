@@ -36,13 +36,13 @@ export default function BlogPost({ postData }) {
   };
 
   const firstImage = getFirstImage(postData.contentHtml);
-  const siteUrl = 'https://xbz0n.github.io'; // Replace with your actual site URL
+  const siteUrl = 'https://xbz0n.sh'; // Update site URL
 
   return (
     <>
       <Head>
         <title>xbz0n@sh:~# {postData.title}</title>
-        <meta name="description" content={postData.excerpt} />
+        <meta name="description" content="Ivan Spiridonov (xbz0n) - Offensive security professional specializing in Red Teaming, Web/Mobile/AD Pentesting, and vulnerability research. Discover pentesting insights, exploit techniques, and security tools." />
         
         {/* Open Graph / Facebook */}
         <meta property="og:type" content="article" />

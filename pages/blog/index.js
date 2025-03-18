@@ -10,8 +10,8 @@ export default function Blog({ posts }) {
     <>
       <Head>
         <title>xbz0n@sh:~# Blog</title>
-        <meta name="description" content="Security research, exploit development, and technical write-ups by Ivan Spiridonov on web application security, network penetration testing, and vulnerability discovery." />
-        <link rel="canonical" href="https://xbz0n.github.io/blog" />
+        <meta name="description" content="Ivan Spiridonov (xbz0n) - Offensive security professional specializing in Red Teaming, Web/Mobile/AD Pentesting, and vulnerability research. Discover pentesting insights, exploit techniques, and security tools." />
+        <link rel="canonical" href="https://xbz0n.sh/blog" />
       </Head>
       
       <div className="space-y-8">
