@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { FaGithub, FaTwitter, FaBars, FaTimes, FaEnvelope, FaPhone, FaMapMarkerAlt } from 'react-icons/fa';
+import { FaGithub, FaTwitter, FaBars, FaTimes, FaEnvelope } from 'react-icons/fa';
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -38,18 +38,12 @@ export default function Navbar() {
             <a href="mailto:ivanspiridonov@gmail.com" className="text-gray-300 hover:text-accent" aria-label="Email">
               <FaEnvelope className="w-5 h-5" />
             </a>
-            <a href="tel:+359876143085" className="text-gray-300 hover:text-accent" aria-label="Phone">
-              <FaPhone className="w-5 h-5" />
-            </a>
             <a href="https://github.com/xbz0n" target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-accent" aria-label="GitHub">
               <FaGithub className="w-5 h-5" />
             </a>
             <a href="https://twitter.com/xbz0n" target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-accent" aria-label="Twitter">
               <FaTwitter className="w-5 h-5" />
             </a>
-            <span className="text-gray-300 hover:text-accent" aria-label="Location">
-              <FaMapMarkerAlt className="w-5 h-5" />
-            </span>
           </div>
           
           <button 
@@ -96,14 +90,10 @@ export default function Navbar() {
               Blog
             </Link>
             
-            <div className="flex justify-between items-center pt-4 pb-2 border-t border-gray-700">
+            <div className="flex justify-evenly items-center pt-4 pb-2 border-t border-gray-700">
               <a href="mailto:ivanspiridonov@gmail.com" className="flex flex-col items-center text-gray-300 hover:text-accent" aria-label="Email">
                 <FaEnvelope className="w-6 h-6 mb-1" />
                 <span className="text-xs">Email</span>
-              </a>
-              <a href="tel:+359876143085" className="flex flex-col items-center text-gray-300 hover:text-accent" aria-label="Phone">
-                <FaPhone className="w-6 h-6 mb-1" />
-                <span className="text-xs">Phone</span>
               </a>
               <a href="https://github.com/xbz0n" target="_blank" rel="noopener noreferrer" className="flex flex-col items-center text-gray-300 hover:text-accent" aria-label="GitHub">
                 <FaGithub className="w-6 h-6 mb-1" />
@@ -113,10 +103,6 @@ export default function Navbar() {
                 <FaTwitter className="w-6 h-6 mb-1" />
                 <span className="text-xs">Twitter</span>
               </a>
-              <span className="flex flex-col items-center text-gray-300" aria-label="Location">
-                <FaMapMarkerAlt className="w-6 h-6 mb-1" />
-                <span className="text-xs">Bulgaria</span>
-              </span>
             </div>
           </div>
         )}
