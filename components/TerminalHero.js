@@ -10,7 +10,7 @@ export default function TerminalHero() {
     'Hello, I am Ivan Spiridonov (xbz0n)',
     'Penetration Tester & Security Researcher',
     'Uncovering critical security flaws that conventional testing misses',
-    'Specialties: Web Apps, API Security, Zero-Days',
+    'Specialties: Red Teaming, Web/Mobile/AD Pentesting',
     'Responsible for multiple CVE discoveries',
     'Type "help" for available commands...'
   ];
