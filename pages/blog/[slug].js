@@ -19,9 +19,20 @@ export default function BlogPost({ postData }) {
 
   // Extract the first image from the post content
   const getFirstImage = (html) => {
-    const imgRegex = /<img[^>]+src="([^">]+)"/;
+    // Improved regex that handles both relative and absolute paths
+    const imgRegex = /<img[^>]+src=["']([^"']+)["']/i;
     const match = html.match(imgRegex);
-    return match ? match[1] : null;
+    
+    if (!match) return null;
+    
+    let imagePath = match[1];
+    
+    // Ensure the path starts with a slash if it's a relative path
+    if (!imagePath.startsWith('http') && !imagePath.startsWith('/')) {
+      imagePath = '/' + imagePath;
+    }
+    
+    return imagePath;
   };
 
   const firstImage = getFirstImage(postData.contentHtml);
@@ -39,6 +50,9 @@ export default function BlogPost({ postData }) {
         <meta property="og:title" content={postData.title} />
         <meta property="og:description" content={postData.excerpt} />
         {firstImage && <meta property="og:image" content={firstImage.startsWith('http') ? firstImage : `${siteUrl}${firstImage}`} />}
+        {firstImage && <meta property="og:image:width" content="1200" />}
+        {firstImage && <meta property="og:image:height" content="630" />}
+        {firstImage && <meta property="og:image:alt" content={postData.title} />}
         
         {/* Twitter */}
         <meta property="twitter:card" content="summary_large_image" />
@@ -46,6 +60,10 @@ export default function BlogPost({ postData }) {
         <meta property="twitter:title" content={postData.title} />
         <meta property="twitter:description" content={postData.excerpt} />
         {firstImage && <meta property="twitter:image" content={firstImage.startsWith('http') ? firstImage : `${siteUrl}${firstImage}`} />}
+        
+        {/* LinkedIn specific */}
+        {firstImage && <meta property="image" content={firstImage.startsWith('http') ? firstImage : `${siteUrl}${firstImage}`} />}
+        <meta property="author" content="Ivan Spiridonov" />
       </Head>
       
       <article className="max-w-3xl mx-auto">
