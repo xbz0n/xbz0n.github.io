@@ -87,6 +87,12 @@ export async function getStaticProps() {
       };
     });
     
+    // Filter out parts 2 and 3 of the redirectors articles
+    posts = posts.filter(post => 
+      post.slug !== 'c2-redirectors-part2' && 
+      post.slug !== 'c2-redirectors-part3'
+    );
+    
     posts = posts.sort((a, b) => {
       if (a.date < b.date) {
         return 1;

@@ -107,34 +107,39 @@ export async function getStaticProps() {
   const postsDirectory = path.join(process.cwd(), 'posts');
   const fileNames = fs.readdirSync(postsDirectory);
   
-  const allPosts = fileNames.map(fileName => {
+  const allPosts = fileNames.map((fileName) => {
     const slug = fileName.replace(/\.md$/, '');
-    
     const fullPath = path.join(postsDirectory, fileName);
     const fileContents = fs.readFileSync(fullPath, 'utf8');
-    
     const matterResult = matter(fileContents);
     
+    // Extract a clean excerpt from the content
     const excerpt = matterResult.content.trim().split('\n\n')[0].replace(/^#+\s+.*$/m, '').trim();
     
     return {
       slug,
-      title: matterResult.data.title,
-      date: matterResult.data.date,
-      tags: matterResult.data.tags,
-      excerpt: excerpt.substring(0, 150) + (excerpt.length > 150 ? '...' : '')
+      excerpt,
+      ...matterResult.data,
     };
   });
   
-  const sortedPosts = allPosts.sort((a, b) => {
+  // Filter out parts 2 and 3 of the redirectors articles
+  const filteredPosts = allPosts.filter(post => 
+    post.slug !== 'c2-redirectors-part2' && 
+    post.slug !== 'c2-redirectors-part3'
+  );
+  
+  // Sort posts by date
+  const sortedPosts = filteredPosts.sort((a, b) => {
     return new Date(b.date) - new Date(a.date);
   });
   
+  // Get the latest 3 posts
   const latestPosts = sortedPosts.slice(0, 3);
   
   return {
     props: {
-      latestPosts
-    }
+      latestPosts,
+    },
   };
 } 

@@ -49,7 +49,13 @@ export async function getStaticPaths() {
     const postsDirectory = path.join(process.cwd(), 'posts');
     const fileNames = fs.readdirSync(postsDirectory);
     
-    const paths = fileNames.map((fileName) => {
+    // Filter out the part2 and part3 redirector posts
+    const filteredFileNames = fileNames.filter(fileName => 
+      fileName !== 'c2-redirectors-part2.md' && 
+      fileName !== 'c2-redirectors-part3.md'
+    );
+    
+    const paths = filteredFileNames.map((fileName) => {
       return {
         params: {
           slug: fileName.replace(/\.md$/, ''),
