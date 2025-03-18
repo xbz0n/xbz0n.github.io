@@ -14,6 +14,19 @@ export default function Tools() {
         'Easy deployment process'
       ],
       liveLink: null
+    },
+    {
+      name: "AutoMSF",
+      repo: "https://github.com/xbz0n/AutoMSF",
+      description: "Script to automate the process of generating multiple types of reverse_https payloads using msfvenom and setting up a multi/handler in Metasploit.",
+      features: [
+        'Generates C#, EXE, VBS, and PS1 payloads',
+        'Copies payloads to web server directory',
+        'Creates base64-encoded PowerShell commands',
+        'Starts multi/handler for incoming connections',
+        'Optimized for OSEP challenges and exams'
+      ],
+      liveLink: null
     }
   ];
 
