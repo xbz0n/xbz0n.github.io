@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { FaGithub, FaTwitter, FaBars, FaTimes, FaEnvelope } from 'react-icons/fa';
+import { FaGithub, FaTwitter, FaBars, FaTimes, FaEnvelope, FaLinkedinIn } from 'react-icons/fa';
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -43,6 +43,9 @@ export default function Navbar() {
             </a>
             <a href="https://twitter.com/xbz0n" target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-accent" aria-label="Twitter">
               <FaTwitter className="w-5 h-5" />
+            </a>
+            <a href="https://www.linkedin.com/in/ivanspiridonov/" target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-accent" aria-label="LinkedIn">
+              <FaLinkedinIn className="w-5 h-5" />
             </a>
           </div>
           
@@ -102,6 +105,10 @@ export default function Navbar() {
               <a href="https://twitter.com/xbz0n" target="_blank" rel="noopener noreferrer" className="flex flex-col items-center text-gray-300 hover:text-accent" aria-label="Twitter">
                 <FaTwitter className="w-6 h-6 mb-1" />
                 <span className="text-xs">Twitter</span>
+              </a>
+              <a href="https://www.linkedin.com/in/ivanspiridonov/" target="_blank" rel="noopener noreferrer" className="flex flex-col items-center text-gray-300 hover:text-accent" aria-label="LinkedIn">
+                <FaLinkedinIn className="w-6 h-6 mb-1" />
+                <span className="text-xs">LinkedIn</span>
               </a>
             </div>
           </div>
