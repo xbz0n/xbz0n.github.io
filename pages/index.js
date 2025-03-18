@@ -123,14 +123,8 @@ export async function getStaticProps() {
     };
   });
   
-  // Filter out parts 2 and 3 of the redirectors articles
-  const filteredPosts = allPosts.filter(post => 
-    post.slug !== 'c2-redirectors-part2' && 
-    post.slug !== 'c2-redirectors-part3'
-  );
-  
   // Sort posts by date
-  const sortedPosts = filteredPosts.sort((a, b) => {
+  const sortedPosts = allPosts.sort((a, b) => {
     return new Date(b.date) - new Date(a.date);
   });
   
