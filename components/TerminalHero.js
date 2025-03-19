@@ -72,7 +72,7 @@ export default function TerminalHero() {
         
         {currentLine >= lines.length && (
           <div className="flex mt-2">
-            <span className="text-accent mr-2">$</span>
+            <span className="text-accent mr-2">xbz0n@sh:~#</span>
             <span className={`${cursorVisible ? 'opacity-100' : 'opacity-0'}`}>|</span>
           </div>
         )}
