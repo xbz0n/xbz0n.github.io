@@ -89,45 +89,6 @@ a {
   }
 }
 
-.animated-underline {
-  position: relative;
-  display: inline-block;
-}
-
-.animated-underline::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  height: 2px;
-  width: 0;
-  background: linear-gradient(to right, #10b981, #3b82f6);
-  animation: underline-progress 3s ease-in-out infinite;
-}
-
-@keyframes underline-progress {
-  0% {
-    width: 0;
-    left: 0;
-    right: auto;
-  }
-  50% {
-    width: 100%;
-    left: 0;
-    right: auto;
-  }
-  51% {
-    width: 100%;
-    left: auto;
-    right: 0;
-  }
-  100% {
-    width: 0;
-    left: auto;
-    right: 0;
-  }
-}
-
 @layer components {
   .btn {
     @apply px-4 py-2 rounded font-medium transition-colors;

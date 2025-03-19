@@ -110,9 +110,7 @@ export default function Home({ latestPosts }) {
                   </span>
                 </div>
                 <div className="mt-2">
-                  <span className="animated-underline">
-                    <span className="job-title text-2xl">Penetration Tester</span>
-                  </span>
+                  <span className="job-title text-2xl">Penetration Tester</span>
                 </div>
               </h1>
               <p className="text-gray-400 text-lg">
