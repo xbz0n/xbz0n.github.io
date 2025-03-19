@@ -53,10 +53,11 @@ a {
 .scramble-text {
   display: inline-block;
   position: relative;
-  color: transparent;
+  color: #fff; /* Fallback color if background-clip fails */
   background: linear-gradient(to right, #10b981, #3b82f6);
-  background-clip: text;
   -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .char {
