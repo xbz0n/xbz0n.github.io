@@ -6,8 +6,25 @@ import fs from 'fs';
 import matter from 'gray-matter';
 import { format } from 'date-fns';
 import Head from 'next/head';
+import { useState, useEffect } from 'react';
 
 export default function Home({ latestPosts }) {
+  const [isGlitching, setIsGlitching] = useState(false);
+  
+  useEffect(() => {
+    // Randomly trigger the glitch effect
+    const glitchInterval = setInterval(() => {
+      const shouldGlitch = Math.random() > 0.7;
+      if (shouldGlitch) {
+        setIsGlitching(true);
+        // Turn off glitch after a short period
+        setTimeout(() => setIsGlitching(false), 2000);
+      }
+    }, 3000);
+    
+    return () => clearInterval(glitchInterval);
+  }, []);
+  
   return (
     <>
       <Head>
@@ -21,9 +38,14 @@ export default function Home({ latestPosts }) {
           <div className="grid md:grid-cols-2 gap-8 items-center">
             <div className="space-y-6">
               <h1 className="leading-tight">
-                <span className="name-title text-5xl bg-gradient-to-r from-accent to-blue-500 bg-clip-text text-transparent block">
-                  Ivan Spiridonov
-                </span>
+                <div className="glitch-wrapper block">
+                  <span 
+                    className={`glitch name-title text-5xl ${isGlitching ? 'active' : 'no-glitch'}`} 
+                    data-text="Ivan Spiridonov"
+                  >
+                    Ivan Spiridonov
+                  </span>
+                </div>
                 <div className="mt-2">
                   <span className="animated-underline">
                     <span className="job-title text-2xl">Penetration Tester</span>
