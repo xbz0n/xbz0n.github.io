@@ -70,7 +70,7 @@ export default function Home({ latestPosts }) {
       
       for (let i = 0; i < text.length; i++) {
         const charSpan = document.createElement('span');
-        charSpan.className = 'char';
+        charSpan.className = 'char bg-gradient-to-r from-accent to-blue-500 bg-clip-text text-transparent';
         charSpan.textContent = text[i];
         nameRef.current.appendChild(charSpan);
       }
