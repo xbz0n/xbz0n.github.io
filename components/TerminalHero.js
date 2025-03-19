@@ -67,7 +67,6 @@ export default function TerminalHero() {
               <FaChevronRight />
             </span>
             <span>{line}</span>
-            {i === currentLine - 1 && <span className={`ml-1 ${cursorVisible ? 'opacity-100' : 'opacity-0'}`}>|</span>}
           </div>
         ))}
         
