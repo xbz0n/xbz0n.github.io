@@ -83,11 +83,17 @@ export default function Home({ latestPosts }) {
       const text = nameRef.current.textContent;
       nameRef.current.innerHTML = '';
       
+      // Add a container for proper gradient application
+      const container = document.createElement('span');
+      container.className = 'name-gradient';
+      nameRef.current.appendChild(container);
+      
       for (let i = 0; i < text.length; i++) {
         const charSpan = document.createElement('span');
-        charSpan.className = 'char bg-gradient-to-r from-accent to-blue-500 bg-clip-text text-transparent';
+        // Don't add gradient to individual chars, just inherit from parent
+        charSpan.className = 'char';
         charSpan.textContent = text[i];
-        nameRef.current.appendChild(charSpan);
+        container.appendChild(charSpan);
       }
     }
   }, []);
@@ -119,7 +125,7 @@ export default function Home({ latestPosts }) {
                 <div className="block">
                   <span 
                     ref={nameRef}
-                    className="name-title text-5xl bg-gradient-to-r from-accent to-blue-500 bg-clip-text text-transparent" 
+                    className="name-title text-5xl" 
                   >
                     {nameString}
                   </span>

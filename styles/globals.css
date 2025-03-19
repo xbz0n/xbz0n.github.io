@@ -39,6 +39,12 @@ a {
   letter-spacing: 0.02em;
 }
 
+.name-gradient {
+  @apply bg-gradient-to-r from-accent to-blue-500 bg-clip-text text-transparent;
+  display: inline-block;
+  white-space: nowrap; /* Prevent wrapping to keep gradient continuous */
+}
+
 .job-title {
   @apply font-mono text-gray-200 relative inline-block;
   padding-bottom: 0.25rem;
