@@ -57,7 +57,7 @@ export default function TerminalHero() {
         <div className="w-3 h-3 rounded-full bg-red-500"></div>
         <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
         <div className="w-3 h-3 rounded-full bg-green-500"></div>
-        <span>terminal — xbz0n@localhost</span>
+        <span>terminal — xbz0n@sh:~#</span>
       </div>
       
       <div className="whitespace-pre-wrap">
