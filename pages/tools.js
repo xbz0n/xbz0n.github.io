@@ -11,8 +11,7 @@ export default function Tools() {
         'Generates encoded shellcode for ASPX webshells',
         'Streamlines testing of .NET environments',
         'Simplified workflow for penetration testers',
-        'Designed for ASPX-enabled web servers',
-        'Security assessment toolkit'
+        'Designed for ASPX-enabled web servers'
       ],
       liveLink: null
     },
