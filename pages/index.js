@@ -6,24 +6,87 @@ import fs from 'fs';
 import matter from 'gray-matter';
 import { format } from 'date-fns';
 import Head from 'next/head';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 export default function Home({ latestPosts }) {
-  const [isGlitching, setIsGlitching] = useState(false);
+  const nameString = "Ivan Spiridonov";
+  const nameRef = useRef(null);
+  const [isScrambling, setIsScrambling] = useState(false);
+  
+  const scrambleText = () => {
+    if (!nameRef.current || isScrambling) return;
+    
+    setIsScrambling(true);
+    
+    const symbols = ['$', '#', '!', '@', '%', '&', '*', '>', '<', '^', '~', '+', '=', '{', '}'];
+    const chars = nameRef.current.querySelectorAll('.char');
+    const originalChars = [...chars].map(c => c.textContent);
+    
+    let iterations = 0;
+    const maxIterations = 10;
+    
+    const interval = setInterval(() => {
+      chars.forEach((char, index) => {
+        // Skip spaces
+        if (originalChars[index] === ' ') return;
+        
+        // Gradually restore original characters as iterations progress
+        if (iterations > maxIterations / 2 && Math.random() < iterations / maxIterations) {
+          char.textContent = originalChars[index];
+          char.style.animation = 'none';
+          return;
+        }
+        
+        // Replace with random symbol
+        if (Math.random() < 0.3) {
+          char.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+          char.style.animation = `charScramble ${0.2 + Math.random() * 0.3}s ease`;
+        }
+      });
+      
+      iterations++;
+      
+      if (iterations >= maxIterations) {
+        clearInterval(interval);
+        
+        // Restore all characters to original
+        chars.forEach((char, index) => {
+          char.textContent = originalChars[index];
+          char.style.animation = 'none';
+        });
+        
+        setTimeout(() => {
+          setIsScrambling(false);
+        }, 1000);
+      }
+    }, 100);
+  };
   
   useEffect(() => {
-    // Randomly trigger the glitch effect
-    const glitchInterval = setInterval(() => {
-      const shouldGlitch = Math.random() > 0.7;
-      if (shouldGlitch) {
-        setIsGlitching(true);
-        // Turn off glitch after a short period
-        setTimeout(() => setIsGlitching(false), 2000);
+    // Split the text into individual characters with spans
+    if (nameRef.current) {
+      const text = nameRef.current.textContent;
+      nameRef.current.innerHTML = '';
+      
+      for (let i = 0; i < text.length; i++) {
+        const charSpan = document.createElement('span');
+        charSpan.className = 'char';
+        charSpan.textContent = text[i];
+        nameRef.current.appendChild(charSpan);
+      }
+    }
+  }, []);
+  
+  useEffect(() => {
+    // Randomly trigger the scramble effect
+    const randomInterval = setInterval(() => {
+      if (Math.random() > 0.7 && !isScrambling) {
+        scrambleText();
       }
     }, 3000);
     
-    return () => clearInterval(glitchInterval);
-  }, []);
+    return () => clearInterval(randomInterval);
+  }, [isScrambling]);
   
   return (
     <>
@@ -40,10 +103,10 @@ export default function Home({ latestPosts }) {
               <h1 className="leading-tight">
                 <div className="glitch-wrapper block">
                   <span 
-                    className={`glitch name-title text-5xl ${isGlitching ? 'active' : 'no-glitch'}`} 
-                    data-text="Ivan Spiridonov"
+                    ref={nameRef}
+                    className="scramble-text name-title text-5xl" 
                   >
-                    Ivan Spiridonov
+                    {nameString}
                   </span>
                 </div>
                 <div className="mt-2">
