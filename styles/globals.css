@@ -36,7 +36,7 @@ a {
 /* Custom name styling */
 .name-title {
   @apply font-sans font-bold;
-  letter-spacing: -0.03em;
+  letter-spacing: 0.02em;
 }
 
 .job-title {
@@ -63,6 +63,7 @@ a {
 .char {
   display: inline-block;
   position: relative;
+  margin: 0 0.01em;
 }
 
 /* Character scramble animation */

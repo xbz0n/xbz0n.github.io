@@ -22,13 +22,28 @@ export default function Home({ latestPosts }) {
     const chars = nameRef.current.querySelectorAll('.char');
     const originalChars = [...chars].map(c => c.textContent);
     
+    // Select a random subset of characters to glitch (between 2-5 characters)
+    const numCharsToGlitch = Math.floor(Math.random() * 4) + 2;
+    const charsToGlitch = new Set();
+    
+    // Only consider non-space characters
+    const validIndices = originalChars
+      .map((char, index) => char !== ' ' ? index : -1)
+      .filter(index => index !== -1);
+    
+    // Randomly select indices to glitch
+    while (charsToGlitch.size < numCharsToGlitch && charsToGlitch.size < validIndices.length) {
+      const randomIndex = validIndices[Math.floor(Math.random() * validIndices.length)];
+      charsToGlitch.add(randomIndex);
+    }
+    
     let iterations = 0;
     const maxIterations = 10;
     
     const interval = setInterval(() => {
       chars.forEach((char, index) => {
-        // Skip spaces
-        if (originalChars[index] === ' ') return;
+        // Skip if not in our set of characters to glitch
+        if (!charsToGlitch.has(index)) return;
         
         // Gradually restore original characters as iterations progress
         if (iterations > maxIterations / 2 && Math.random() < iterations / maxIterations) {
@@ -38,7 +53,7 @@ export default function Home({ latestPosts }) {
         }
         
         // Replace with random symbol
-        if (Math.random() < 0.3) {
+        if (Math.random() < 0.6) { // Increased probability for more visible effect
           char.textContent = symbols[Math.floor(Math.random() * symbols.length)];
           char.style.animation = `charScramble ${0.2 + Math.random() * 0.3}s ease`;
         }
