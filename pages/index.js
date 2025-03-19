@@ -101,10 +101,10 @@ export default function Home({ latestPosts }) {
           <div className="grid md:grid-cols-2 gap-8 items-center">
             <div className="space-y-6">
               <h1 className="leading-tight">
-                <div className="glitch-wrapper block">
+                <div className="block">
                   <span 
                     ref={nameRef}
-                    className="scramble-text name-title text-5xl" 
+                    className="name-title text-5xl bg-gradient-to-r from-accent to-blue-500 bg-clip-text text-transparent" 
                   >
                     {nameString}
                   </span>
