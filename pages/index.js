@@ -20,13 +20,13 @@ export default function Home({ latestPosts }) {
         <section className="py-8">
           <div className="grid md:grid-cols-2 gap-8 items-center">
             <div className="space-y-6">
-              <h1 className="text-4xl leading-tight">
-                <span className="name-title bg-gradient-to-r from-accent to-blue-500 bg-clip-text text-transparent">
+              <h1 className="leading-tight">
+                <span className="name-title text-5xl bg-gradient-to-r from-accent to-blue-500 bg-clip-text text-transparent block">
                   Ivan Spiridonov
                 </span>
                 <div className="mt-2">
                   <span className="animated-underline">
-                    <span className="job-title">Penetration Tester</span>
+                    <span className="job-title text-2xl">Penetration Tester</span>
                   </span>
                 </div>
               </h1>
