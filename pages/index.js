@@ -83,17 +83,11 @@ export default function Home({ latestPosts }) {
       const text = nameRef.current.textContent;
       nameRef.current.innerHTML = '';
       
-      // Add a container for proper gradient application
-      const container = document.createElement('span');
-      container.className = 'name-gradient';
-      nameRef.current.appendChild(container);
-      
       for (let i = 0; i < text.length; i++) {
         const charSpan = document.createElement('span');
-        // Don't add gradient to individual chars, just inherit from parent
         charSpan.className = 'char';
         charSpan.textContent = text[i];
-        container.appendChild(charSpan);
+        nameRef.current.appendChild(charSpan);
       }
     }
   }, []);

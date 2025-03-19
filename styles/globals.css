@@ -35,14 +35,8 @@ a {
 
 /* Custom name styling */
 .name-title {
-  @apply font-sans font-bold;
+  @apply font-sans font-bold text-white;
   letter-spacing: 0.02em;
-}
-
-.name-gradient {
-  @apply bg-gradient-to-r from-accent to-blue-500 bg-clip-text text-transparent;
-  display: inline-block;
-  white-space: nowrap; /* Prevent wrapping to keep gradient continuous */
 }
 
 .job-title {
@@ -56,20 +50,11 @@ a {
   display: inline-block;
 }
 
-.scramble-text {
-  display: inline-block;
-  position: relative;
-  color: #fff; /* Fallback color if background-clip fails */
-  background: linear-gradient(to right, #10b981, #3b82f6);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
 .char {
   display: inline-block;
   position: relative;
   margin: 0 0.01em;
+  color: white;
 }
 
 /* Character scramble animation */
