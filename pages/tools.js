@@ -4,6 +4,19 @@ import Head from 'next/head';
 export default function Tools() {
   const tools = [
     {
+      name: "AspXVenom",
+      repo: "https://github.com/xbz0n/AspXVenom",
+      description: "Automates the process of generating encoded shellcode and embedding it into ASPX webshells, providing a smooth workflow for penetration testers during security assessments. The tool is specifically designed for testing ASPX-enabled web servers and .NET environments.",
+      features: [
+        'Generates encoded shellcode for ASPX webshells',
+        'Streamlines testing of .NET environments',
+        'Simplified workflow for penetration testers',
+        'Designed for ASPX-enabled web servers',
+        'Security assessment toolkit'
+      ],
+      liveLink: null
+    },
+    {
       name: "GoPhish Deploy",
       repo: "https://github.com/xbz0n/gophish-deploy",
       description: "Python script to automate the deployment and configuration of the GoPhish phishing framework. The script installs all necessary dependencies, configures SSL certificates, and sets up the environment for a production-ready deployment.",
