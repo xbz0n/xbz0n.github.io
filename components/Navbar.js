@@ -15,7 +15,7 @@ export default function Navbar() {
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-6">
             <Link href="/">
-              <span className="text-xl font-bold tracking-tighter bg-gradient-to-r from-accent to-blue-500 bg-clip-text text-transparent">xbz0n@sh:~#</span>
+              <span className="text-xl font-bold tracking-tighter bg-gradient-to-r from-red-500 to-red-700 bg-clip-text text-transparent">xbz0n@sh:~#</span>
             </Link>
             
             <div className="hidden md:flex space-x-6">
