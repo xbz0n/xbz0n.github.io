@@ -1,3 +1,2 @@
-# xbz0n's Security Research Website
+# xbz0n's Security Research Blog
 
-Personal website for Ivan Spiridonov (xbz0n) - Penetration Tester & Security Researcher.
