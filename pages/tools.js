@@ -16,6 +16,18 @@ export default function Tools() {
       liveLink: null
     },
     {
+      name: "MacroPhantom",
+      repo: "https://github.com/xbz0n/MacroPhantom",
+      description: "MacroPhantom automates the process of generating XOR+Caesar encrypted shellcode and embedding it into VBA macros for Microsoft Office documents. The tool streamlines the workflow for security professionals during penetration tests and security assessments, particularly for phishing simulations.",
+      features: [
+        'Generates XOR+Caesar encrypted shellcode',
+        'Creates VBA macros for Microsoft Office documents',
+        'Designed for phishing simulations',
+        'Streamlines workflow for penetration testers'
+      ],
+      liveLink: null
+    },
+    {
       name: "GoPhish Deploy",
       repo: "https://github.com/xbz0n/gophish-deploy",
       description: "Python script to automate the deployment and configuration of the GoPhish phishing framework. The script installs all necessary dependencies, configures SSL certificates, and sets up the environment for a production-ready deployment.",
