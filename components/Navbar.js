@@ -16,7 +16,7 @@ export default function Navbar() {
           <div className="flex items-center space-x-6">
             <Link href="/">
               <span className="text-xl font-bold tracking-tighter bg-gradient-to-r from-accent to-blue-500 bg-clip-text text-transparent">
-                xbz0n@sh:~<span className="blink-cursor">#</span>
+                xbz0n@sh:~#
               </span>
             </Link>
             
