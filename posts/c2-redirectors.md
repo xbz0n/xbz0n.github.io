@@ -1,6 +1,6 @@
 ---
 title: "C2 Redirectors: Advanced Infrastructure for Modern Red Team Operations"
-date: "2025-03-19"
+date: "2025-03-25"
 tags: ["Red Team", "C2", "Infrastructure", "OPSEC", "Network Security"]
 ---
 
