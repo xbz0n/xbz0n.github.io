@@ -27,6 +27,20 @@ a {
   @apply prose prose-invert max-w-none prose-headings:text-accent prose-a:text-accent prose-code:text-white prose-code:bg-transparent prose-code:px-0 prose-code:py-0 prose-code:rounded-none;
 }
 
+/* Image styling for blog posts */
+.blog-content img {
+  @apply w-full h-auto rounded-lg shadow-lg border border-gray-700 my-8;
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.blog-content img:hover {
+  @apply border-accent/50 transition-colors duration-200;
+}
+
 /* Override any Tailwind prose styles for code to let our Prism styles take precedence */
 .blog-content pre,
 .blog-content code {
