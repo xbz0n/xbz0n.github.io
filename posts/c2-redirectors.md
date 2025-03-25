@@ -6,6 +6,8 @@ tags: ["Red Team", "C2", "Infrastructure", "OPSEC", "Network Security"]
 
 # C2 Redirectors: Advanced Infrastructure for Modern Red Team Operations
 
+![C2 redirectors architecture and implementation](/images/c2-redirectors.png)
+
 ## Introduction
 
 Let's talk about Command and Control (C2) infrastructure. It's the backbone of any red team operation, letting you talk to your implants in target environments. But here's the problem - connecting directly to C2 servers is way too risky these days. Modern security tools can spot these connections easily, which is bad news for your op.
