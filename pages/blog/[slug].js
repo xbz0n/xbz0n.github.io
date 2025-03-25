@@ -8,14 +8,51 @@ import Link from 'next/link';
 import Head from 'next/head';
 import { useEffect } from 'react';
 import Prism from 'prismjs';
+import 'prismjs/plugins/line-numbers/prism-line-numbers';
 
 export default function BlogPost({ postData }) {
   useEffect(() => {
     // Re-highlight code blocks when content changes
     if (typeof window !== 'undefined') {
       Prism.highlightAll();
+      addCopyButtons();
     }
   }, [postData]);
+
+  // Function to add copy buttons to code blocks
+  const addCopyButtons = () => {
+    const codeBlocks = document.querySelectorAll('pre[class*="language-"]');
+    codeBlocks.forEach(block => {
+      // Add line numbers class
+      block.classList.add('line-numbers');
+      
+      // Create copy button
+      const button = document.createElement('button');
+      button.className = 'copy-button';
+      button.textContent = 'Copy';
+      
+      // Add click handler
+      button.addEventListener('click', async () => {
+        const code = block.querySelector('code').textContent;
+        try {
+          await navigator.clipboard.writeText(code);
+          button.textContent = 'Copied!';
+          setTimeout(() => {
+            button.textContent = 'Copy';
+          }, 2000);
+        } catch (err) {
+          console.error('Failed to copy text: ', err);
+          button.textContent = 'Failed';
+          setTimeout(() => {
+            button.textContent = 'Copy';
+          }, 2000);
+        }
+      });
+      
+      // Add button to block
+      block.appendChild(button);
+    });
+  };
 
   // Extract the first image from the post content
   const getFirstImage = (html) => {

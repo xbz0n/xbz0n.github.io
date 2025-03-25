@@ -1,10 +1,10 @@
 /**
- * Custom dark theme for Prism.js with vibrant colors
+ * One Dark Pro theme for Prism.js
  */
 
 code[class*="language-"],
 pre[class*="language-"] {
-  color: #f8f8f2;
+  color: #abb2bf;
   background: none;
   font-family: "JetBrains Mono", Consolas, Monaco, "Andale Mono", "Ubuntu Mono", monospace;
   text-align: left;
@@ -29,14 +29,65 @@ pre[class*="language-"] {
   margin: 1.5em 0;
   overflow: auto;
   border-radius: 0.5rem;
-  background-color: #282a36 !important;
+  background-color: #282c34 !important;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
   border: 1px solid rgba(98, 114, 164, 0.2);
+  position: relative;
 }
 
-:not(pre) > code[class*="language-"],
-pre[class*="language-"] {
-  background-color: #282a36;
+/* Line numbers */
+.line-numbers .line-numbers-rows {
+  position: absolute;
+  pointer-events: none;
+  top: 0;
+  font-size: 100%;
+  left: -3.8em;
+  width: 3em;
+  letter-spacing: -1px;
+  border-right: 1px solid #999;
+  user-select: none;
+}
+
+.line-numbers-rows > span {
+  pointer-events: none;
+  display: block;
+  counter-increment: linenumber;
+}
+
+.line-numbers-rows > span:before {
+  content: counter(linenumber);
+  color: #495162;
+  display: block;
+  padding-right: 0.8em;
+  text-align: right;
+}
+
+/* Copy button */
+.copy-button {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  padding: 0.5rem 1rem;
+  background-color: #3e4451;
+  color: #abb2bf;
+  border: none;
+  border-radius: 0.3rem;
+  cursor: pointer;
+  font-size: 0.8rem;
+  opacity: 0;
+  transition: opacity 0.2s ease-in-out;
+}
+
+pre[class*="language-"]:hover .copy-button {
+  opacity: 1;
+}
+
+.copy-button:hover {
+  background-color: #4b5263;
+}
+
+.copy-button:active {
+  background-color: #2c313c;
 }
 
 /* Inline code */
@@ -44,15 +95,15 @@ pre[class*="language-"] {
   padding: 0.2em 0.4em;
   border-radius: 0.3em;
   white-space: normal;
-  background-color: rgba(98, 114, 164, 0.2);
-  color: #f8f8f2;
+  background-color: #282c34;
+  color: #abb2bf;
 }
 
 /* Style for inline code in Markdown (single backtick) */
 .blog-content code:not([class*="language-"]) {
   font-family: "JetBrains Mono", Consolas, Monaco, "Andale Mono", "Ubuntu Mono", monospace;
-  background-color: #282a36;
-  color: #ff79c6;
+  background-color: #282c34;
+  color: #e06c75;
   padding: 0.2em 0.4em;
   border-radius: 0.3em;
   font-size: 0.9em;
@@ -60,16 +111,17 @@ pre[class*="language-"] {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
 }
 
+/* One Dark Pro theme colors */
 .token.comment,
 .token.prolog,
 .token.doctype,
 .token.cdata {
-  color: #6272a4;
+  color: #5c6370;
   font-style: italic;
 }
 
 .token.punctuation {
-  color: #f8f8f2;
+  color: #abb2bf;
 }
 
 .token.namespace {
@@ -81,12 +133,12 @@ pre[class*="language-"] {
 .token.constant,
 .token.symbol,
 .token.deleted {
-  color: #ff79c6;
+  color: #e06c75;
 }
 
 .token.boolean,
 .token.number {
-  color: #bd93f9;
+  color: #d19a66;
 }
 
 .token.selector,
@@ -95,7 +147,7 @@ pre[class*="language-"] {
 .token.char,
 .token.builtin,
 .token.inserted {
-  color: #50fa7b;
+  color: #98c379;
 }
 
 .token.operator,
@@ -103,24 +155,24 @@ pre[class*="language-"] {
 .token.url,
 .language-css .token.string,
 .style .token.string {
-  color: #f8f8f2;
+  color: #56b6c2;
 }
 
 .token.atrule,
 .token.attr-value,
 .token.keyword {
-  color: #ff79c6;
+  color: #c678dd;
 }
 
 .token.function,
 .token.class-name {
-  color: #8be9fd;
+  color: #61afef;
 }
 
 .token.regex,
 .token.important,
 .token.variable {
-  color: #f1fa8c;
+  color: #c678dd;
 }
 
 .token.important,
@@ -153,7 +205,7 @@ pre[class*="language-"] > code[class*="language-"] {
   padding: inherit 0;
   margin-top: 1em;
   background: rgba(255, 255, 255, 0.08);
-  box-shadow: inset 5px 0 0 #ff79c6;
+  box-shadow: inset 5px 0 0 #c678dd;
   z-index: 0;
   pointer-events: none;
   line-height: inherit;
