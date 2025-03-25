@@ -8,7 +8,6 @@ import Link from 'next/link';
 import Head from 'next/head';
 import { useEffect } from 'react';
 import Prism from 'prismjs';
-import 'prismjs/plugins/line-numbers/prism-line-numbers';
 
 export default function BlogPost({ postData }) {
   useEffect(() => {
@@ -23,9 +22,6 @@ export default function BlogPost({ postData }) {
   const addCopyButtons = () => {
     const codeBlocks = document.querySelectorAll('pre[class*="language-"]');
     codeBlocks.forEach(block => {
-      // Add line numbers class
-      block.classList.add('line-numbers');
-      
       // Create copy button
       const button = document.createElement('button');
       button.className = 'copy-button';

@@ -20,7 +20,7 @@ pre[class*="language-"] {
   -moz-hyphens: none;
   -ms-hyphens: none;
   hyphens: none;
-  font-size: 0.95rem;
+  font-size: 0.85rem;
 }
 
 /* Code blocks */
@@ -33,33 +33,6 @@ pre[class*="language-"] {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
   border: 1px solid rgba(98, 114, 164, 0.2);
   position: relative;
-}
-
-/* Line numbers */
-.line-numbers .line-numbers-rows {
-  position: absolute;
-  pointer-events: none;
-  top: 0;
-  font-size: 100%;
-  left: -3.8em;
-  width: 3em;
-  letter-spacing: -1px;
-  border-right: 1px solid #999;
-  user-select: none;
-}
-
-.line-numbers-rows > span {
-  pointer-events: none;
-  display: block;
-  counter-increment: linenumber;
-}
-
-.line-numbers-rows > span:before {
-  content: counter(linenumber);
-  color: #495162;
-  display: block;
-  padding-right: 0.8em;
-  text-align: right;
 }
 
 /* Copy button */
@@ -106,7 +79,7 @@ pre[class*="language-"]:hover .copy-button {
   color: #e06c75;
   padding: 0.2em 0.4em;
   border-radius: 0.3em;
-  font-size: 0.9em;
+  font-size: 0.85em;
   border: 1px solid rgba(98, 114, 164, 0.2);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
 }

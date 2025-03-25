@@ -17,7 +17,6 @@ import 'prismjs/components/prism-json';
 import 'prismjs/components/prism-markdown';
 import 'prismjs/components/prism-css';
 import 'prismjs/components/prism-asm6502'; // For assembly
-import 'prismjs/plugins/line-numbers/prism-line-numbers';
 
 function MyApp({ Component, pageProps }) {
   useEffect(() => {
