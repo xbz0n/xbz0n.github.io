@@ -1,6 +1,6 @@
 ---
 title: "Social Engineering in Red Team Operations: Technical Setup and Tools"
-date: "2025-04-03"
+date: "2025-04-01"
 tags: ["Red Team", "Social Engineering", "Phishing", "OSINT", "Infrastructure"]
 ---
 
@@ -30,7 +30,7 @@ Here's the problem with newly registered domains - security tools flag them imme
 
 ```bash
 # Check domain age with whois
-whois example.com | grep "Creation Date"
+whois example.com | grep "created"
 ```
 
 When targeting high-value organizations, I recommend:
@@ -1563,17 +1563,17 @@ Throughout this article, we've examined the technical infrastructure and tools n
 
 The key takeaways from this article are:
 
-1. **Build convincing infrastructure**: From domain selection to email server setup, every technical element should withstand scrutiny and appear legitimate.
+1. From domain selection to email server setup, every technical element should withstand scrutiny and appear legitimate.
 
-2. **Layer your approaches**: Combine phishing, vishing, and smishing for campaigns that are resilient and adaptable to different target environments.
+2. Combine phishing, vishing, and smishing for campaigns that are resilient and adaptable to different target environments.
 
-3. **Prioritize OSINT**: Comprehensive intelligence gathering dramatically increases success rates by allowing for highly targeted, convincing pretext scenarios.
+3. Comprehensive intelligence gathering dramatically increases success rates by allowing for highly targeted, convincing pretext scenarios.
 
-4. **Automate where possible**: Leverage modern tools like LLMs and specialized frameworks to scale your operations while maintaining quality.
+4. Leverage modern tools like LLMs and specialized frameworks to scale your operations while maintaining quality.
 
-5. **Monitor and adapt**: Implement robust tracking systems to measure effectiveness and adjust tactics based on results.
+5. Implement robust tracking systems to measure effectiveness and adjust tactics based on results.
 
-6. **Maintain strict ethical boundaries**: Always operate within the scope of authorized assessments and with appropriate disclosure to clients.
+6. Always operate within the scope of authorized assessments and with appropriate disclosure to clients.
 
 Remember that the most successful social engineering campaigns aren't about technical sophistication alone—they're about creating scenarios that trigger emotional responses while appearing perfectly legitimate.
 
