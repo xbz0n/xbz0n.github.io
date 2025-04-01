@@ -4,6 +4,19 @@ import Head from 'next/head';
 export default function Tools() {
   const tools = [
     {
+      name: "InterceptReady",
+      repo: "https://github.com/xbz0n/InterceptReady",
+      description: "An automated toolkit for configuring Android emulators with Frida and Burp Suite for mobile security testing. It handles the installation of Frida, configuration of Burp Suite certificates, and setting up proxy settings for a fully-functional mobile testing environment.",
+      features: [
+        'Frida integration for Android emulators',
+        'Automatic Burp Suite CA certificate installation',
+        'System-wide proxy configuration',
+        'Enhanced SSL pinning bypass script',
+        'Multiple emulator support'
+      ],
+      liveLink: null
+    },
+    {
       name: "AspXVenom",
       repo: "https://github.com/xbz0n/AspXVenom",
       description: "Automates the process of generating encoded shellcode and embedding it into ASPX webshells, providing a smooth workflow for penetration testers during security assessments. The tool is specifically designed for testing ASPX-enabled web servers and .NET environments.",
