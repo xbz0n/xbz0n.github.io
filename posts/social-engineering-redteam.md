@@ -10,7 +10,7 @@ tags: ["Red Team", "Social Engineering", "Phishing", "OSINT", "Infrastructure"]
 
 ## Introduction
 
-Let's talk about social engineering in modern red team operations. Despite all the fancy security tech out there, humans still make decisions based on trust, authority, and urgency. That's why social engineering remains one of the most reliable ways to breach an organization's defenses.
+Let's talk about social engineering and OSINT in modern red team operations. Despite all the fancy security tech out there, humans still make decisions based on trust, authority, and urgency. That's why social engineering remains one of the most reliable ways to breach an organization's defenses.
 
 But there's a world of difference between amateur social engineering and professional red team operations. Pros don't just send random phishing emails - they build complete, convincing campaigns with robust infrastructure that mimics real threat actors. They're methodical, careful, and focused on operational security.
 
@@ -333,20 +333,12 @@ Modern spam filters are sophisticated beasts. They use everything from content a
 
 1. **Warm up your IP gradually** - Don't go from zero to thousands of emails overnight. Start with a few emails daily and slowly increase volume.
 
-2. **Test your emails before sending** - I always use email scoring tools to check deliverability:
-
-```bash
-# Check your email's spam score with mail-tester
-echo "Testing email deliverability" | mail -s "Test Email" test@mail-tester.com
-# Then check the provided URL for results
-```
-
-3. **Use temporary email services for testing** - Never test phishing emails by sending them to your own Gmail or Outlook accounts, as this can link your infrastructure to your identity:
+2. **Use temporary email services for testing** - Never test phishing emails by sending them to your own Gmail or Outlook accounts, as this can link your infrastructure to your identity:
    - [Temp-Mail](https://temp-mail.org/) - Provides disposable email addresses
    - [10MinuteMail](https://10minutemail.com/) - Short-lived throwaway addresses
    - [Guerrilla Mail](https://www.guerrillamail.com/) - No registration required
 
-4. **Make your content look legitimate**:
+3. **Make your content look legitimate**:
    - Include proper headers and footers like real companies use
    - Avoid obvious spam trigger words
    - Keep a good balance of text to images (too many images is suspicious)
@@ -436,7 +428,6 @@ For high-security targets, consider these advanced tips:
 
 - **Domain aging is crucial** - Set up your domains at least 7-14 days before your campaign so spam filters that crawl the web have time to build trust for your domain
 - Keep campaigns short (24-48 hours) to avoid detection
-- Use new domains for each operation
 - Modify the phishlets to remove any known detection fingerprints
 - Host on residential IPs to avoid commercial hosting detection
 
@@ -474,7 +465,7 @@ From there, you can create email templates, landing pages, and user groups for y
 
 #### Evasion Techniques for Phishing Infrastructure
 
-Security tools are getting better at detecting phishing pages. Here are some ways to stay under the radar:
+Security tools of M$ and other providers are getting better at detecting phishing pages. Here are some ways to stay under the radar:
 
 1. **IP-based filtering** to block security companies and researchers:
 
@@ -548,161 +539,6 @@ include 'real_phishing_page.html';
 ?>
 ```
 
-### Advanced Domain Setup
-
-#### Domain Rotation System
-
-For longer campaigns, implement a domain rotation system. This involves:
-
-1. **Selecting multiple domains** - Use a pool of domains that are less likely to be flagged
-2. **Rotating between domains** - Regularly switch between domains to avoid detection
-3. **Monitoring domain health** - Check reputation scores regularly to ensure domains remain safe
-
-### Email Infrastructure Enhancements
-
-### Tracking System Setup
-
-To effectively measure the success of your campaigns, you need a robust tracking system. GoPhish provides basic tracking, but for more advanced tracking capabilities across multiple channels, you can implement a custom tracking system.
-
-Here's a robust approach for tracking user interactions:
-
-```php
-<?php
-// campaign_tracker.php - Store in a secure, isolated server
-
-// Database connection
-$db = new mysqli('localhost', 'tracker_user', 'secure_password', 'campaign_tracking');
-
-// Handle tracking pixel request
-if (isset($_GET['eid']) && isset($_GET['cid'])) {
-    $email_id = $db->real_escape_string($_GET['eid']);
-    $campaign_id = $db->real_escape_string($_GET['cid']);
-    $ip = $db->real_escape_string($_SERVER['REMOTE_ADDR']);
-    $user_agent = $db->real_escape_string($_SERVER['HTTP_USER_AGENT']);
-    $timestamp = date('Y-m-d H:i:s');
-    
-    // Log the email open
-    $query = "INSERT INTO email_opens (email_id, campaign_id, ip_address, user_agent, timestamp) 
-              VALUES ('$email_id', '$campaign_id', '$ip', '$user_agent', '$timestamp')";
-    $db->query($query);
-    
-    // Return a transparent 1x1 pixel
-    header('Content-Type: image/gif');
-    echo base64_decode('R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7');
-    exit;
-}
-
-// Handle link click tracking
-if (isset($_GET['link']) && isset($_GET['eid']) && isset($_GET['cid'])) {
-    $link_id = $db->real_escape_string($_GET['link']);
-    $email_id = $db->real_escape_string($_GET['eid']);
-    $campaign_id = $db->real_escape_string($_GET['cid']);
-    $ip = $db->real_escape_string($_SERVER['REMOTE_ADDR']);
-    $user_agent = $db->real_escape_string($_SERVER['HTTP_USER_AGENT']);
-    $timestamp = date('Y-m-d H:i:s');
-    
-    // Log the link click
-    $query = "INSERT INTO link_clicks (link_id, email_id, campaign_id, ip_address, user_agent, timestamp) 
-              VALUES ('$link_id', '$email_id', '$campaign_id', '$ip', '$user_agent', '$timestamp')";
-    $db->query($query);
-    
-    // Fetch the redirect URL
-    $query = "SELECT target_url FROM links WHERE link_id = '$link_id'";
-    $result = $db->query($query);
-    
-    if ($result && $result->num_rows > 0) {
-        $row = $result->fetch_assoc();
-        header('Location: ' . $row['target_url']);
-    } else {
-        header('Location: https://default-fallback.com');
-    }
-    exit;
-}
-
-// Close database connection
-$db->close();
-?>
-```
-
-For this tracking system to work, set up a database with this schema:
-
-```sql
-CREATE TABLE campaigns (
-    campaign_id VARCHAR(50) PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
-    description TEXT,
-    start_date DATETIME,
-    end_date DATETIME,
-    target_organization VARCHAR(100)
-);
-
-CREATE TABLE targets (
-    email_id VARCHAR(50) PRIMARY KEY,
-    campaign_id VARCHAR(50),
-    email VARCHAR(100) NOT NULL,
-    first_name VARCHAR(50),
-    last_name VARCHAR(50),
-    department VARCHAR(50),
-    position VARCHAR(50),
-    FOREIGN KEY (campaign_id) REFERENCES campaigns(campaign_id)
-);
-
-CREATE TABLE email_opens (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    email_id VARCHAR(50),
-    campaign_id VARCHAR(50),
-    ip_address VARCHAR(45),
-    user_agent TEXT,
-    timestamp DATETIME,
-    FOREIGN KEY (email_id) REFERENCES targets(email_id),
-    FOREIGN KEY (campaign_id) REFERENCES campaigns(campaign_id)
-);
-
-CREATE TABLE links (
-    link_id VARCHAR(50) PRIMARY KEY,
-    campaign_id VARCHAR(50),
-    target_url TEXT NOT NULL,
-    description VARCHAR(100),
-    FOREIGN KEY (campaign_id) REFERENCES campaigns(campaign_id)
-);
-
-CREATE TABLE link_clicks (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    link_id VARCHAR(50),
-    email_id VARCHAR(50),
-    campaign_id VARCHAR(50),
-    ip_address VARCHAR(45),
-    user_agent TEXT,
-    timestamp DATETIME,
-    FOREIGN KEY (link_id) REFERENCES links(link_id),
-    FOREIGN KEY (email_id) REFERENCES targets(email_id),
-    FOREIGN KEY (campaign_id) REFERENCES campaigns(campaign_id)
-);
-
-CREATE TABLE credentials (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    email_id VARCHAR(50),
-    campaign_id VARCHAR(50),
-    username VARCHAR(100),
-    password VARCHAR(100),
-    additional_data TEXT,
-    ip_address VARCHAR(45),
-    user_agent TEXT,
-    timestamp DATETIME,
-    FOREIGN KEY (email_id) REFERENCES targets(email_id),
-    FOREIGN KEY (campaign_id) REFERENCES campaigns(campaign_id)
-);
-```
-
-This tracking system allows you to collect metrics like:
-- Email open rates
-- Link click-through rates
-- Credential submission rates
-- User agent and device statistics
-- Geographic locations of targets
-- Time-based response patterns
-
-This data is invaluable for reporting and for improving future campaigns. It helps you understand which tactics work best against which targets.
 
 ### Voice Phishing Infrastructure
 
@@ -760,24 +596,23 @@ The TwiML script referenced above controls what happens during the call:
 Caller ID spoofing is a critical component of effective vishing campaigns. Here are several approaches:
 
 1. **SIP Trunking Providers**:
-   - **Telnyx** - Offers programmable SIP trunking with customizable caller ID
-   - **Twilio** - Limited caller ID customization within their guidelines
-   - **Plivo** - Similar to Twilio with flexible API
+   - Telnyx - Offers programmable SIP trunking with customizable caller ID
+   - Twilio - Limited caller ID customization within their guidelines
+   - Plivo - Similar to Twilio with flexible API
 
 2. **Dedicated Spoofing Services**:
-   - **SpoofCard** - Popular commercial service for one-off calls
-   - **SpoofTel** - Offers both web and app-based spoofing
-   - **Caller ID Changer Pro** - Mobile app for Android devices
+   - SpoofCard - Popular commercial service for one-off calls
+   - SpoofTel - Offers both web and app-based spoofing
 
 3. **VoIP Software with Spoofing Capabilities**:
-   - **Asterisk with SIP configuration** - Open-source solution requiring technical setup
-   - **FreePBX** - More user-friendly Asterisk-based system
-   - **3CX** - Commercial PBX software with caller ID customization
+   - Asterisk with SIP configuration - Open-source solution requiring technical setup
+   - FreePBX - More user-friendly Asterisk-based system
+   - 3CX - Commercial PBX software with caller ID customization
 
 4. **Advanced Tactics**:
-   - **Neighbor Spoofing** - Using a number with the same area code as the target
-   - **Organization Spoofing** - Making calls appear to come from within the target's organization
-   - **Toll-Free Spoofing** - Using toll-free numbers which often bypass call blocking
+   - Neighbor Spoofing - Using a number with the same area code as the target
+   - Organization Spoofing - Making calls appear to come from within the target's organization
+   - Toll-Free Spoofing - Using toll-free numbers which often bypass call blocking
 
 For red team operations, the most effective approach is combining SIP trunking with custom PBX software. This provides the best balance of flexibility, reliability, and believability.
 
@@ -822,62 +657,6 @@ print(f"Sent smishing message with ID: {message_id}")
 
 For more stealthy operations, consider bulk SMS services that offer better anonymity or alphanumeric sender IDs.
 
-#### SMS Gateway APIs
-
-For larger campaigns, SMS gateway APIs provide more flexibility:
-
-```python
-import requests
-import json
-
-def send_bulk_sms(targets, message, campaign_id):
-    """Send SMS to multiple targets through a bulk SMS provider"""
-    
-    # API endpoint
-    url = "https://api.bulksms-provider.com/send"
-    
-    # Authentication
-    headers = {
-        "Authorization": "Bearer your_api_key",
-        "Content-Type": "application/json"
-    }
-    
-    # Prepare messages in batches of 100
-    for i in range(0, len(targets), 100):
-        batch = targets[i:i+100]
-        
-        # Create payload
-        payload = {
-            "sender_id": "SECURITY",
-            "campaign_id": campaign_id,
-            "messages": []
-        }
-        
-        for phone in batch:
-            payload["messages"].append({
-                "to": phone,
-                "body": message,
-                "reference": f"ref-{campaign_id}-{phone[-4:]}"
-            })
-        
-        # Send the request
-        response = requests.post(url, headers=headers, data=json.dumps(payload))
-        
-        # Check result
-        if response.status_code != 200:
-            print(f"Error sending batch: {response.text}")
-        else:
-            result = response.json()
-            print(f"Batch sent. Delivered: {result['delivered']}, Failed: {result['failed']}")
-            
-# Example usage
-targets = ["+15551234567", "+15552345678", "+15553456789"]
-message = "ALERT: Suspicious login detected. Verify it was you: http://security-verify.example.com/v?id=USER123"
-campaign_id = "SMISH-2025-04"
-
-send_bulk_sms(targets, message, campaign_id)
-```
-
 ## OSINT Tools for Target Research
 
 Effective social engineering requires thorough intelligence gathering. Let's explore tools and techniques for automated reconnaissance.
@@ -919,21 +698,6 @@ python3 linkedin2username.py -u your_linkedin@email.com -c "Target Company" -s 5
 ```
 
 This tool requires a valid LinkedIn account but yields more accurate results and includes title information.
-
-#### LinkedIn Data Analysis with Maltego
-
-Once you have employee data, Maltego provides powerful visualization capabilities to identify key targets:
-
-1. Import your employee list into Maltego
-2. Create a custom entity for the company
-3. Link employees to the company
-4. Run transforms to identify reporting structures
-5. Use the "To Role" transform to categorize employees by department
-
-This visualization helps identify:
-- High-value targets (IT admins, help desk staff)
-- Department structures and reporting relationships
-- Potential authority figures for pretexting scenarios
 
 ### Email Verification Tools
 
@@ -1564,15 +1328,10 @@ Throughout this article, we've examined the technical infrastructure and tools n
 The key takeaways from this article are:
 
 1. From domain selection to email server setup, every technical element should withstand scrutiny and appear legitimate.
-
 2. Combine phishing, vishing, and smishing for campaigns that are resilient and adaptable to different target environments.
-
 3. Comprehensive intelligence gathering dramatically increases success rates by allowing for highly targeted, convincing pretext scenarios.
-
 4. Leverage modern tools like LLMs and specialized frameworks to scale your operations while maintaining quality.
-
 5. Implement robust tracking systems to measure effectiveness and adjust tactics based on results.
-
 6. Always operate within the scope of authorized assessments and with appropriate disclosure to clients.
 
 Remember that the most successful social engineering campaigns aren't about technical sophistication alone—they're about creating scenarios that trigger emotional responses while appearing perfectly legitimate.
