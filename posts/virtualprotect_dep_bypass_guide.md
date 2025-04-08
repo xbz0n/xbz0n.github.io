@@ -1,6 +1,6 @@
 ---
 title: "VirtualProtect DEP Bypass with ROP Chains: Step-By-Step VulnServer VirtualProtec Exploit"
-date: "2025-04-05"
+date: "2025-04-08"
 tags: ["Exploit Development", "Windows", "DEP Bypass", "ROP", "Buffer Overflow"]
 ---
 
