@@ -1,10 +1,23 @@
 import { FaExternalLinkAlt } from 'react-icons/fa';
+import Image from 'next/image';
 
-export default function CertificationCard({ title, link, icon: Icon }) {
+export default function CertificationCard({ title, link, icon: Icon, imagePath }) {
   return (
     <div className="bg-secondary/50 rounded-lg border border-gray-700 p-4 transition-all hover:border-accent/50">
       <div className="flex items-center space-x-3">
-        {Icon && <Icon className="text-accent w-6 h-6" />}
+        {imagePath ? (
+          <div className="relative w-8 h-8 flex-shrink-0">
+            <Image 
+              src={imagePath} 
+              alt={`${title} icon`} 
+              width={32} 
+              height={32} 
+              className="object-contain"
+            />
+          </div>
+        ) : Icon ? (
+          <Icon className="text-accent w-6 h-6" />
+        ) : null}
         <h3 className="text-lg font-medium">{title}</h3>
       </div>
       

@@ -7,37 +7,44 @@ export default function About() {
     {
       title: "OffSec Web Expert (OSWE)",
       link: "https://www.credential.net/b24c3444-42f4-4355-b5dc-f4e885ce3f4c",
-      icon: FaCode
+      icon: FaCode,
+      imagePath: "/images/oswe-icon.png"
     },
     {
       title: "OffSec Experienced Penetration Tester (OSEP)",
       link: "https://www.credential.net/b3d9d569-b3c8-43b2-9ddc-7dffc8308194",
-      icon: FaServer
+      icon: FaServer,
+      imagePath: "/images/osep-icon.png"
     },
     {
       title: "OffSec Certified Professional (OSCP)",
       link: "https://www.credential.net/d07917a9-34b9-46ca-8fe2-7db76681e55c",
-      icon: FaHackerNews
+      icon: FaHackerNews,
+      imagePath: "/images/oscp-icon.png"
     },
     {
       title: "Certified Red Team Operator",
       link: "https://eu.badgr.com/public/assertions/gs2PPSGSQr-jDsOy-l-fcA",
-      icon: FaBug
+      icon: FaBug,
+      imagePath: "/images/crto-icon.png"
     },
     {
       title: "Certified Red Team Lead",
       link: "https://eu.badgr.com/public/assertions/rWbIBlvXTyuELPHXiDls7g",
-      icon: FaShieldAlt
+      icon: FaShieldAlt,
+      imagePath: "/images/crtl-icon.png"
     },
     {
       title: "Certified Red Team Expert",
       link: "https://www.credential.net/495e426e-41c5-48a3-afee-e10f78a737de",
-      icon: FaShieldAlt
+      icon: FaShieldAlt,
+      imagePath: "/images/crte-icon.png"
     },
     {
       title: "Burp Suite Certified Practitioner",
       link: "https://portswigger.net/web-security/e/c/bec525281dd69532",
-      icon: FaBug
+      icon: FaBug,
+      imagePath: "/images/bscp-icon.png"
     }
   ];
 
@@ -79,6 +86,7 @@ export default function About() {
                 title={cert.title}
                 link={cert.link}
                 icon={cert.icon}
+                imagePath={cert.imagePath}
               />
             ))}
           </div>
