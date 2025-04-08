@@ -228,7 +228,27 @@ function cleanHtml(html) {
   for (let i = 0; i < parts.length; i++) {
     if (parts[i].type === 'text') {
       // Replace backticks with code tags in text parts only
-      parts[i].content = parts[i].content.replace(/`([^`]+?)`/g, '<code>$1</code>');
+      // First, temporarily replace any existing <code> tags to prevent conflicts
+      let content = parts[i].content;
+      content = content.replace(/<code/g, '%%CODE_START%%');
+      content = content.replace(/<\/code>/g, '%%CODE_END%%');
+      
+      // More aggressive backtick replacement - handles both inline and any stray backticks
+      // This looks for standalone backticks that aren't part of triple backticks
+      content = content.replace(/`([^`]+?)`/g, function(match, p1) {
+        // Skip if this appears to be part of a code block
+        if (match.indexOf('\n') !== -1) return match;
+        return '<code>' + p1 + '</code>';
+      });
+      
+      // A safer way to clean up any remaining standalone backticks
+      content = content.split('`').join('');
+      
+      // Restore original code tags
+      content = content.replace(/%%CODE_START%%/g, '<code');
+      content = content.replace(/%%CODE_END%%/g, '</code>');
+      
+      parts[i].content = content;
     }
   }
   
