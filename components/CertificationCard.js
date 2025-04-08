@@ -6,17 +6,17 @@ export default function CertificationCard({ title, link, icon: Icon, imagePath }
     <div className="bg-secondary/50 rounded-lg border border-gray-700 p-4 transition-all hover:border-accent/50">
       <div className="flex items-center space-x-3">
         {imagePath ? (
-          <div className="relative w-8 h-8 flex-shrink-0">
+          <div className="relative w-16 h-16 flex-shrink-0">
             <Image 
               src={imagePath} 
               alt={`${title} icon`} 
-              width={32} 
-              height={32} 
+              width={64} 
+              height={64} 
               className="object-contain"
             />
           </div>
         ) : Icon ? (
-          <Icon className="text-accent w-6 h-6" />
+          <Icon className="text-accent w-8 h-8" />
         ) : null}
         <h3 className="text-lg font-medium">{title}</h3>
       </div>
