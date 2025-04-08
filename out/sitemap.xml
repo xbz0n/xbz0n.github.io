@@ -37,6 +37,12 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://xbz0n.sh/blog/virtualprotect_dep_bypass_guide</loc>
+    <lastmod>2025-04-08</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://xbz0n.sh/blog/social-engineering-redteam</loc>
     <lastmod>2025-04-01</lastmod>
     <changefreq>yearly</changefreq>
@@ -50,7 +56,7 @@
   </url>
   <url>
     <loc>https://xbz0n.sh/blog/calculator-shellcode-analysis</loc>
-    <lastmod>2023-03-18</lastmod>
+    <lastmod>2025-03-18</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.6</priority>
   </url>
