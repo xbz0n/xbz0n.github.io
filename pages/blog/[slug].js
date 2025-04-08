@@ -190,18 +190,50 @@ function cleanHtml(html) {
   );
   
   // Handle inline code formatting with backticks
-  // We'll use a two-step approach to avoid regex lookbehind compatibility issues
+  // First, let's split the HTML into "code block" parts and "non-code block" parts
+  const parts = [];
+  let lastIndex = 0;
   
-  // First mark all code elements to be preserved
-  cleaned = cleaned.replace(/<code/g, '<CODE_PRESERVE');
-  cleaned = cleaned.replace(/<\/code>/g, '</CODE_PRESERVE>');
+  // Find all pre tags
+  const preRegex = /<pre[\s\S]*?<\/pre>/g;
+  let preMatch;
   
-  // Now handle all backtick pairs
-  cleaned = cleaned.replace(/`([^`\n]+)`/g, '<code>$1</code>');
+  while ((preMatch = preRegex.exec(cleaned)) !== null) {
+    // Add text before this pre tag
+    if (preMatch.index > lastIndex) {
+      parts.push({
+        type: 'text',
+        content: cleaned.substring(lastIndex, preMatch.index)
+      });
+    }
+    
+    // Add the pre tag itself
+    parts.push({
+      type: 'pre',
+      content: preMatch[0]
+    });
+    
+    lastIndex = preMatch.index + preMatch[0].length;
+  }
   
-  // Restore preserved code tags
-  cleaned = cleaned.replace(/<CODE_PRESERVE/g, '<code');
-  cleaned = cleaned.replace(/<\/CODE_PRESERVE>/g, '</code>');
+  // Add any remaining text
+  if (lastIndex < cleaned.length) {
+    parts.push({
+      type: 'text',
+      content: cleaned.substring(lastIndex)
+    });
+  }
+  
+  // Now process each part
+  for (let i = 0; i < parts.length; i++) {
+    if (parts[i].type === 'text') {
+      // Replace backticks with code tags in text parts only
+      parts[i].content = parts[i].content.replace(/`([^`]+?)`/g, '<code>$1</code>');
+    }
+  }
+  
+  // Join everything back together
+  cleaned = parts.map(part => part.content).join('');
   
   return cleaned;
 }
