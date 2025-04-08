@@ -1,5 +1,5 @@
 ---
-title: "VulnServer VirtualProtect DEP Bypass with VirtualProtec"
+title: "VirtualProtect DEP Bypass: Step-By-Step VulnServer Exploit"
 date: "2025-04-08"
 tags: ["Exploit Development", "Windows", "DEP Bypass", "ROP", "Buffer Overflow"]
 ---
