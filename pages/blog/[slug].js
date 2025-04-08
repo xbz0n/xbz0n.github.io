@@ -152,35 +152,56 @@ export async function getStaticPaths() {
 function cleanHtml(html) {
   let cleaned = html;
   
-  // Apply language-specific syntax highlighting to code blocks
-  // First transformation: Add language class based on info string
+  // Fix fenced code blocks with language specifiers that weren't properly transformed
   cleaned = cleaned.replace(
-    /<pre><code>```(\w+)([\s\S]*?)```<\/code><\/pre>/g,
+    /<pre><code>```(\w+)\s*([\s\S]*?)```<\/code><\/pre>/g,
     function(match, lang, code) {
+      // Remove extra backticks that might appear in the rendered output
+      code = code.replace(/^```|```$/gm, '');
       return `<pre class="language-${lang}"><code class="language-${lang}">${code}</code></pre>`;
     }
   );
   
-  // Second transformation: Fix properly formatted code blocks with language classes
+  // Fix fenced code blocks without language specifiers
+  cleaned = cleaned.replace(
+    /<pre><code>```\s*([\s\S]*?)```<\/code><\/pre>/g,
+    function(match, code) {
+      // Remove extra backticks that might appear in the rendered output
+      code = code.replace(/^```|```$/gm, '');
+      return `<pre class="language-none"><code class="language-none">${code}</code></pre>`;
+    }
+  );
+  
+  // Make sure code blocks with language classes have the class on both pre and code elements
   cleaned = cleaned.replace(
     /<pre><code class="language-(\w+)">([\s\S]*?)<\/code><\/pre>/g,
     '<pre class="language-$1"><code class="language-$1">$2</code></pre>'
   );
 
-  // Third transformation: Handle remaining code blocks without specified language
+  // Handle any remaining standard code blocks
   cleaned = cleaned.replace(
     /<pre><code>([\s\S]*?)<\/code><\/pre>/g,
     function(match, code) {
-      if (!code.startsWith('<pre class="language-')) {
+      if (!code.includes('<pre class="language-')) {
         return `<pre class="language-none"><code class="language-none">${code}</code></pre>`;
       }
       return match;
     }
   );
   
-  // Fix the issue with backtick symbols showing in rendered inline code
-  // This replaces any remaining visible backticks with proper inline code formatting
-  cleaned = cleaned.replace(/`([^`]+)`/g, '<code>$1</code>');
+  // Handle inline code formatting with backticks
+  // We'll use a two-step approach to avoid regex lookbehind compatibility issues
+  
+  // First mark all code elements to be preserved
+  cleaned = cleaned.replace(/<code/g, '<CODE_PRESERVE');
+  cleaned = cleaned.replace(/<\/code>/g, '</CODE_PRESERVE>');
+  
+  // Now handle all backtick pairs
+  cleaned = cleaned.replace(/`([^`\n]+)`/g, '<code>$1</code>');
+  
+  // Restore preserved code tags
+  cleaned = cleaned.replace(/<CODE_PRESERVE/g, '<code');
+  cleaned = cleaned.replace(/<\/CODE_PRESERVE>/g, '</code>');
   
   return cleaned;
 }
