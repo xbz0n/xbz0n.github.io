@@ -482,7 +482,7 @@ foreach ($blocked_ips as $blocked) {
     if (strpos($visitor_ip, $blocked) === 0) {
         // Redirect to legitimate site
         header('Location: https://google.com');
-        exit;
+    exit;
     }
 }
 
