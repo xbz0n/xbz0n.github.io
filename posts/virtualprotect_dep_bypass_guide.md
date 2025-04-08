@@ -494,15 +494,16 @@ ecx += struct.pack("<I", 0x7653a3c1)  # &Writable location [KERNEL32.DLL]
 **Current Value**: 0x7653a3c1 (Writable memory address in KERNEL32.DLL)
 **Reason**: This register needs to hold the pointer to a writable memory location (lpflOldProtect parameter) where VirtualProtect can store the old memory protection flags.
 
-**How we found it**: We identified a suitable writable address within KERNEL32.DLL's .data section in Section 5, using Mona (!py mona findmem -p "rw" -m kernel32.dll). 0x7653a3c1 was chosen from the results:
-```
+**How we found it**: We identified a suitable writable address within KERNEL32.DLL's .data in Section 5.
 
 **How we found the gadget**:
+
 ```
 !py mona find -type instr -s "pop ecx # ret" -m "msvcrt" -cpb "\x00"
 ```
 
 **Alternative Options**:
+
 1. **Using essfunc.dll's writable memory**:
 ```python
 ecx = struct.pack("<I", 0x775f94ee)  # pop ecx; ret
