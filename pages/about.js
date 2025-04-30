@@ -23,12 +23,6 @@ export default function About() {
       imagePath: "/images/oswe-icon.png"
     },
     {
-      title: "eLearnSecurity Web Application Penetration Tester eXtreme (eWPTX)",
-      link: "https://verified.elearnsecurity.com/certificates/c0f55368-dca0-4f85-acad-100ce65d1533",
-      icon: FaCode,
-      imagePath: "/images/ewptx-icon.png"
-    },
-    {
       title: "OffSec Experienced Penetration Tester (OSEP)",
       link: "https://credentials.offsec.com/b3d9d569-b3c8-43b2-9ddc-7dffc8308194",
       icon: FaServer,
