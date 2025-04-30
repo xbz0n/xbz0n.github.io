@@ -5,7 +5,7 @@ import CertificationCard from '../components/CertificationCard';
 export default function About() {
   const certifications = [
     {
-      title: "Offensive Security Certified Expert 3 (OSCE³)",
+      title: "OffSec Certified Expert 3 (OSCE³)",
       link: "https://credentials.offsec.com/acbb0543-8925-4420-8c4c-650d8f6e9f23",
       icon: FaShieldAlt,
       imagePath: "/images/osce3-icon.png"
@@ -21,6 +21,12 @@ export default function About() {
       link: "https://credentials.offsec.com/b24c3444-42f4-4355-b5dc-f4e885ce3f4c",
       icon: FaCode,
       imagePath: "/images/oswe-icon.png"
+    },
+    {
+      title: "eLearnSecurity Web Application Penetration Tester eXtreme (eWPTX)",
+      link: "https://verified.elearnsecurity.com/certificates/c0f55368-dca0-4f85-acad-100ce65d1533",
+      icon: FaCode,
+      imagePath: "/images/ewptx-icon.png"
     },
     {
       title: "OffSec Experienced Penetration Tester (OSEP)",
