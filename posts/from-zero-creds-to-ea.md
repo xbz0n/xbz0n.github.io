@@ -12,7 +12,7 @@ tags: ["Active Directory", "Penetration Testing", "NTLM Relay", "SMB", "DCSync",
 
 Active Directory remains the backbone of most corporate network environments. Despite being a mature technology with decades of security research behind it, misconfigurations and default settings continue to provide avenues for attackers to gain complete control of Windows domains.
 
-This article details how I was able to go from having zero credentials to obtaining Enterprise Admin access during a recent internal network penetration test. The attack chain demonstrates how several seemingly minor misconfigurations can be chained together to compromise an entire Active Directory forest.
+This article details how I was able to go from having zero credentials to obtaining Enterprise Admin access during a recent engagement. The attack chain demonstrates how several seemingly minor misconfigurations can be chained together to compromise an entire Active Directory forest.
 
 What makes this attack particularly effective is that it requires no exploitation of unpatched vulnerabilities - just the abuse of insecure configurations that exist in many corporate environments by default.
 
