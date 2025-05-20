@@ -37,6 +37,12 @@
     <priority>0.6</priority>
   </url>
   <url>
+    <loc>https://xbz0n.sh/blog/from-zero-creds-to-ea</loc>
+    <lastmod>2025-05-20</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://xbz0n.sh/blog/social-engineering-redteam</loc>
     <lastmod>2025-04-25</lastmod>
     <changefreq>yearly</changefreq>
