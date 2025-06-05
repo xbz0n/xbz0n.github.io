@@ -33,7 +33,6 @@ Root CA (Offline)
             └── Issued Certificates
 ```
 
-**Note:** In this guide, "Subordinate CA" and "SubCA" refer to the same concept - a Certificate Authority that operates under a Root CA in the PKI hierarchy.
 
 Let's see what this looks like in our GOAD environment:
 
@@ -1698,7 +1697,7 @@ All version 1 templates are potentially vulnerable when enrollment rights are gr
 
 **Status: ACTIVE THREAT**
 
-ESC16 represents a critical misconfiguration where the Certificate Authority is configured to omit the `szOID_NTDS_CA_SECURITY_EXT` extension (OID: `1.3.6.1.4.1.311.25.2`) on every certificate it issues. This vulnerability was first documented in research by Munib Nawaz and has been incorporated into Certipy v5+ detection capabilities.
+ESC16 represents a critical misconfiguration where the Certificate Authority is configured to omit the `szOID_NTDS_CA_SECURITY_EXT` extension (OID: `1.3.6.1.4.1.311.25.2`) on every certificate it issues.
 
 ### Technical Details
 
