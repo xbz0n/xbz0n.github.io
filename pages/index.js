@@ -218,7 +218,14 @@ export async function getStaticProps() {
   const postsDirectory = path.join(process.cwd(), 'posts');
   const fileNames = fs.readdirSync(postsDirectory);
   
-  const allPosts = fileNames.map((fileName) => {
+  // Filter out non-markdown files and system files
+  const markdownFiles = fileNames.filter(fileName => 
+    fileName.endsWith('.md') && 
+    !fileName.startsWith('.') &&
+    !fileName.includes('.DS_Store')
+  );
+  
+  const allPosts = markdownFiles.map((fileName) => {
     const slug = fileName.replace(/\.md$/, '');
     const fullPath = path.join(postsDirectory, fileName);
     const fileContents = fs.readFileSync(fullPath, 'utf8');
@@ -234,10 +241,12 @@ export async function getStaticProps() {
     };
   });
   
-  // Sort posts by date
-  const sortedPosts = allPosts.sort((a, b) => {
-    return new Date(b.date) - new Date(a.date);
-  });
+  // Filter out posts with invalid dates and sort posts by date
+  const sortedPosts = allPosts
+    .filter(post => post.date && !isNaN(new Date(post.date)))
+    .sort((a, b) => {
+      return new Date(b.date) - new Date(a.date);
+    });
   
   // Get the latest 3 posts
   const latestPosts = sortedPosts.slice(0, 3);

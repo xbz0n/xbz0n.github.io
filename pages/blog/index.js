@@ -138,7 +138,14 @@ export async function getStaticProps() {
   try {
     const fileNames = fs.readdirSync(postsDirectory);
     
-    posts = fileNames.map((fileName) => {
+    // Filter out non-markdown files and system files
+    const markdownFiles = fileNames.filter(fileName => 
+      fileName.endsWith('.md') && 
+      !fileName.startsWith('.') &&
+      !fileName.includes('.DS_Store')
+    );
+    
+    posts = markdownFiles.map((fileName) => {
       const slug = fileName.replace(/\.md$/, '');
       const fullPath = path.join(postsDirectory, fileName);
       const fileContents = fs.readFileSync(fullPath, 'utf8');
@@ -154,13 +161,16 @@ export async function getStaticProps() {
       };
     });
     
-    posts = posts.sort((a, b) => {
-      if (a.date < b.date) {
-        return 1;
-      } else {
-        return -1;
-      }
-    });
+    // Filter out posts with invalid dates and sort
+    posts = posts
+      .filter(post => post.date && !isNaN(new Date(post.date)))
+      .sort((a, b) => {
+        if (a.date < b.date) {
+          return 1;
+        } else {
+          return -1;
+        }
+      });
   } catch (error) {
     console.error('Error loading posts:', error);
     posts = [];

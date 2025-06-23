@@ -127,7 +127,14 @@ export async function getStaticPaths() {
     const postsDirectory = path.join(process.cwd(), 'posts');
     const fileNames = fs.readdirSync(postsDirectory);
     
-    const paths = fileNames.map((fileName) => {
+    // Filter out non-markdown files and system files
+    const markdownFiles = fileNames.filter(fileName => 
+      fileName.endsWith('.md') && 
+      !fileName.startsWith('.') &&
+      !fileName.includes('.DS_Store')
+    );
+    
+    const paths = markdownFiles.map((fileName) => {
       return {
         params: {
           slug: fileName.replace(/\.md$/, ''),

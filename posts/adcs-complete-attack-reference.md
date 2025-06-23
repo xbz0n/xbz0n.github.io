@@ -6,7 +6,7 @@ tags: ["Active Directory", "ADCS", "PKI", "Privilege Escalation", "Red Team", "C
 
 # Breaking ADCS: ESC1 to ESC16 Attack Techniques
 
-![ADCS attack vectors and certificate template abuse](/images/adcs-attacks.png)
+![ADCS attack vectors and certificate template abuse](/images/adcs-attacks.jpeg)
 
 ## Introduction
 

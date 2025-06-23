@@ -6,7 +6,7 @@ tags: ["Exploit Development", "VulnServer", "DEP Bypass", "ROP", "Buffer Overflo
 
 # VirtualProtect DEP Bypass: Step-By-Step Exploit
 
-![ROP chain exploitation techniques](/images/dep-bypass.png)
+![ROP chain exploitation techniques](/images/dep-bypass.jpeg)
 
 ## Introduction
 
