@@ -165,12 +165,12 @@ export async function getStaticProps() {
     posts = posts
       .filter(post => post.date && !isNaN(new Date(post.date)))
       .sort((a, b) => {
-        if (a.date < b.date) {
-          return 1;
-        } else {
-          return -1;
-        }
-      });
+      if (a.date < b.date) {
+        return 1;
+      } else {
+        return -1;
+      }
+    });
   } catch (error) {
     console.error('Error loading posts:', error);
     posts = [];
