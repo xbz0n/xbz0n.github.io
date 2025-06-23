@@ -924,32 +924,25 @@ Most importantly, you now understand the **principles** behind why each componen
 ## References
 
 1. **Mythic C2 Framework**  
-   Its-a-Feature. *Mythic: A cross-platform, post-exploit, red teaming framework*. GitHub Repository.  
-   https://github.com/its-a-feature/Mythic
+   [Mythic: A cross-platform, post-exploit, red teaming framework](https://github.com/its-a-feature/Mythic)
 
 2. **Apollo Agent for Mythic**  
-   MythicAgents. *Apollo - A .NET Framework 4.0 Windows Agent*. GitHub Repository.  
-   https://github.com/MythicAgents/apollo
+   [Apollo - A .NET Framework 4.0 Windows Agent](https://github.com/MythicAgents/apollo)
 
 3. **HTTP C2 Profile for Mythic**  
-   MythicC2Profiles. *HTTP C2 Profile for Mythic Framework*. GitHub Repository.  
-   https://github.com/MythicC2Profiles/http
+   [HTTP C2 Profile for Mythic Framework*](https://github.com/MythicC2Profiles/http)
 
 4. **EarlyBird Injection Technique**  
-   Cyberbit, Hod Gavriel, Boris Erbesfeld. *New ‘Early Bird’ Code Injection Technique Discovered*. Cyberark Security Research, 2018.  
-   https://www.cyberbit.com/endpoint-security/new-early-bird-code-injection-technique-discovered/
+   [New ‘Early Bird’ Code Injection Technique Discovered*. Cyberark Security Research, 2018.](https://www.cyberbit.com/endpoint-security/new-early-bird-code-injection-technique-discovered/)
 
 5. **Windows APC Internals**  
-   Microsoft Corporation. *Asynchronous Procedure Calls*. Windows Development Documentation.  
-   https://docs.microsoft.com/en-us/windows/win32/sync/asynchronous-procedure-calls
+   [Asynchronous Procedure Calls*. Windows Development Documentation.](https://docs.microsoft.com/en-us/windows/win32/sync/asynchronous-procedure-calls)
 
 6. **C2 Infrastructure Design Patterns**  
-   MITRE ATT&CK Framework. *Command and Control Tactics*. MITRE Corporation.  
-   https://attack.mitre.org/tactics/TA0011/
+   [MITRE ATT&CK Framework. Command and Control Tactics. MITRE Corporation.](https://attack.mitre.org/tactics/TA0011/)
 
 7. **WinHTTP Programming Interface**  
-    Microsoft Corporation. *WinHTTP API Reference*. Windows Development Documentation.  
-    https://docs.microsoft.com/en-us/windows/win32/winhttp/winhttp-start-page
+    [WinHTTP API Reference. Windows Development Documentation.](https://docs.microsoft.com/en-us/windows/win32/winhttp/winhttp-start-page)
 
 ---
 
