@@ -232,7 +232,50 @@ export async function getStaticProps() {
     const matterResult = matter(fileContents);
     
     // Extract a clean excerpt from the content
-    const excerpt = matterResult.content.trim().split('\n\n')[0].replace(/^#+\s+.*$/m, '').trim();
+    // The matter library already separates frontmatter from content
+    // So matterResult.content only contains the actual markdown content
+    const contentLines = matterResult.content.trim().split('\n');
+    
+    // Find the first paragraph that's not a header, image, or empty line
+    let excerpt = '';
+    for (let i = 0; i < contentLines.length; i++) {
+      const line = contentLines[i].trim();
+      
+      // Skip empty lines, headers, and image references
+      if (line.length === 0 || 
+          line.startsWith('#') || 
+          line.startsWith('![') || 
+          line.startsWith('<img')) {
+        continue;
+      }
+      
+      // If we found a good line, use it and potentially the next few lines
+      const paragraphLines = [];
+      for (let j = i; j < contentLines.length && j < i + 3; j++) {
+        const nextLine = contentLines[j].trim();
+        if (nextLine.length === 0) break;
+        if (nextLine.startsWith('#') || nextLine.startsWith('![') || nextLine.startsWith('<img')) break;
+        paragraphLines.push(nextLine);
+      }
+      
+      excerpt = paragraphLines.join(' ');
+      break;
+    }
+    
+    // Fallback to a simple approach if no good excerpt was found
+    if (!excerpt) {
+      excerpt = matterResult.content
+        .replace(/^#+\s+.*$/gm, '') // Remove headers
+        .replace(/!\[.*?\]\(.*?\)/g, '') // Remove images
+        .trim()
+        .split('\n\n')[0] // Get first paragraph
+        .trim();
+    }
+    
+    // Limit excerpt length
+    if (excerpt.length > 200) {
+      excerpt = excerpt.substring(0, 197) + '...';
+    }
     
     return {
       slug,

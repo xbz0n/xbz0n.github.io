@@ -3,11 +3,6 @@ title: "Mythic C2 with EarlyBird Injection and Defender Evasion"
 date: "2025-06-23"
 tags: ["Red Team", "C2", "Mythic", "Infrastructure", "Process Injection", "EarlyBird", "OPSEC", "Malware Development"]
 ---
----
-title: "Mythic C2 with EarlyBird Injection and Defender Evasion"
-date: "2025-04-26"
-tags: ["Red Team", "C2", "Mythic", "Infrastructure", "Process Injection", "EarlyBird", "OPSEC", "Malware Development"]
----
 
 # Mythic C2 with EarlyBird Injection and Defender Evasion
 
