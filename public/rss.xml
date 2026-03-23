@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>xbz0n | Security Research Blog</title>
+    <link>https://xbz0n.sh/blog</link>
+    <description>Security research articles covering penetration testing, exploit development, red team operations, Active Directory attacks, and CVE disclosures by Ivan Spiridonov (xbz0n).</description>
+    <language>en</language>
+    <lastBuildDate>Mon, 16 Feb 2026 07:19:52 GMT</lastBuildDate>
+    <managingEditor>ivanspiridonov@gmail.com (Ivan Spiridonov)</managingEditor>
+    <atom:link href="https://xbz0n.sh/rss.xml" rel="self" type="application/rss+xml"/>
+  <item>
+    <title>Extracting a Dead Cult Leader&apos;s AI Mind</title>
+    <link>https://xbz0n.sh/blog/extracting-dead-cult-leaders-ai-mind</link>
+    <guid isPermaLink="true">https://xbz0n.sh/blog/extracting-dead-cult-leaders-ai-mind</guid>
+    <pubDate>Sun, 15 Feb 2026 00:00:00 GMT</pubDate>
+    <author>ivanspiridonov@gmail.com (Ivan Spiridonov)</author>
+    <category>OSINT</category>
+    <category>CTI</category>
+    <category>AI Security</category>
+    <category>Jailbreak</category>
+    <category>Custom GPT</category>
+    <category>Cult Intelligence</category>
+  </item>
+  <item>
+    <title>Living Off the Land: Windows Post-Exploitation Without Tools</title>
+    <link>https://xbz0n.sh/blog/living-off-the-land-windows</link>
+    <guid isPermaLink="true">https://xbz0n.sh/blog/living-off-the-land-windows</guid>
+    <pubDate>Fri, 28 Nov 2025 00:00:00 GMT</pubDate>
+    <author>ivanspiridonov@gmail.com (Ivan Spiridonov)</author>
+    <category>Post-Exploitation</category>
+    <category>Windows</category>
+    <category>Red Team</category>
+    <category>PowerShell</category>
+    <category>LOLBins</category>
+    <category>Lateral Movement</category>
+    <category>Offensive Security</category>
+  </item>
+  <item>
+    <title>Finding and Exploiting CVE-2025-50674 in OpenMediaVault</title>
+    <link>https://xbz0n.sh/blog/CVE-2025-50674</link>
+    <guid isPermaLink="true">https://xbz0n.sh/blog/CVE-2025-50674</guid>
+    <pubDate>Sun, 24 Aug 2025 00:00:00 GMT</pubDate>
+    <author>ivanspiridonov@gmail.com (Ivan Spiridonov)</author>
+    <category>Vulnerability Research</category>
+    <category>Privilege Escalation</category>
+    <category>CVE</category>
+    <category>OpenMediaVault</category>
+    <category>Newline Injection</category>
+  </item>
+  <item>
+    <title>Mythic C2 with EarlyBird Injection and Defender Evasion</title>
+    <link>https://xbz0n.sh/blog/mythic-c2-early-bird-defender-evasion</link>
+    <guid isPermaLink="true">https://xbz0n.sh/blog/mythic-c2-early-bird-defender-evasion</guid>
+    <pubDate>Mon, 23 Jun 2025 00:00:00 GMT</pubDate>
+    <author>ivanspiridonov@gmail.com (Ivan Spiridonov)</author>
+    <category>Red Team</category>
+    <category>C2</category>
+    <category>Mythic</category>
+    <category>Infrastructure</category>
+    <category>Process Injection</category>
+    <category>EarlyBird</category>
+    <category>OPSEC</category>
+    <category>Malware Development</category>
+  </item>
+  <item>
+    <title>Breaking ADCS: ESC1 to ESC16 Attack Techniques</title>
+    <link>https://xbz0n.sh/blog/adcs-complete-attack-reference</link>
+    <guid isPermaLink="true">https://xbz0n.sh/blog/adcs-complete-attack-reference</guid>
+    <pubDate>Tue, 03 Jun 2025 00:00:00 GMT</pubDate>
+    <author>ivanspiridonov@gmail.com (Ivan Spiridonov)</author>
+    <category>Active Directory</category>
+    <category>ADCS</category>
+    <category>PKI</category>
+    <category>Privilege Escalation</category>
+    <category>Red Team</category>
+    <category>Certificate Templates</category>
+    <category>ESC16</category>
+  </item>
+  <item>
+    <title>From Zero Creds to Enterprise Admin</title>
+    <link>https://xbz0n.sh/blog/from-zero-creds-to-ea</link>
+    <guid isPermaLink="true">https://xbz0n.sh/blog/from-zero-creds-to-ea</guid>
+    <pubDate>Tue, 20 May 2025 00:00:00 GMT</pubDate>
+    <author>ivanspiridonov@gmail.com (Ivan Spiridonov)</author>
+    <category>Active Directory</category>
+    <category>Penetration Testing</category>
+    <category>NTLM Relay</category>
+    <category>SMB</category>
+    <category>DCSync</category>
+    <category>Domain Takeover</category>
+    <category>Network Security</category>
+  </item>
+  <item>
+    <title>XSS to Account Takeover &amp; Data Exfiltration</title>
+    <link>https://xbz0n.sh/blog/XSS-to-Account-Takeover-and-Data-Exfiltration</link>
+    <guid isPermaLink="true">https://xbz0n.sh/blog/XSS-to-Account-Takeover-and-Data-Exfiltration</guid>
+    <pubDate>Thu, 24 Apr 2025 00:00:00 GMT</pubDate>
+    <author>ivanspiridonov@gmail.com (Ivan Spiridonov)</author>
+    <category>Web Security</category>
+    <category>XSS</category>
+    <category>Account Takeover</category>
+    <category>CSRF</category>
+    <category>Session Riding</category>
+    <category>Data Exfiltration</category>
+    <category>Vulnerability Research</category>
+  </item>
+  <item>
+    <title>VirtualProtect DEP Bypass: Step-By-Step Exploit</title>
+    <link>https://xbz0n.sh/blog/virtualprotect_dep_bypass_guide</link>
+    <guid isPermaLink="true">https://xbz0n.sh/blog/virtualprotect_dep_bypass_guide</guid>
+    <pubDate>Tue, 08 Apr 2025 00:00:00 GMT</pubDate>
+    <author>ivanspiridonov@gmail.com (Ivan Spiridonov)</author>
+    <category>Exploit Development</category>
+    <category>VulnServer</category>
+    <category>DEP Bypass</category>
+    <category>ROP</category>
+    <category>Buffer Overflow</category>
+    <category>Windows Exploitation</category>
+  </item>
+  <item>
+    <title>Social Engineering in Red Team Operations: Technical Setup and Tools</title>
+    <link>https://xbz0n.sh/blog/social-engineering-redteam</link>
+    <guid isPermaLink="true">https://xbz0n.sh/blog/social-engineering-redteam</guid>
+    <pubDate>Tue, 01 Apr 2025 00:00:00 GMT</pubDate>
+    <author>ivanspiridonov@gmail.com (Ivan Spiridonov)</author>
+    <category>Red Team</category>
+    <category>Social Engineering</category>
+    <category>Phishing</category>
+    <category>OSINT</category>
+    <category>Infrastructure</category>
+    <category>Offensive Security</category>
+  </item>
+  <item>
+    <title>C2 Redirectors: Advanced Infrastructure for Modern Red Team Operations</title>
+    <link>https://xbz0n.sh/blog/c2-redirectors</link>
+    <guid isPermaLink="true">https://xbz0n.sh/blog/c2-redirectors</guid>
+    <pubDate>Tue, 25 Mar 2025 00:00:00 GMT</pubDate>
+    <author>ivanspiridonov@gmail.com (Ivan Spiridonov)</author>
+    <category>Red Team</category>
+    <category>C2</category>
+    <category>Infrastructure</category>
+    <category>OPSEC</category>
+    <category>Network Security</category>
+    <category>Command and Control</category>
+  </item>
+  <item>
+    <title>Mastering x86 Shellcode: A Deep Dive into Calculator-Launching Payload Development</title>
+    <link>https://xbz0n.sh/blog/calculator-shellcode-analysis</link>
+    <guid isPermaLink="true">https://xbz0n.sh/blog/calculator-shellcode-analysis</guid>
+    <pubDate>Tue, 18 Mar 2025 00:00:00 GMT</pubDate>
+    <author>ivanspiridonov@gmail.com (Ivan Spiridonov)</author>
+    <category>Shellcode</category>
+    <category>Assembly</category>
+    <category>Windows</category>
+    <category>Exploit Development</category>
+    <category>x86</category>
+    <category>Low-level Programming</category>
+  </item>
+  <item>
+    <title>Finding and Exploiting CVE-2023-0830 in EasyNas</title>
+    <link>https://xbz0n.sh/blog/cve-2023-0830</link>
+    <guid isPermaLink="true">https://xbz0n.sh/blog/cve-2023-0830</guid>
+    <pubDate>Sat, 18 Mar 2023 00:00:00 GMT</pubDate>
+    <author>ivanspiridonov@gmail.com (Ivan Spiridonov)</author>
+    <category>Vulnerability Research</category>
+    <category>Command Injection</category>
+    <category>CVE</category>
+    <category>EasyNAS</category>
+    <category>Exploit Development</category>
+    <category>Privilege Escalation</category>
+  </item>
+  <item>
+    <title>GraphQL PenTest Methodology and Exploitation Techniques</title>
+    <link>https://xbz0n.sh/blog/graphql-security-flaws</link>
+    <guid isPermaLink="true">https://xbz0n.sh/blog/graphql-security-flaws</guid>
+    <pubDate>Sat, 18 Mar 2023 00:00:00 GMT</pubDate>
+    <author>ivanspiridonov@gmail.com (Ivan Spiridonov)</author>
+    <category>Web Security</category>
+    <category>GraphQL</category>
+    <category>Penetration Testing</category>
+    <category>API Security</category>
+    <category>Vulnerability Research</category>
+    <category>Exploitation</category>
+  </item>
+  </channel>
+</rss>

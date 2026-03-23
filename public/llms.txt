@@ -1,0 +1,57 @@
+# xbz0n.sh
+
+> Personal website of Ivan Spiridonov (xbz0n) — Offensive Security Consultant specializing in penetration testing, red teaming, vulnerability research, and exploit development.
+
+## About
+
+Ivan Spiridonov is a professional penetration tester and security researcher based in Europe. He holds OSCP, OSEP, OSWE, OSED, and OSCE3 certifications from Offensive Security. He has published multiple CVEs and develops open-source security tools.
+
+- Website: https://xbz0n.sh
+- GitHub: https://github.com/xbz0n
+- Twitter: https://twitter.com/xbz0n
+- LinkedIn: https://www.linkedin.com/in/ivanspiridonov/
+
+## Pages
+
+- [Home](https://xbz0n.sh/)
+- [About](https://xbz0n.sh/about)
+- [Blog](https://xbz0n.sh/blog)
+- [Tools](https://xbz0n.sh/tools)
+- [CVEs](https://xbz0n.sh/cves)
+
+## Blog Posts
+
+- [Extracting a Dead Cult Leader's AI Mind](https://xbz0n.sh/blog/extracting-dead-cult-leaders-ai-mind): OSINT and prompt injection techniques used to extract the full training data from a Custom GPT modeled after a deceased Bulgarian cult leader.
+- [Living Off the Land: Windows Post-Exploitation Without Tools](https://xbz0n.sh/blog/living-off-the-land-windows): Using built-in Windows binaries (LOLBins) and PowerShell for post-exploitation, lateral movement, and persistence without dropping external tools.
+- [Finding and Exploiting CVE-2025-50674 in OpenMediaVault](https://xbz0n.sh/blog/CVE-2025-50674): Discovery and exploitation of a privilege escalation vulnerability in OpenMediaVault 7.4.17 via the password change function.
+- [Mythic C2 with EarlyBird Injection and Defender Evasion](https://xbz0n.sh/blog/mythic-c2-early-bird-defender-evasion): Setting up Mythic C2 infrastructure with EarlyBird APC injection to bypass Windows Defender.
+- [Breaking ADCS: ESC1 to ESC16 Attack Techniques](https://xbz0n.sh/blog/adcs-complete-attack-reference): Complete reference for Active Directory Certificate Services attack techniques from ESC1 through ESC16.
+- [From Zero Creds to Enterprise Admin](https://xbz0n.sh/blog/from-zero-creds-to-ea): Full Active Directory attack chain from no credentials to Enterprise Admin access.
+- [XSS to Account Takeover & Data Exfiltration](https://xbz0n.sh/blog/XSS-to-Account-Takeover-and-Data-Exfiltration): Exploiting cross-site scripting vulnerabilities to achieve account takeover and exfiltrate sensitive data.
+- [VirtualProtect DEP Bypass: Step-By-Step Exploit](https://xbz0n.sh/blog/virtualprotect_dep_bypass_guide): Detailed walkthrough of bypassing Data Execution Prevention using VirtualProtect in exploit development.
+- [Social Engineering in Red Team Operations](https://xbz0n.sh/blog/social-engineering-redteam): Technical setup and tools for social engineering campaigns during red team engagements.
+- [C2 Redirectors: Advanced Infrastructure for Modern Red Team Operations](https://xbz0n.sh/blog/c2-redirectors): Building resilient command-and-control infrastructure with redirectors for red team operations.
+- [Mastering x86 Shellcode: Calculator-Launching Payload Development](https://xbz0n.sh/blog/calculator-shellcode-analysis): Deep dive into x86 assembly shellcode development with a calculator-launching payload.
+- [Finding and Exploiting CVE-2023-0830 in EasyNAS](https://xbz0n.sh/blog/cve-2023-0830): Discovery and exploitation of an arbitrary command execution vulnerability in EasyNAS backup and restore script.
+- [GraphQL PenTest Methodology and Exploitation Techniques](https://xbz0n.sh/blog/graphql-security-flaws): Methodology for testing GraphQL APIs for security vulnerabilities and common exploitation techniques.
+
+## Published CVEs
+
+- CVE-2025-50674: Privilege escalation in OpenMediaVault 7.4.17
+- CVE-2024-32136: SQL injection vulnerability
+- CVE-2024-33911: Security configuration vulnerability
+- CVE-2024-31370: Injection vulnerability allowing arbitrary code execution
+- CVE-2024-30240: SQL injection allowing authentication bypass
+- CVE-2024-0566: SQL injection allowing data exfiltration
+- CVE-2024-0405: Input validation vulnerability leading to RCE
+- CVE-2024-0399: Data integrity and confidentiality vulnerability
+- CVE-2024-0365: Privilege escalation vulnerability
+- CVE-2023-0830: Command injection in EasyNAS
+
+## Open-Source Tools
+
+- [InterceptReady](https://github.com/xbz0n/InterceptReady): Automated toolkit for configuring Android emulators with Frida and Burp Suite for mobile security testing.
+- [AspXVenom](https://github.com/xbz0n/AspXVenom): Generates encoded shellcode and embeds it into ASPX webshells for penetration testing.
+- [MacroPhantom](https://github.com/xbz0n/MacroPhantom): Generates XOR+Caesar encrypted shellcode and embeds it into VBA macros for Office documents.
+- [GoPhish Deploy](https://github.com/xbz0n/gophish-deploy): Automates deployment and configuration of the GoPhish phishing framework.
+- [AutoMSF](https://github.com/xbz0n/AutoMSF): Automates generation of multiple reverse_https payloads using msfvenom with Metasploit handler setup.
