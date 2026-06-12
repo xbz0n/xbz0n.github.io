@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 560" font-family="ui-monospace,Menlo,Consolas,monospace">
+  <rect width="1100" height="560" fill="#0d1117"/>
+  <text x="550" y="46" fill="#e6edf3" font-size="26" font-weight="700" text-anchor="middle">Smishing Triad — МВР Bulgaria fake-fine campaign</text>
+  <text x="550" y="74" fill="#8b949e" font-size="15" text-anchor="middle">mvr-bgi.cyou · real-time card + OTP relay · live 3-D Secure bypass</text>
+
+  <!-- SMS -->
+  <rect x="40" y="120" width="200" height="120" rx="10" fill="#161b22" stroke="#30363d"/>
+  <text x="140" y="150" fill="#58a6ff" font-size="15" font-weight="700" text-anchor="middle">1. Smishing SMS</text>
+  <text x="140" y="178" fill="#c9d1d9" font-size="12.5" text-anchor="middle">"МВР: неплатена глоба"</text>
+  <text x="140" y="198" fill="#c9d1d9" font-size="12.5" text-anchor="middle">hxxps://mvr-bgi.cyou/BG</text>
+  <text x="140" y="222" fill="#8b949e" font-size="12" text-anchor="middle">to victim's phone</text>
+
+  <!-- Phishing site -->
+  <rect x="320" y="100" width="240" height="170" rx="10" fill="#161b22" stroke="#f85149"/>
+  <text x="440" y="128" fill="#f85149" font-size="15" font-weight="700" text-anchor="middle">2. Fake МВР portal</text>
+  <text x="440" y="152" fill="#c9d1d9" font-size="12" text-anchor="middle">Vue SPA · cloaked (mobile only)</text>
+  <text x="440" y="172" fill="#c9d1d9" font-size="12" text-anchor="middle">harvests: card, CVV, PIN,</text>
+  <text x="440" y="190" fill="#c9d1d9" font-size="12" text-anchor="middle">OTP, EGN, phone</text>
+  <text x="440" y="216" fill="#8b949e" font-size="11.5" text-anchor="middle">43.130.152.152 · Tencent SG</text>
+  <text x="440" y="234" fill="#8b949e" font-size="11.5" text-anchor="middle">Caddy → GoFrame backend</text>
+  <text x="440" y="256" fill="#3fb950" font-size="11.5" text-anchor="middle">POST /card /pay · wss /ws?token=</text>
+
+  <!-- Operator -->
+  <rect x="640" y="100" width="240" height="170" rx="10" fill="#161b22" stroke="#d29922"/>
+  <text x="760" y="128" fill="#d29922" font-size="15" font-weight="700" text-anchor="middle">3. Human operator</text>
+  <text x="760" y="152" fill="#c9d1d9" font-size="12" text-anchor="middle">"300+ front-desk staff"</text>
+  <text x="760" y="172" fill="#c9d1d9" font-size="12" text-anchor="middle">watches live panel,</text>
+  <text x="760" y="190" fill="#c9d1d9" font-size="12" text-anchor="middle">validates card + OTP</text>
+  <text x="760" y="214" fill="#8b949e" font-size="11.5" text-anchor="middle">events: app-valid,</text>
+  <text x="760" y="232" fill="#8b949e" font-size="11.5" text-anchor="middle">otp-valid, custom-otp-valid</text>
+  <text x="760" y="256" fill="#8b949e" font-size="11.5" text-anchor="middle">source IP = server logs only</text>
+
+  <!-- Bank -->
+  <rect x="930" y="120" width="140" height="120" rx="10" fill="#161b22" stroke="#30363d"/>
+  <text x="1000" y="150" fill="#58a6ff" font-size="15" font-weight="700" text-anchor="middle">4. Real bank</text>
+  <text x="1000" y="178" fill="#c9d1d9" font-size="12" text-anchor="middle">3-D Secure</text>
+  <text x="1000" y="198" fill="#c9d1d9" font-size="12" text-anchor="middle">sends OTP to</text>
+  <text x="1000" y="218" fill="#c9d1d9" font-size="12" text-anchor="middle">victim → relayed</text>
+
+  <!-- arrows -->
+  <defs>
+    <marker id="a" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#8b949e"/></marker>
+    <marker id="g" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#3fb950"/></marker>
+  </defs>
+  <line x1="240" y1="180" x2="316" y2="180" stroke="#8b949e" stroke-width="2" marker-end="url(#a)"/>
+  <line x1="560" y1="170" x2="636" y2="170" stroke="#3fb950" stroke-width="2" marker-end="url(#g)"/>
+  <line x1="636" y1="205" x2="560" y2="205" stroke="#3fb950" stroke-width="2" marker-end="url(#g)"/>
+  <line x1="880" y1="185" x2="926" y2="185" stroke="#8b949e" stroke-width="2" marker-end="url(#a)"/>
+  <text x="598" y="160" fill="#3fb950" font-size="11" text-anchor="middle">data</text>
+  <text x="598" y="225" fill="#3fb950" font-size="11" text-anchor="middle">drive UI</text>
+
+  <!-- cluster footer -->
+  <rect x="40" y="320" width="1030" height="200" rx="10" fill="#0b0f14" stroke="#30363d"/>
+  <text x="60" y="350" fill="#e6edf3" font-size="15" font-weight="700">Same host = global operation (77+ sibling lures on 43.130.152.152)</text>
+  <text x="60" y="382" fill="#8b949e" font-size="13">🇫🇷 transports*gouv.icu (ANTAI fines)   🇸🇪 transportstyrelsen-msm.icu   🇲🇹 maltaposti.icu   🇱🇻 pasts-dpd.icu</text>
+  <text x="60" y="410" fill="#8b949e" font-size="13">🇭🇰 hketoll-gov.icu   🇦🇷 andreani*.icu   🇨🇱 chileatiende*.icu   🇬🇪 tbcpayioge.icu   🇭🇷 eprekrsajinius.cyou</text>
+  <text x="60" y="446" fill="#c9d1d9" font-size="13">Registrar: Gname (CN registrant) · DNS: Tencent DNSPod · TLS: Let's Encrypt · Registered &amp; weaponised same day</text>
+  <text x="60" y="474" fill="#3fb950" font-size="13">Attribution (high confidence): Smishing Triad / "Lighthouse" phishing-as-a-service</text>
+  <text x="60" y="502" fill="#8b949e" font-size="12">Investigation: passive OSINT + non-intrusive retrieval only — no exploitation of attacker infrastructure.</text>
+</svg>

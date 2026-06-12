@@ -1,0 +1,1808 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CPSA Quick Reference Notes</title>
+<style>
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --surface2: #222633;
+    --border: #2e3345;
+    --text: #e1e4ed;
+    --text-dim: #8b91a5;
+    --accent: #6c8cff;
+    --accent2: #a78bfa;
+    --green: #4ade80;
+    --orange: #fb923c;
+    --red: #f87171;
+    --cyan: #22d3ee;
+    --yellow: #facc15;
+    --pink: #f472b6;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'SF Mono', 'Cascadia Code', 'Fira Code', 'JetBrains Mono', 'Consolas', monospace;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 13.5px;
+    line-height: 1.65;
+    padding: 0;
+  }
+
+  /* ── NAV SIDEBAR ── */
+  .nav-toggle { display: none; }
+  .nav-label {
+    display: none;
+    position: fixed; top: 12px; left: 12px; z-index: 1001;
+    background: var(--accent); color: #fff; border: none; border-radius: 8px;
+    width: 40px; height: 40px; font-size: 20px; cursor: pointer;
+    align-items: center; justify-content: center;
+  }
+
+  nav {
+    position: fixed; top: 0; left: 0; bottom: 0; width: 260px;
+    background: var(--surface); border-right: 1px solid var(--border);
+    overflow-y: auto; z-index: 1000; padding: 20px 0;
+  }
+  nav h2 {
+    font-size: 11px; text-transform: uppercase; letter-spacing: 2px;
+    color: var(--accent); padding: 0 20px; margin-bottom: 12px;
+  }
+  nav a {
+    display: block; padding: 7px 20px; color: var(--text-dim);
+    text-decoration: none; font-size: 12px; transition: all 0.15s;
+    border-left: 3px solid transparent;
+  }
+  nav a:hover, nav a.active {
+    color: var(--accent); background: rgba(108,140,255,0.06);
+    border-left-color: var(--accent);
+  }
+  nav a .num { color: var(--text-dim); margin-right: 6px; font-size: 10px; }
+
+  /* ── MAIN ── */
+  main {
+    margin-left: 260px; padding: 30px 40px 80px;
+    max-width: 1000px;
+  }
+
+  h1 {
+    font-size: 28px; font-weight: 700;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text; margin-bottom: 6px;
+  }
+  .subtitle { color: var(--text-dim); font-size: 13px; margin-bottom: 36px; }
+
+  /* ── SECTIONS ── */
+  .section {
+    margin-bottom: 40px; padding: 24px 28px;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px;
+  }
+  .section h2 {
+    font-size: 16px; color: var(--accent); margin-bottom: 18px;
+    padding-bottom: 10px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .section h2 .icon { font-size: 18px; }
+  .section h3 {
+    font-size: 13px; color: var(--accent2); margin: 20px 0 10px;
+    text-transform: uppercase; letter-spacing: 1px;
+  }
+
+  /* ── TABLES ── */
+  table {
+    width: 100%; border-collapse: collapse; margin: 12px 0;
+    font-size: 13px;
+  }
+  thead th {
+    text-align: left; padding: 8px 12px;
+    background: var(--surface2); color: var(--accent);
+    font-size: 11px; text-transform: uppercase; letter-spacing: 1px;
+    border-bottom: 2px solid var(--border);
+  }
+  tbody td {
+    padding: 7px 12px; border-bottom: 1px solid var(--border);
+  }
+  tbody tr:hover { background: rgba(108,140,255,0.04); }
+  tbody tr:last-child td { border-bottom: none; }
+
+  /* Port number column styling */
+  .port-num { color: var(--cyan); font-weight: 600; }
+  .hash-prefix { color: var(--orange); font-weight: 600; }
+  .code-num { color: var(--yellow); font-weight: 600; }
+
+  /* ── KEY-VALUE NOTES ── */
+  .notes { list-style: none; }
+  .notes li {
+    padding: 5px 0; position: relative; padding-left: 18px;
+  }
+  .notes li::before {
+    content: '›'; position: absolute; left: 0; color: var(--accent);
+    font-weight: bold; font-size: 15px;
+  }
+
+  code, .mono {
+    font-family: inherit;
+    background: var(--surface2); padding: 2px 6px; border-radius: 4px;
+    color: var(--cyan); font-size: 12.5px;
+  }
+
+  .tag {
+    display: inline-block; padding: 2px 8px; border-radius: 4px;
+    font-size: 11px; font-weight: 600;
+  }
+  .tag-green  { background: rgba(74,222,128,0.12); color: var(--green); }
+  .tag-red    { background: rgba(248,113,113,0.12); color: var(--red); }
+  .tag-orange { background: rgba(251,146,60,0.12);  color: var(--orange); }
+  .tag-cyan   { background: rgba(34,211,238,0.12);  color: var(--cyan); }
+  .tag-pink   { background: rgba(244,114,182,0.12); color: var(--pink); }
+  .tag-yellow { background: rgba(250,204,21,0.12);  color: var(--yellow); }
+
+  strong { color: #fff; }
+  em { color: var(--text-dim); font-style: normal; }
+
+  .two-col {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+  }
+  .two-col .card {
+    background: var(--surface2); border-radius: 8px; padding: 14px 16px;
+    border: 1px solid var(--border);
+  }
+  .card-title {
+    font-size: 11px; text-transform: uppercase; letter-spacing: 1px;
+    color: var(--accent2); margin-bottom: 8px;
+  }
+
+  .highlight-box {
+    background: rgba(108,140,255,0.06); border: 1px solid rgba(108,140,255,0.15);
+    border-radius: 8px; padding: 12px 16px; margin: 12px 0;
+  }
+
+  .divider { border: none; border-top: 1px solid var(--border); margin: 20px 0; }
+
+  /* ── LEARN CHECKBOXES ── */
+  .learn-check {
+    display: inline-block; width: 14px; height: 14px;
+    border: 1.5px solid var(--text-dim); border-radius: 4px;
+    margin-right: 8px; cursor: pointer; vertical-align: middle;
+    flex-shrink: 0; transition: all 0.15s; position: relative;
+    background: transparent;
+  }
+  .learn-check:hover { border-color: var(--green); transform: scale(1.15); }
+  tr.learned .learn-check,
+  li.learned .learn-check {
+    background: var(--green); border-color: var(--green);
+  }
+  tr.learned .learn-check::after,
+  li.learned .learn-check::after {
+    content: '✓'; position: absolute; top: -4px; left: 1px;
+    color: #0f1117; font-size: 13px; font-weight: 700; line-height: 1;
+  }
+  tr.learned, li.learned {
+    opacity: 0.35;
+    text-decoration: line-through;
+    text-decoration-color: var(--green);
+  }
+  body.hide-learned tr.learned,
+  body.hide-learned li.learned { display: none !important; }
+
+  .learn-controls {
+    display: flex; gap: 8px; margin: 12px 0 0; flex-wrap: wrap;
+  }
+  .learn-controls button {
+    background: var(--surface2); color: var(--text);
+    border: 1px solid var(--border); border-radius: 8px;
+    padding: 8px 14px; cursor: pointer;
+    font-family: inherit; font-size: 12px; transition: all 0.15s;
+  }
+  .learn-controls button:hover { border-color: var(--accent); color: var(--accent); }
+  .learn-controls button.active {
+    background: var(--accent); color: #fff; border-color: var(--accent);
+  }
+  @media print {
+    .learn-check, .learn-controls { display: none !important; }
+    tr.learned, li.learned { opacity: 1; text-decoration: none; }
+  }
+
+  /* ── PORT GROUP HEADERS ── */
+  tr.port-group td {
+    background: linear-gradient(90deg, rgba(108,140,255,0.18), rgba(167,139,250,0.08));
+    color: var(--accent2);
+    font-weight: 700; font-size: 11px;
+    text-transform: uppercase; letter-spacing: 2px;
+    padding: 10px 14px;
+    border-top: 2px solid var(--accent2);
+    border-bottom: 2px solid var(--accent2);
+  }
+  tr.port-group td .tip { margin-left: 10px; font-size: 14px; }
+
+  /* ── MNEMONIC TOOLTIPS ── */
+  .tip {
+    position: relative; display: inline-block; cursor: pointer;
+    margin-left: 8px; font-size: 13px; user-select: none;
+    background: linear-gradient(135deg, var(--yellow), var(--orange));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+    transition: transform 0.15s;
+  }
+  .tip:hover { transform: scale(1.2); }
+  .tip-popup {
+    display: none; position: absolute;
+    bottom: calc(100% + 10px); left: 50%; transform: translateX(-50%);
+    background: var(--surface2); border: 1px solid var(--accent2);
+    border-radius: 10px; padding: 12px 14px; width: 320px;
+    z-index: 500; font-size: 12.5px; line-height: 1.55;
+    color: var(--text); box-shadow: 0 10px 32px rgba(0,0,0,0.5);
+    text-transform: none; letter-spacing: normal; font-weight: normal;
+    text-align: left; white-space: normal;
+    -webkit-text-fill-color: var(--text); background-clip: border-box;
+    -webkit-background-clip: border-box;
+  }
+  .tip-popup::after {
+    content: ''; position: absolute; top: 100%; left: 50%;
+    margin-left: -7px; border: 7px solid transparent;
+    border-top-color: var(--accent2);
+  }
+  .tip.active .tip-popup, .tip:hover .tip-popup { display: block; }
+  .tip-popup strong { color: var(--accent); }
+  .tip-popup code {
+    background: var(--bg); padding: 1px 5px; border-radius: 3px;
+    color: var(--cyan); font-size: 11.5px;
+  }
+  .tip-popup .key { color: var(--yellow); font-weight: 600; }
+  @media (max-width: 800px) {
+    .tip-popup { width: 260px; }
+  }
+
+  /* ── SEARCH ── */
+  .search-wrap {
+    position: sticky; top: 0; z-index: 100;
+    background: var(--bg); padding: 12px 0 16px; margin-bottom: 10px;
+  }
+  #search {
+    width: 100%; padding: 10px 16px; border-radius: 8px;
+    border: 1px solid var(--border); background: var(--surface);
+    color: var(--text); font-family: inherit; font-size: 13px;
+    outline: none; transition: border-color 0.2s;
+  }
+  #search:focus { border-color: var(--accent); }
+  #search::placeholder { color: var(--text-dim); }
+
+  /* ── SCROLL TO TOP ── */
+  .to-top {
+    position: fixed; bottom: 24px; right: 24px;
+    background: var(--accent); color: #fff; border: none;
+    width: 40px; height: 40px; border-radius: 50%;
+    font-size: 18px; cursor: pointer; opacity: 0;
+    transition: opacity 0.3s; z-index: 999;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .to-top.show { opacity: 1; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 800px) {
+    nav { transform: translateX(-100%); transition: transform 0.3s; width: 280px; }
+    .nav-toggle:checked ~ nav { transform: translateX(0); }
+    .nav-toggle:checked ~ .nav-overlay { display: block; }
+    .nav-label { display: flex; }
+    .nav-overlay {
+      display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 999;
+    }
+    main { margin-left: 0; padding: 70px 16px 60px; }
+    .two-col { grid-template-columns: 1fr; }
+  }
+
+  @media print {
+    nav, .search-wrap, .to-top, .nav-label { display: none !important; }
+    main { margin-left: 0; padding: 10px; }
+    body { background: #fff; color: #111; font-size: 11px; }
+    .section { border: 1px solid #ccc; break-inside: avoid; page-break-inside: avoid; }
+    thead th { background: #eee; color: #333; }
+    code { background: #eee; color: #333; }
+    h1 { background: none; -webkit-text-fill-color: #111; color: #111; }
+  }
+</style>
+</head>
+<body>
+
+<input type="checkbox" id="nav-toggle" class="nav-toggle">
+<label for="nav-toggle" class="nav-label">☰</label>
+<div class="nav-overlay" onclick="document.getElementById('nav-toggle').checked=false"></div>
+
+<nav>
+  <h2>CPSA Notes</h2>
+  <a href="#hashes"><span class="num">01</span> Hash Prefixes</a>
+  <a href="#digests"><span class="num">02</span> Hash & Digest Sizes</a>
+  <a href="#ciphers"><span class="num">03</span> Encryption Ciphers</a>
+  <a href="#sip"><span class="num">04</span> SIP Protocol</a>
+  <a href="#http"><span class="num">05</span> HTTP Codes & Methods</a>
+  <a href="#ports"><span class="num">06</span> Ports (sorted)</a>
+  <a href="#ip"><span class="num">07</span> IP & Subnets</a>
+  <a href="#rid"><span class="num">08</span> Windows RIDs & SIDs</a>
+  <a href="#wifi"><span class="num">09</span> WiFi / 802.11</a>
+  <a href="#windows"><span class="num">10</span> Windows Essentials</a>
+  <a href="#unix"><span class="num">11</span> Unix/Linux Essentials</a>
+  <a href="#nmap"><span class="num">12</span> Nmap Cheat Sheet</a>
+  <a href="#osi"><span class="num">13</span> OSI Model</a>
+  <a href="#abbr"><span class="num">14</span> Abbreviations</a>
+  <a href="#misc"><span class="num">15</span> Misc High-Yield</a>
+  <a href="#pentest"><span class="num">16</span> Pentesting & Law</a>
+  <a href="#auth"><span class="num">17</span> Internet & Legal Authorities</a>
+  <a href="#db"><span class="num">18</span> Database Defaults</a>
+  <a href="#mac"><span class="num">19</span> MAC Addresses</a>
+  <a href="#netmisc"><span class="num">20</span> Network Misc</a>
+  <a href="#tcp"><span class="num">21</span> TCP Handshake</a>
+  <a href="#web"><span class="num">22</span> Web & Application</a>
+</nav>
+
+<main>
+  <h1>CPSA Quick Reference Notes</h1>
+  <p class="subtitle">Extracted from 803 quiz questions + 3 Udemy practice tests &mdash; all facts in one place</p>
+
+  <div class="search-wrap">
+    <input type="text" id="search" placeholder="Search notes... (e.g. 'port 443', 'DES', 'RID')">
+    <div class="learn-controls">
+      <button id="hide-learned-btn" type="button">🎯 Hide Learned (0)</button>
+      <button id="reset-learned-btn" type="button">↺ Reset Learned</button>
+      <span style="color:var(--text-dim); font-size:11px; align-self:center; margin-left:6px;">
+        Click the ☐ on any row to mark it learned
+      </span>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ 1. HASH PREFIXES ═══ -->
+  <div class="section" id="hashes">
+    <h2><span class="icon">🔑</span> 1. Hash Prefixes (sorted)</h2>
+    <table>
+      <thead><tr><th>Prefix</th><th>Algorithm</th></tr></thead>
+      <tbody>
+        <tr><td class="hash-prefix">$1$</td><td>MD5</td></tr>
+        <tr><td class="hash-prefix">$2a$</td><td>Blowfish</td></tr>
+        <tr><td class="hash-prefix">$5$</td><td>SHA-256</td></tr>
+        <tr><td class="hash-prefix">$6$</td><td>SHA-512</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ 2. DIGEST SIZES ═══ -->
+  <div class="section" id="digests">
+    <h2><span class="icon">📏</span> 2. Hash & Digest Sizes</h2>
+    <table>
+      <thead><tr><th>Algorithm</th><th>Output Length</th></tr></thead>
+      <tbody>
+        <tr><td>MD5</td><td>128 bits / 16 bytes / <strong>32 hex chars</strong></td></tr>
+        <tr><td>SHA-1</td><td>160 bits</td></tr>
+        <tr><td>SHA-2</td><td>224, 256, 384, or 512 bits</td></tr>
+        <tr><td>LM Hash</td><td>Max 14 chars input, <span class="tag tag-red">NOT salted</span></td></tr>
+        <tr><td>NTLM Hash</td><td><span class="tag tag-red">NOT salted</span></td></tr>
+        <tr><td>MD5(null)</td><td><code>d41d8cd98f00b204e9800998ecf8427e</code></td></tr>
+      </tbody>
+    </table>
+    <ul class="notes">
+      <li><strong>LM Hash:</strong> if password &lt; 8 chars &rarr; rightmost portion is always the same value</li>
+      <li><strong>LM Hash</strong> splits passwords into two <strong>7-character chunks</strong>; truncates &gt;14 chars</li>
+      <li><strong>LM Hash</strong> susceptible to <strong>rainbow table attacks</strong></li>
+      <li><strong>LM + NTLM:</strong> Neither are salted</li>
+      <li><strong>Windows 2003 default:</strong> stores both LM Hash and NTLM Hash</li>
+      <li><strong>Windows XP</strong> commonly uses LM hash for storage</li>
+      <li><strong>Collisions</strong> = two different inputs produce the same hash</li>
+    </ul>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ 3. CIPHERS ═══ -->
+  <div class="section" id="ciphers">
+    <h2><span class="icon">🔐</span> 3. Encryption Ciphers<span class="tip" tabindex="0">💡<span class="tip-popup">
+      <strong>Mnemonic — key/block sizes</strong><br>
+      <span class="key">DES</span> = <code>56</code>-bit key, <code>64</code>-bit block — "<em>5 before 6, 6 before 4</em>" (D=4th letter → 64 block).<br>
+      <span class="key">3DES</span> = 3×DES → key <code>168</code>, block stays <code>64</code>.<br>
+      <span class="key">AES</span> = block <strong>always 128</strong>; keys go <code>128 → 192 → 256</code> (+64 each).<br>
+      <span class="key">RC4</span> = <strong>R</strong>ivest <strong>C</strong>ipher <strong>4</strong> = stream (R for "river — flows bit by bit").<br>
+      <span class="key">RSA</span> = primes + asymmetric (named after authors).
+    </span></span></h2>
+    <table>
+      <thead><tr><th>Cipher</th><th>Key Size</th><th>Block Size</th><th>Type</th></tr></thead>
+      <tbody>
+        <tr><td>DES<span class="tip" tabindex="0">💡<span class="tip-popup">
+          <strong>DES — Data Encryption Standard</strong><br>
+          <span class="key">56</span>-bit key, <span class="key">64</span>-bit block. "<em>5 before 6, 6 before 4</em>".<br>
+          Born 1977, broken by brute force &mdash; the <strong>weakest</strong> standard cipher you'll see on the exam.<br>
+          Worst variant: <strong>DES-ECB</strong> (no chaining → patterns leak).
+        </span></span></td><td>56 bits</td><td>64 bits</td><td><span class="tag tag-cyan">Symmetric block</span></td></tr>
+        <tr><td>3DES<span class="tip" tabindex="0">💡<span class="tip-popup">
+          <strong>3DES — Triple DES</strong><br>
+          Apply DES <span class="key">three</span> times → effective key <code>112</code> (2-key) or <code>168</code> (3-key).<br>
+          Block stays <code>64</code> (it's still DES underneath).<br>
+          Replaced by <strong>AES</strong> because it's slow.
+        </span></span></td><td>112/168 bits</td><td>64 bits</td><td><span class="tag tag-cyan">Symmetric block</span> (DES &times;3)</td></tr>
+        <tr><td>AES (Rijndael)<span class="tip" tabindex="0">💡<span class="tip-popup">
+          <strong>AES — Advanced Encryption Standard</strong><br>
+          Block <strong>always 128</strong>. Keys: <code>128 → 192 → 256</code> (+64 each step).<br>
+          Original name <strong>Rijndael</strong> (Dutch authors) &mdash; selected by NIST to replace 3DES.<br>
+          Common modes: <strong>CBC</strong> (TLS), <strong>GCM</strong> (auth+enc, used in TLS 1.3, WPA3-GCMP).
+        </span></span></td><td>128, 192, 256</td><td>128 bits</td><td><span class="tag tag-cyan">Symmetric block</span></td></tr>
+        <tr><td>RC4<span class="tip" tabindex="0">💡<span class="tip-popup">
+          <strong>RC4 — Rivest Cipher 4</strong><br>
+          <strong>Stream</strong> cipher (no block size — encrypts bit-by-bit, "<em>flows like a river</em>").<br>
+          Variable key <code>40&ndash;2048</code> bits.<br>
+          Used in old <strong>WEP</strong> and early <strong>SSL/TLS</strong> &mdash; now considered <span class="tag tag-red">broken</span>.
+        </span></span></td><td>40&ndash;2048 bits</td><td>Stream</td><td><span class="tag tag-green">Symmetric stream</span></td></tr>
+        <tr><td>RSA<span class="tip" tabindex="0">💡<span class="tip-popup">
+          <strong>RSA — Rivest, Shamir, Adleman</strong><br>
+          <strong>Asymmetric</strong>: public/private keypair built on the hardness of <em>factoring large primes</em>.<br>
+          Min cert key size on exam: <code>2048</code> bits.<br>
+          Uses: key exchange, digital signatures, <strong>PGP</strong>, <strong>X.509</strong> certs.
+        </span></span></td><td>2048+ bits</td><td>&mdash;</td><td><span class="tag tag-pink">Asymmetric</span></td></tr>
+        <tr><td>SYSKEY<span class="tip" tabindex="0">💡<span class="tip-popup">
+          <strong>SYSKEY — Windows SAM protection</strong><br>
+          <code>128</code>-bit symmetric key that encrypts the local <strong>SAM</strong> hive (where NTLM hashes live).<br>
+          Mode 1 (default) stores it in registry &mdash; offline attacks can extract it with the SAM &amp; SYSTEM hives (e.g. <code>secretsdump</code>).
+        </span></span></td><td>128 bits</td><td>&mdash;</td><td><span class="tag tag-cyan">Symmetric</span></td></tr>
+      </tbody>
+    </table>
+    <ul class="notes">
+      <li><strong>DES</strong> = least secure / weakest &bull; <strong>DES ECB</strong> = weakest form of DES</li>
+      <li><strong>ECB mode</strong> = discloses structure of clear-text<span class="tip" tabindex="0">💡<span class="tip-popup">
+        <strong>ECB — Electronic CodeBook</strong><br>
+        Each block encrypted <em>independently</em> → identical plaintext blocks produce identical ciphertext blocks.<br>
+        Famous "<strong>ECB penguin</strong>" image leak. Never use in real systems.
+      </span></span></li>
+      <li><strong>CFB mode</strong> = uses block cipher as stream cipher<span class="tip" tabindex="0">💡<span class="tip-popup">
+        <strong>CFB — Cipher FeedBack</strong><br>
+        Turns a block cipher into a <strong>stream</strong> cipher by XOR-ing keystream from previous ciphertext.<br>
+        "<em>Feedback = output of last step becomes input of next</em>".
+      </span></span></li>
+      <li><strong>CBC mode</strong> = vulnerable to padding oracle attacks; IV is first block of ciphertext<span class="tip" tabindex="0">💡<span class="tip-popup">
+        <strong>CBC — Cipher Block Chaining</strong><br>
+        Each block XOR'd with previous ciphertext → needs an <strong>IV</strong> (first "previous block").<br>
+        Weakness: <strong>padding oracle</strong> (POODLE, Lucky13) when server leaks pad-validity.
+      </span></span></li>
+      <li><strong>GCM</strong> (Galois/Counter Mode) = commonly used for AES on UDP streaming<span class="tip" tabindex="0">💡<span class="tip-popup">
+        <strong>GCM — Galois/Counter Mode</strong><br>
+        Combines <strong>CTR</strong> mode (encryption) with <strong>Galois</strong> field math (auth tag) → <em>AEAD</em>.<br>
+        Authenticated encryption: gives both confidentiality AND integrity in one pass.<br>
+        Default in TLS 1.3, WPA3 (GCMP), and IPsec for UDP/streaming.
+      </span></span></li>
+      <li><strong>Rijndael</strong> = replacement for 3DES (became AES)</li>
+      <li><strong>Diffie-Hellman</strong> = key exchange, vulnerable to MITM</li>
+      <li><strong>RSA</strong> = asymmetric, uses prime numbers</li>
+      <li><strong>Min SSL cert key size</strong> = 2048 bits</li>
+      <li><strong>Cisco Type 7</strong> = weak, reversible (Vigen&egrave;re algorithm)</li>
+      <li><strong>SHA-256</strong> = cannot be used for reversible encryption</li>
+      <li><strong>S/MIME</strong> = encrypt email &bull; <strong>PGP</strong> = secure email (RSA, keyring)</li>
+      <li><strong>SSHv2</strong> = confidentiality + integrity, NOT vulnerable to MITM</li>
+      <li><strong>RADIUS</strong> = only encrypts password &bull; <strong>TACACS</strong> = encrypts entire packet</li>
+      <li><strong>DTLS</strong> = Datagram Transport Layer Security (for UDP)</li>
+      <li><strong>Block cipher</strong> = encrypts blocks &bull; <strong>Stream cipher</strong> = encrypts 1 bit at a time</li>
+      <li><strong>TLS downgrade attacks</strong> commonly target TLS 1.0</li>
+    </ul>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ 4. SIP ═══ -->
+  <div class="section" id="sip">
+    <h2><span class="icon">📞</span> 4. SIP (Session Initiation Protocol)</h2>
+    <div class="two-col">
+      <div class="card">
+        <div class="card-title">SIP Ports</div>
+        <strong class="port-num">5060</strong> TCP/UDP &mdash; unencrypted<br>
+        <strong class="port-num">5061</strong> TCP/UDP &mdash; encrypted (TLS)
+      </div>
+      <div class="card">
+        <div class="card-title">6 Base Methods</div>
+        <code>REGISTER, INVITE, ACK, CANCEL, BYE, OPTIONS</code><br>
+        <em>Sequence: REGISTER &rarr; INVITE &rarr; ACK &rarr; BYE</em>
+      </div>
+    </div>
+    <div class="highlight-box">
+      <strong>NOT valid:</strong> <code>HANGUP</code>, <code>CLOSE</code> &nbsp;&bull;&nbsp;
+      <strong>Stealthiest:</strong> <code>OPTIONS</code> &nbsp;&bull;&nbsp;
+      <strong>SIP</strong> = setup/teardown &nbsp;&bull;&nbsp; <strong>RTP</strong> = audio data
+    </div>
+    <h3>SIP Response Codes<span class="tip" tabindex="0">💡<span class="tip-popup">
+      <strong>Mnemonic — SIP mirrors HTTP families</strong><br>
+      <span class="key">1xx</span> = provisional/in-progress &mdash; <code>100 Trying</code>, <code>180 Ringing</code>, <code>181 Forwarded</code><br>
+      <span class="key">2xx</span> = success &mdash; <code>200 OK</code><br>
+      <span class="key">3xx</span> = redirect &mdash; <code>302 Moved temp</code><br>
+      <span class="key">4xx</span> = client error &mdash; <code>404 No user</code><br>
+      Trick: <em>1<strong>8</strong>0 = phone goes ROUND</em> (180°) = Ringing. <em>1<strong>8</strong>1 = one extra step</em> = Forwarded.
+    </span></span></h3>
+    <table>
+      <thead><tr><th>Code</th><th>Meaning</th></tr></thead>
+      <tbody>
+        <tr><td class="code-num">100</td><td>Trying (server trying to reach callee)</td></tr>
+        <tr><td class="code-num">180</td><td>Ringing</td></tr>
+        <tr><td class="code-num">181</td><td>Call is being forwarded</td></tr>
+        <tr><td class="code-num">200</td><td>OK / Request successful</td></tr>
+        <tr><td class="code-num">302</td><td>User temporarily moved</td></tr>
+        <tr><td class="code-num">404</td><td>User does not exist</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ 5. HTTP ═══ -->
+  <div class="section" id="http">
+    <h2><span class="icon">🌐</span> 5. HTTP Status Codes & Methods<span class="tip" tabindex="0">💡<span class="tip-popup">
+      <strong>Mnemonic — HTTP families &amp; the tricky codes</strong><br>
+      <span class="key">1xx</span> info &bull; <span class="key">2xx</span> success &bull; <span class="key">3xx</span> redirect &bull; <span class="key">4xx</span> client &bull; <span class="key">5xx</span> server<br>
+      <code>301</code> "<strong>One</strong> way" = permanent &nbsp;|&nbsp; <code>302</code> "<strong>Two</strong>-step (round trip)" = temp<br>
+      <code>307</code> = temp + <em>keep the method</em> (7 looks like an arrow)<br>
+      <code>401</code> auth needed &nbsp;|&nbsp; <code>407</code> = 401 + 6 for "<strong>P</strong>roxy" (P = 16th letter, close enough)<br>
+      <code>410</code> "<em>10-finger wave goodbye</em>" = Gone forever<br>
+      <code>413</code> "<em>1-3 = entry too 3hree</em>" = Entity Too Large<br>
+      <code>404</code> = the classic Not Found
+    </span></span></h2>
+    <table>
+      <thead><tr><th>Code</th><th>Meaning</th></tr></thead>
+      <tbody>
+        <tr><td class="code-num">301</td><td>Moved Permanently</td></tr>
+        <tr><td class="code-num">302</td><td>Found</td></tr>
+        <tr><td class="code-num">307</td><td>Address Changed Temporarily</td></tr>
+        <tr><td class="code-num">404</td><td>Not Found</td></tr>
+        <tr><td class="code-num">407</td><td>Proxy Authentication Required</td></tr>
+        <tr><td class="code-num">410</td><td>Gone</td></tr>
+        <tr><td class="code-num">413</td><td>Request Entity Too Large</td></tr>
+      </tbody>
+    </table>
+    <h3>HTTP Methods</h3>
+    <ul class="notes">
+      <li><strong>Valid:</strong> <code>GET, POST, PUT, DELETE, HEAD, OPTIONS, TRACE, PATCH</code></li>
+      <li><strong>Disable on production:</strong> <code>PUT</code>, <code>TRACE</code></li>
+      <li><strong>NOT valid:</strong> <code>PROPGET</code>, <code>PROPERFIND</code></li>
+      <li><code>OPTIONS</code> = displays allowed HTTP verbs on server</li>
+      <li><strong>HTTP Request Smuggling</strong> &rarr; exploits <strong>Content-Length</strong></li>
+    </ul>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ 6. PORTS ═══ -->
+  <div class="section" id="ports">
+    <h2><span class="icon">🔌</span> 6. Ports (sorted by number)</h2>
+    <table>
+      <thead><tr><th style="width:100px">Port</th><th>Service</th></tr></thead>
+      <tbody>
+        <tr class="port-group"><td colspan="2">📁 File Transfer & Shell<span class="tip" tabindex="0">💡<span class="tip-popup">
+          <strong>Mnemonic — the 20s are file/shell</strong><br>
+          <code>20/21</code> = FTP (data/control, the only "double port" pair in classic services).<br>
+          <code>22</code> = SSH (secure replacement for telnet).<br>
+          <code>23</code> = Telnet (cleartext, never use).<br>
+          <code>69</code> = TFTP (UDP, no auth — "<em>nice</em>" file transfer).<br>
+          <code>989/990</code> = FTPS (FTP + TLS).
+        </span></span></td></tr>
+        <tr><td class="port-num">20</td><td>FTP Data</td></tr>
+        <tr><td class="port-num">21</td><td>FTP</td></tr>
+        <tr><td class="port-num">22</td><td>SSH</td></tr>
+        <tr><td class="port-num">23</td><td>Telnet</td></tr>
+        <tr><td class="port-num">69</td><td>TFTP (UDP)</td></tr>
+        <tr><td class="port-num">989</td><td>FTPS (FTP + TLS)</td></tr>
+
+        <tr class="port-group"><td colspan="2">✉️ Mail<span class="tip" tabindex="0">💡<span class="tip-popup">
+          <strong>Mnemonic — Mail trio + their TLS twins</strong><br>
+          <code>25</code> = SMTP (send) &bull; <code>587</code> = SMTP submission (auth)<br>
+          <code>110</code> = POP3 (download) &rarr; <code>995</code> = POP3S<br>
+          <code>143</code> = IMAP (sync) &rarr; <code>993</code> = IMAPS<br>
+          The high TLS ports (<code>993</code>/<code>995</code>) sit just below 1000 — easy to spot.
+        </span></span></td></tr>
+        <tr><td class="port-num">25</td><td>SMTP</td></tr>
+        <tr><td class="port-num">110</td><td>POP3 (TCP)</td></tr>
+        <tr><td class="port-num">143</td><td>IMAP4</td></tr>
+        <tr><td class="port-num">587</td><td>SMTP (submission)</td></tr>
+        <tr><td class="port-num">993</td><td>IMAPS</td></tr>
+        <tr><td class="port-num">995</td><td>POP3S</td></tr>
+
+        <tr class="port-group"><td colspan="2">🌐 Web & Proxy<span class="tip" tabindex="0">💡<span class="tip-popup">
+          <strong>Mnemonic — Web ports</strong><br>
+          <code>80</code> = HTTP &bull; <code>443</code> = HTTPS ("<em>4-for-3, secure</em>").<br>
+          <code>8080</code> = HTTP alt (dev/proxies).<br>
+          <code>3128</code> = Squid proxy (the cephalopod).<br>
+          <code>593</code> = HTTP RPC (RPC-over-HTTP).
+        </span></span></td></tr>
+        <tr><td class="port-num">80</td><td>HTTP</td></tr>
+        <tr><td class="port-num">443</td><td>HTTPS</td></tr>
+        <tr><td class="port-num">593</td><td>HTTP RPC</td></tr>
+        <tr><td class="port-num">3128</td><td>Squid Proxy</td></tr>
+
+        <tr class="port-group"><td colspan="2">🔎 Name & Discovery<span class="tip" tabindex="0">💡<span class="tip-popup">
+          <strong>Mnemonic — DNS/DHCP/TFTP cluster</strong><br>
+          <code>53</code> = DNS (UDP queries, TCP for zone transfer/AXFR).<br>
+          <code>67/68</code> = DHCP (<strong>S</strong>erver/<strong>C</strong>lient, both UDP, server is lower).<br>
+          <code>69</code> = TFTP — DHCP often hands a TFTP boot image, so 67→68→<strong>69</strong> sit together.<br>
+          <code>43</code> = WHOIS &bull; <code>4321</code> = rwhois (repeat of 4-3-2-1).<br>
+          <code>79</code> = Finger &bull; <code>113</code> = Ident.
+        </span></span></td></tr>
+        <tr><td class="port-num">43</td><td>WHOIS (TCP)</td></tr>
+        <tr><td class="port-num">53</td><td>DNS &mdash; UDP lookup / TCP zone transfer</td></tr>
+        <tr><td class="port-num">67</td><td>DHCP Server (UDP)</td></tr>
+        <tr><td class="port-num">68</td><td>DHCP Client (UDP)</td></tr>
+        <tr><td class="port-num">79</td><td>Finger (TCP)</td></tr>
+        <tr><td class="port-num">113</td><td>Ident (TCP)</td></tr>
+        <tr><td class="port-num">4321</td><td>rwhois</td></tr>
+
+        <tr class="port-group"><td colspan="2">🔐 Auth / AAA<span class="tip" tabindex="0">💡<span class="tip-popup">
+          <strong>Mnemonic — AAA family</strong><br>
+          <code>49</code> = TACACS+ (Cisco, TCP, encrypts entire packet).<br>
+          <code>88</code> = Kerberos (TCP+UDP) &bull; <code>464</code> = Kerberos password change.<br>
+          <code>1812/1813</code> = RADIUS Auth / Accounting (UDP). "<em>18-12-13</em>" — sequential.<br>
+          Memory: <strong>TACACS &lt; Kerberos &lt; RADIUS</strong> in port order.
+        </span></span></td></tr>
+        <tr><td class="port-num">49</td><td>TACACS+ (TCP)</td></tr>
+        <tr><td class="port-num">88</td><td>Kerberos (TCP+UDP), also 464</td></tr>
+        <tr><td class="port-num">1812/1813</td><td>RADIUS Auth / Accounting</td></tr>
+
+        <tr class="port-group"><td colspan="2">🛡️ IPSec & VPN<span class="tip" tabindex="0">💡<span class="tip-popup">
+          <strong>Mnemonic — VPN protocol stack</strong><br>
+          <code>500/udp</code> = IKE/ISAKMP (key exchange) &bull; <code>4500/udp</code> = NAT-T.<br>
+          IP <strong>protocols</strong> (not ports): <code>50</code> = ESP (encrypt), <code>51</code> = AH (auth).<br>
+          <code>1194</code> = OpenVPN &bull; <code>1701/1702</code> = L2TP &bull; <code>1723</code> = PPTP (+ GRE proto 47).<br>
+          PPTP &lt; L2TP &lt; OpenVPN in security.
+        </span></span></td></tr>
+        <tr><td class="port-num">50</td><td>IPSec ESP <em>(IP protocol)</em></td></tr>
+        <tr><td class="port-num">51</td><td>IPSec AH <em>(IP protocol)</em></td></tr>
+        <tr><td class="port-num">500</td><td>IKE / ISAKMP / IPSec (UDP)</td></tr>
+        <tr><td class="port-num">1194</td><td>OpenVPN</td></tr>
+        <tr><td class="port-num">1702</td><td>L2TP</td></tr>
+        <tr><td class="port-num">1723</td><td>PPTP (TCP) + IP protocol 47 (GRE)</td></tr>
+
+        <tr class="port-group"><td colspan="2">🪟 NetBIOS & SMB<span class="tip" tabindex="0">💡<span class="tip-popup">
+          <strong>Mnemonic — the Windows file-share block</strong><br>
+          <code>137</code> = NetBIOS <strong>Name</strong> (UDP) &bull; <code>138</code> = <strong>Datagram</strong> &bull; <code>139</code> = <strong>Session</strong> (TCP).<br>
+          Sequence: <em>N-D-S</em> (137 → 138 → 139).<br>
+          <code>445</code> = SMB direct-over-TCP / CIFS (modern Windows). <em>NetBIOS-free SMB.</em><br>
+          <code>2301</code> = HPE management.
+        </span></span></td></tr>
+        <tr><td class="port-num">137</td><td>NetBIOS Name Service (UDP)</td></tr>
+        <tr><td class="port-num">138</td><td>NetBIOS Datagram Service</td></tr>
+        <tr><td class="port-num">139</td><td>NetBIOS Session Service</td></tr>
+        <tr><td class="port-num">445</td><td>SMB / CIFS</td></tr>
+        <tr><td class="port-num">2301</td><td>HPE Management / OpenVMS</td></tr>
+
+        <tr class="port-group"><td colspan="2">📰 News, Time & Monitoring<span class="tip" tabindex="0">💡<span class="tip-popup">
+          <strong>Mnemonic — the 100s block</strong><br>
+          <code>111</code> = RPC Portmapper (sunrpc).<br>
+          <code>119</code> = NNTP (Usenet news).<br>
+          <code>123</code> = NTP (Network Time — "<em>1-2-3 clock</em>").<br>
+          <code>161/162</code> = SNMP (get/trap, UDP).<br>
+          <code>514</code> = syslog (also rsh) &bull; <code>520</code> = RIP.
+        </span></span></td></tr>
+        <tr><td class="port-num">111</td><td>RPC Portmapper (TCP+UDP)</td></tr>
+        <tr><td class="port-num">119</td><td>NNTP (TCP)</td></tr>
+        <tr><td class="port-num">123</td><td>NTP (UDP)</td></tr>
+        <tr><td class="port-num">161/162</td><td>SNMP get / trap (UDP)</td></tr>
+        <tr><td class="port-num">514</td><td>syslog (UDP) / rsh (TCP)</td></tr>
+
+        <tr class="port-group"><td colspan="2">📂 Directory & Routing<span class="tip" tabindex="0">💡<span class="tip-popup">
+          <strong>Mnemonic — directory + dynamic routing</strong><br>
+          <code>389</code> = LDAP &bull; <code>636</code> = LDAPS.<br>
+          <code>179</code> = BGP (TCP, Internet's backbone).<br>
+          <code>520</code> = RIP (UDP, distance vector, old).<br>
+          <code>177</code> = XDMCP (X display manager — UDP).
+        </span></span></td></tr>
+        <tr><td class="port-num">177</td><td>XDMCP (UDP)</td></tr>
+        <tr><td class="port-num">179</td><td>BGP (TCP)</td></tr>
+        <tr><td class="port-num">389</td><td>LDAP</td></tr>
+        <tr><td class="port-num">520</td><td>RIP</td></tr>
+
+        <tr class="port-group"><td colspan="2">🐚 R-Services (legacy UNIX)<span class="tip" tabindex="0">💡<span class="tip-popup">
+          <strong>Mnemonic — 5-1-X cluster</strong><br>
+          <code>512</code> = rexec (remote exec) &bull; <code>513</code> = rlogin / rwho &bull; <code>514</code> = rsh / syslog.<br>
+          All <strong>cleartext</strong>, all replaced by SSH.<br>
+          Memory: "<em>five-one-two-three-four</em>" — consecutive trio.
+        </span></span></td></tr>
+        <tr><td class="port-num">512</td><td>rexec</td></tr>
+        <tr><td class="port-num">513</td><td>rlogin / rwho (UDP)</td></tr>
+
+        <tr class="port-group"><td colspan="2">🗄️ Databases<span class="tip" tabindex="0">💡<span class="tip-popup">
+          <strong>Mnemonic — DB ports</strong><br>
+          <code>1433/tcp</code> = MSSQL &bull; <code>1434/udp</code> = MSSQL browser &bull; <code>2433</code> = MSSQL hidden.<br>
+          <code>1521</code> = Oracle TNS ("<em>15-21, oracle prediction</em>").<br>
+          <code>3306</code> = MySQL ("<em>two 3s, two zeros split</em>") &bull; <code>5432</code> = PostgreSQL ("<em>5-4-3-2 countdown</em>").<br>
+          <code>27017</code> = MongoDB &bull; <code>6379</code> = Redis.
+        </span></span></td></tr>
+        <tr><td class="port-num">1433</td><td>MSSQL</td></tr>
+        <tr><td class="port-num">1434</td><td>MSSQL (UDP Browser)</td></tr>
+        <tr><td class="port-num">1521</td><td>Oracle SQL / TNS Listener</td></tr>
+        <tr><td class="port-num">2433</td><td>MSSQL Hidden Mode</td></tr>
+        <tr><td class="port-num">3306</td><td>MySQL</td></tr>
+        <tr><td class="port-num">5432</td><td>PostgreSQL</td></tr>
+        <tr><td class="port-num">6379</td><td>Redis</td></tr>
+        <tr><td class="port-num">27017</td><td>MongoDB</td></tr>
+
+        <tr class="port-group"><td colspan="2">🖥️ Remote Desktop & Display<span class="tip" tabindex="0">💡<span class="tip-popup">
+          <strong>Mnemonic — RDP &amp; X11</strong><br>
+          <code>3389</code> = MS-RDP ("<em>33-89, Windows desktop</em>").<br>
+          <code>6000</code>+ = X11 (each X display = 6000 + N).<br>
+          <code>2049</code> = NFS (file share, Unix).<br>
+          <code>9100</code> = raw printer (JetDirect).
+        </span></span></td></tr>
+        <tr><td class="port-num">2049</td><td>NFS</td></tr>
+        <tr><td class="port-num">3389</td><td>MS-RDP</td></tr>
+        <tr><td class="port-num">6000</td><td>X11</td></tr>
+        <tr><td class="port-num">9100</td><td>Printer (raw)</td></tr>
+
+        <tr class="port-group"><td colspan="2">📞 VoIP & Messaging<span class="tip" tabindex="0">💡<span class="tip-popup">
+          <strong>Mnemonic — VoIP &amp; chat</strong><br>
+          <code>5060/5061</code> = SIP (unencrypted / TLS).<br>
+          <code>5050</code> = Yahoo! Messenger (older).
+        </span></span></td></tr>
+        <tr><td class="port-num">5050</td><td>Yahoo! Messenger</td></tr>
+        <tr><td class="port-num">5060/5061</td><td>SIP (plain / TLS)</td></tr>
+
+        <tr class="port-group"><td colspan="2">🐴 Trojans & Ephemeral<span class="tip" tabindex="0">💡<span class="tip-popup">
+          <strong>Mnemonic — exam favourites</strong><br>
+          <code>6666</code> = Beast (and IRC botnets) — "<em>4× 6, evil number</em>".<br>
+          <code>12345</code> = NetBus — "<em>counting up</em>".<br>
+          <code>49152&ndash;65535</code> = IANA dynamic/ephemeral range (clients pick from here).
+        </span></span></td></tr>
+        <tr><td class="port-num">6666</td><td>Beast <span class="tag tag-red">Trojan</span></td></tr>
+        <tr><td class="port-num">12345</td><td>NetBus <span class="tag tag-red">Trojan</span></td></tr>
+        <tr><td class="port-num">49152&ndash;65535</td><td>Dynamic / Ephemeral</td></tr>
+      </tbody>
+    </table>
+    <div class="highlight-box">
+      <strong>Privileged:</strong> 0&ndash;1023 (root only) &nbsp;&bull;&nbsp;
+      <strong>IPSec/IKE:</strong> UDP 500 + Protocol 50 &amp; 51
+    </div>
+    <h3>Port Math</h3>
+    <ul class="notes">
+      <li>NetBIOS-ssn (<strong>139</strong>) + SSH (<strong>22</strong>) = <strong class="port-num">161</strong> = SNMP</li>
+      <li>Oracle-TNS (<strong>1521</strong>) &minus; Kerberos (<strong>88</strong>) = <strong class="port-num">1433</strong> = MS-SQL-S</li>
+      <li>HTTP (<strong>80</strong>) / FTP-Data (<strong>20</strong>) + FTP (<strong>21</strong>) = <strong class="port-num">25</strong> = SMTP</li>
+    </ul>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ 7. IP ═══ -->
+  <div class="section" id="ip">
+    <h2><span class="icon">🌍</span> 7. IP Addresses & Subnets</h2>
+    <div class="two-col">
+      <div class="card">
+        <div class="card-title">IPv4</div>
+        <strong>32 bits</strong>, 4 bytes, 4 octets<br>
+        Layer 3 (Network) in OSI
+      </div>
+      <div class="card">
+        <div class="card-title">IPv6</div>
+        <strong>128 bits</strong>, 16 bytes<br>
+        Loopback: <code>::1</code><br>
+        First 64 bits = network; last 64 = host (Interface ID)<br>
+        Uses <strong>NDP</strong> instead of ARP<br>
+        HSRPv2 supports IPv6 (v1 does not)
+      </div>
+    </div>
+    <h3>Private IP Ranges (RFC 1918)<span class="tip" tabindex="0">💡<span class="tip-popup">
+      <strong>Mnemonic — RFC 1918 ("Ten, Twelve, Sixteen")</strong><br>
+      <code>10.0.0.0/8</code> — biggest block, 1 octet locked → <strong>/8</strong> (Class A).<br>
+      <code>172.16.0.0/12</code> — odd one. Remember <em>"16 → /12"</em>: starts at 172.<strong>16</strong>, ends at 172.<strong>31</strong>.<br>
+      <code>192.168.0.0/16</code> — home routers, 2 octets locked → <strong>/16</strong> (Class C-ish).<br><br>
+      The CIDRs (<strong>8 → 12 → 16</strong>) climb by +4 as the range shrinks.
+    </span></span></h3>
+    <table>
+      <thead><tr><th>Range</th><th>CIDR</th></tr></thead>
+      <tbody>
+        <tr><td>10.0.0.0</td><td>/8</td></tr>
+        <tr><td>172.16.0.0&ndash;172.31.255.255</td><td>/12</td></tr>
+        <tr><td>192.168.0.0</td><td>/16</td></tr>
+      </tbody>
+    </table>
+    <h3>Subnet Quick Reference<span class="tip" tabindex="0">💡<span class="tip-popup">
+      <strong>Mnemonic — subnets without a calculator</strong><br>
+      Usable hosts = <code>2^(32-CIDR) − 2</code>. Just double-and-add-2 going DOWN:<br>
+      <code>/30 = 2</code> → <code>/29 = 6</code> → <code>/28 = 14</code> → <code>/27 = 30</code> → <code>/26 = 62</code> → <code>/25 = 126</code> → <code>/24 = 254</code><br>
+      Pattern: each step <em>doubles the previous +2</em>.<br><br>
+      <strong>Mask octet</strong> (the last non-255 octet):<br>
+      <code>128, 192, 224, 240, 248, 252, 254, 255</code><br>
+      Each = <code>256 − block_size</code>. Block sizes halve: 128→64→32→16→8→4→2→1.<br><br>
+      <strong>Classful shortcut:</strong> /8=A, /16=B, /24=C.
+    </span></span></h3>
+    <table>
+      <thead><tr><th>CIDR</th><th>Subnet Mask</th><th>Usable Hosts</th></tr></thead>
+      <tbody>
+        <tr><td class="port-num">/8<span class="tip" tabindex="0">💡<span class="tip-popup">
+          <strong>/8 — Class A</strong><br>
+          Hosts = <code>2^24 − 2 = 16,777,214</code>.<br>
+          First octet is network, last 3 are host. Example: <code>10.0.0.0/8</code>.
+        </span></span></td><td>255.0.0.0</td><td>16,777,214 <em>(Class A)</em></td></tr>
+        <tr><td class="port-num">/16<span class="tip" tabindex="0">💡<span class="tip-popup">
+          <strong>/16 — Class B</strong><br>
+          Hosts = <code>2^16 − 2 = 65,534</code> &bull; Total addresses = <code>65,536</code>.<br>
+          Example: <code>192.168.0.0/16</code>, <code>172.16.0.0/16</code>.
+        </span></span></td><td>255.255.0.0</td><td>65,534 <em>(Class B)</em></td></tr>
+        <tr><td class="port-num">/24<span class="tip" tabindex="0">💡<span class="tip-popup">
+          <strong>/24 — Class C</strong><br>
+          Hosts = <code>2^8 − 2 = 254</code>. The default home LAN.<br>
+          Mask: <code>255.255.255.0</code> &mdash; everything but the last octet locked.
+        </span></span></td><td>255.255.255.0</td><td>254</td></tr>
+        <tr><td class="port-num">/25<span class="tip" tabindex="0">💡<span class="tip-popup">
+          <strong>/25 — half a /24</strong><br>
+          Hosts = <code>2^7 − 2 = 126</code>. Mask ends in <code>.128</code> (256 − 128 block).<br>
+          Splits a /24 into 2 networks of 128 addresses each.
+        </span></span></td><td>255.255.255.128</td><td>126</td></tr>
+        <tr><td class="port-num">/28<span class="tip" tabindex="0">💡<span class="tip-popup">
+          <strong>/28 — small VLAN size</strong><br>
+          Hosts = <code>2^4 − 2 = 14</code>. Mask ends in <code>.240</code> (block size 16).<br>
+          16 of these fit in a /24.
+        </span></span></td><td>255.255.255.240</td><td>14</td></tr>
+        <tr><td class="port-num">/29<span class="tip" tabindex="0">💡<span class="tip-popup">
+          <strong>/29 — typical WAN / DMZ block</strong><br>
+          Hosts = <code>2^3 − 2 = 6</code>. Mask ends in <code>.248</code> (block size 8).<br>
+          Common for ISP-handoff segments.
+        </span></span></td><td>255.255.255.248</td><td>6</td></tr>
+        <tr><td class="port-num">/30<span class="tip" tabindex="0">💡<span class="tip-popup">
+          <strong>/30 — point-to-point link</strong><br>
+          Hosts = <code>2^2 − 2 = 2</code>. Mask ends in <code>.252</code> (block size 4).<br>
+          Standard for router-to-router links (one IP per side, plus net &amp; broadcast).<br>
+          <em>/31</em> exists too (RFC 3021) for true P2P, with no broadcast.
+        </span></span></td><td>255.255.255.252</td><td>2</td></tr>
+      </tbody>
+    </table>
+    <ul class="notes">
+      <li><strong>Invalid IP:</strong> 192.168.300.1 (octet max = 255)</li>
+      <li><strong>Socket</strong> = IP address + port number</li>
+      <li><strong>Class B total:</strong> 65,536 addresses</li>
+      <li><strong>MTU 1000Base-T Ethernet:</strong> 1500 bytes</li>
+    </ul>
+    <h3>ICMP Types</h3>
+    <ul class="notes">
+      <li>Type 3 = Destination Unreachable &bull; Type 3 Code 1 = Host Unreachable</li>
+      <li>Type 8 = Echo Request (ping)</li>
+      <li>TTL=0 &rarr; packet discarded, ICMP error sent back</li>
+      <li>traceroute <code>!X</code> = Communication administratively prohibited</li>
+      <li><strong>Windows tracert</strong> = ICMP &bull; <strong>Linux traceroute</strong> = UDP</li>
+    </ul>
+    <h3>TTL Default Values &rarr; OS Identification<span class="tip" tabindex="0">💡<span class="tip-popup">
+      <strong>Mnemonic — Powers of 2, round DOWN</strong><br>
+      OS defaults are <strong>powers of 2</strong>: <code>64</code>, <code>128</code>, <code>255</code>.<br>
+      When you receive a TTL, round <strong>UP</strong> to the nearest of these → that's the originator's OS.<br>
+      <em>Example:</em> TTL <code>56</code> → was <code>64</code> (Linux), 8 hops away.<br>
+      <em>Example:</em> TTL <code>123</code> → was <code>128</code> (Windows), 5 hops away.<br><br>
+      Memory: <strong>L</strong>inux = <strong>L</strong>ow (64) &bull; Windows = "<em>Win-128</em>" &bull; Cisco maxes the field (255).
+    </span></span></h3>
+    <table>
+      <thead><tr><th>Default TTL</th><th>OS</th></tr></thead>
+      <tbody>
+        <tr><td class="code-num">128</td><td>Windows</td></tr>
+        <tr><td class="code-num">64</td><td>Linux</td></tr>
+        <tr><td class="code-num">255</td><td>Cisco / Network devices</td></tr>
+      </tbody>
+    </table>
+    <div class="highlight-box">
+      TTL=123 &rarr; <strong>Windows</strong> (128&minus;5) = 5 hops away<br>
+      TTL=56 &rarr; <strong>Linux</strong> (64&minus;8) = 8 hops away
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ 8. RIDs ═══ -->
+  <div class="section" id="rid">
+    <h2><span class="icon">🪪</span> 8. Windows RIDs & SIDs</h2>
+    <table>
+      <thead><tr><th>RID</th><th>Account</th></tr></thead>
+      <tbody>
+        <tr><td class="code-num">500</td><td>Administrator</td></tr>
+        <tr><td class="code-num">501</td><td>Guest</td></tr>
+        <tr><td class="code-num">1000</td><td>First User Account</td></tr>
+      </tbody>
+    </table>
+    <ul class="notes">
+      <li><strong>SID</strong> = Security Identifier &bull; <strong>RID</strong> = Relative Identifier (last part of SID)</li>
+      <li><strong>Administrator always has RID 500</strong> &mdash; identify admin by RID, not name</li>
+      <li><strong>Built-in Admin</strong> = <span class="tag tag-orange">never locked out</span> (regardless of lockout policy)</li>
+      <li><code>lookupsids</code> = RID cycling user enum via rpcclient</li>
+      <li><code>whoami /groups</code> = shows SID, group membership, account type</li>
+    </ul>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ 9. WIFI ═══ -->
+  <div class="section" id="wifi">
+    <h2><span class="icon">📶</span> 9. WiFi / 802.11 Protocols<span class="tip" tabindex="0">💡<span class="tip-popup">
+      <strong>Mnemonic — WiFi security evolution</strong><br>
+      <code>WEP</code> → <code>WPA</code> → <code>WPA2</code> → <code>WPA3</code>. Each fixed the prior one's break.<br>
+      Cipher progression: <strong>RC4</strong> (WEP, broken) → <strong>RC4+TKIP</strong> (WPA bandage) → <strong>AES-CCMP</strong> (WPA2) → <strong>AES-GCMP</strong> (WPA3).<br>
+      Standard: <code>802.11i</code> = WPA2 amendment.<br>
+      Auth: <code>802.1X</code> = port-based, uses RADIUS + EAP.
+    </span></span></h2>
+    <div class="highlight-box">
+      <strong>Frequencies:</strong> 2.4 GHz, 5 GHz, 6 GHz, 60 GHz<span class="tip" tabindex="0">💡<span class="tip-popup">
+        <strong>Mnemonic — 802.11 letters &amp; bands</strong><br>
+        <code>802.11b/g/n</code> = <strong>2.4 GHz</strong> (longer range, more congestion).<br>
+        <code>802.11a/n/ac</code> = <strong>5 GHz</strong> (faster, shorter range).<br>
+        <code>802.11ax</code> (Wi-Fi 6/6E) = <strong>2.4 + 5 + 6 GHz</strong>.<br>
+        <code>802.11ad/ay</code> = <strong>60 GHz</strong> (WiGig, line-of-sight).<br>
+        Memory: vowels (a/ax) go HIGH frequency; later letters add bands.
+      </span></span>
+    </div>
+    <table>
+      <thead><tr><th>Protocol</th><th>Standard</th><th>Cipher</th><th>Key</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>WEP<span class="tip" tabindex="0">💡<span class="tip-popup">
+          <strong>WEP — Wired Equivalent Privacy</strong><br>
+          RC4 with a tiny <strong>24-bit IV</strong> → IV collisions after ~5,000 packets.<br>
+          "128-bit WEP" is actually <code>104 secret + 24 IV</code>.<br>
+          Broken by <strong>FMS</strong> (Fluhrer/Mantin/Shamir) attack — needs ~100k–1M packets.<br>
+          Memory: <em>"WEP = Weakness Equals Pwnable"</em>.
+        </span></span></td><td>802.11a/b</td><td>RC4</td><td>64/128-bit static</td><td>IV=24 bits, <span class="tag tag-red">very weak</span></td></tr>
+        <tr><td>TKIP<span class="tip" tabindex="0">💡<span class="tip-popup">
+          <strong>TKIP — Temporal Key Integrity Protocol</strong><br>
+          Bandage on RC4 between WEP and WPA2. Adds:<br>
+          • <strong>Per-packet key</strong> mixing<br>
+          • <strong>64-bit MIC</strong> (Michael) for integrity<br>
+          • Larger 48-bit IV<br>
+          Still uses RC4 → deprecated in WPA3. Memory: <em>"Temporary fix"</em>.
+        </span></span></td><td>802.11i</td><td>RC4</td><td>Dynamic</td><td>64-bit MIC, legacy compatible</td></tr>
+        <tr><td>WPA/WPA2<span class="tip" tabindex="0">💡<span class="tip-popup">
+          <strong>WPA2 — the modern baseline</strong><br>
+          Standard: <code>802.11i</code>. Cipher: <strong>AES-CCMP</strong> (replaces TKIP).<br>
+          Two modes:<br>
+          • <strong>Personal (PSK)</strong> — passphrase, brute-forceable via 4-way handshake capture.<br>
+          • <strong>Enterprise</strong> — 802.1X + RADIUS + EAP.<br>
+          <strong>WPA3</strong> upgrades to <strong>AES-GCMP</strong> + SAE (replaces PSK).
+        </span></span></td><td>802.11i</td><td>AES + TKIP</td><td>&mdash;</td><td>CCMP, GCMP, PSK support</td></tr>
+      </tbody>
+    </table>
+    <ul class="notes">
+      <li><strong>WEP</strong> = Wired Equivalent Privacy &bull; <strong>WPA</strong> = WiFi Protected Access</li>
+      <li><strong>WPA2 standard:</strong> 802.11i &bull; <strong>WPA-Personal:</strong> PSK, susceptible to brute-force</li>
+      <li><strong>TKIP</strong> = Temporal Key Integrity Protocol (interim WEP replacement)</li>
+      <li><strong>128-bit WEP</strong> = only 104 secret bits (24-bit IV)</li>
+      <li><strong>WEP weakness:</strong> weak Initialization Vectors &bull; <strong>Incorrectly implemented:</strong> RC4</li>
+      <li><strong>FMS attack:</strong> ~100,000&ndash;1,000,000 packets needed</li>
+      <li><strong>SSID:</strong> max 32 bytes, case sensitive, broadcast in clear text</li>
+      <li><strong>Hidden SSID:</strong> still in Beacon Frames; revealed by Association Request</li>
+      <li><strong>Monitor Mode</strong> = passive wireless frame capture</li>
+      <li><strong>Deauth attack:</strong> recover hidden ESSID + capture WPA/WPA2 handshake</li>
+      <li><strong>802.1X:</strong> RADIUS with EAP extensions</li>
+      <li><strong>EAP-RSA</strong> = <span class="tag tag-red">NOT a valid EAP method</span></li>
+      <li><strong>PEAP</strong> = Microsoft &bull; <strong>LEAP</strong> = Cisco<span class="tip" tabindex="0">💡<span class="tip-popup">
+        <strong>EAP family — who made what</strong><br>
+        <code>EAP</code> = Extensible Authentication Protocol (framework, not auth itself).<br>
+        <code>PEAP</code> = <strong>P</strong>rotected EAP — Microsoft (uses server PKI cert, tunnels MSCHAPv2).<br>
+        <code>LEAP</code> = <strong>L</strong>ightweight EAP — Cisco (uses TKIP + dynamic keys, broken).<br>
+        <code>EAP-TLS</code> = mutual cert auth (most secure).<br>
+        <code>EAP-TTLS</code> = Tunneled TLS (server cert only).<br>
+        Memory: <em>P=Protected=Pretty PKI</em>, <em>L=Lightweight=Lame &amp; Cisco</em>.<br>
+        <span class="tag tag-red">EAP-RSA</span> is NOT a valid EAP method (exam trap).
+      </span></span></li>
+      <li>PEAP uses server-side PKI; LEAP uses TKIP + dynamic keys</li>
+      <li><strong>Tools:</strong> Fiddler, WiFite, airmon-ng, Fern Wifi</li>
+    </ul>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ 10. WINDOWS ═══ -->
+  <div class="section" id="windows">
+    <h2><span class="icon">🪟</span> 10. Windows Essentials</h2>
+    <h3>Key Files & Locations</h3>
+    <ul class="notes">
+      <li><strong>SAM database</strong> &rarr; password hashes</li>
+      <li><code>NTDS.DIT</code> &rarr; AD database (stored at <code>Windows\NTDS\Ntds.dit</code>)</li>
+      <li>Registry: <code>C:\Windows\System32\Config</code></li>
+      <li>Persistence: <code>HKLM\...\CurrentVersion\Run</code> / <code>RunOnce</code></li>
+    </ul>
+    <h3>Registry Root Keys (5)</h3>
+    <div class="highlight-box"><code>HKLM &bull; HKCC &bull; HKCR &bull; HKCU &bull; HKU</code></div>
+    <h3>IIS &rarr; OS Mapping<span class="tip" tabindex="0">💡<span class="tip-popup">
+      <strong>Mnemonic — IIS to Windows</strong><br>
+      Easy half: from <span class="key">IIS 7.5 onward</span>, the IIS number = the <em>client</em> Windows number:<br>
+      <code>7.5 ↔ Win 7</code> &bull; <code>8.0 ↔ Win 8</code> &bull; <code>8.5 ↔ Win 8.1</code> &bull; <code>10 ↔ Win 10/11</code><br><br>
+      Older half (NT era):<br>
+      <code>IIS 5.0 → Win 2000</code> ("5 fingers welcoming Y2K")<br>
+      <code>IIS 6.0 → Server 2003</code> ("6 → 03, swap digits")<br>
+      <code>IIS 7.0 → Server 2008 / Vista</code> ("lucky 7 came with Vista")<br><br>
+      Server pairings: <code>2008 R2 = 7.5</code> &bull; <code>2012 = 8</code> &bull; <code>2012 R2 = 8.5</code> &bull; <code>2016+ = 10</code>.
+    </span></span></h3>
+    <table>
+      <thead><tr><th>IIS Version</th><th>Operating System</th></tr></thead>
+      <tbody>
+        <tr><td>Microsoft-IIS/1.0</td><td>Windows NT 3.51</td></tr>
+        <tr><td>Microsoft-IIS/2.0</td><td>Windows NT 4.0</td></tr>
+        <tr><td>Microsoft-IIS/3.0</td><td>Windows NT 4.0 SP3</td></tr>
+        <tr><td>Microsoft-IIS/4.0</td><td>Windows NT 4.0 Option Pack</td></tr>
+        <tr><td>Microsoft-IIS/5.0</td><td>Windows 2000</td></tr>
+        <tr><td>Microsoft-IIS/5.1</td><td>Windows XP Professional</td></tr>
+        <tr><td>Microsoft-IIS/6.0</td><td>Windows Server 2003 / XP Pro x64</td></tr>
+        <tr><td>Microsoft-IIS/7.0</td><td>Windows Server 2008 / Vista</td></tr>
+        <tr><td>Microsoft-IIS/7.5</td><td>Windows Server 2008 R2 / Windows 7</td></tr>
+        <tr><td>Microsoft-IIS/8.0</td><td>Windows Server 2012 / Windows 8</td></tr>
+        <tr><td>Microsoft-IIS/8.5</td><td>Windows Server 2012 R2 / Windows 8.1</td></tr>
+        <tr><td>Microsoft-IIS/10.0</td><td>Windows Server 2016/2019/2022 / Windows 10/11</td></tr>
+      </tbody>
+    </table>
+    <h3>Key Commands</h3>
+    <ul class="notes">
+      <li><code>NET USE \\host\ipc$ "" /u:""</code> &rarr; Null session</li>
+      <li><code>nbtstat -A &lt;IP&gt;</code> &rarr; NetBIOS enumeration</li>
+      <li><code>Net localgroup administrators</code> &rarr; list admin group</li>
+      <li><code>nltest</code> / <code>nslookup -type=any</code> &rarr; find AD domain controller</li>
+      <li><code>Get-HotFix</code> &rarr; list Windows updates (PowerShell)</li>
+      <li><code>wmic qfe</code> &rarr; query hotfixes (Win32_QuickFixEngineering) &bull; <strong>QFE</strong> = Quick Fix Engineering</li>
+      <li><code>wmic product</code> &rarr; installed software &bull; <code>wmic os</code> &rarr; OS info</li>
+      <li><code>RestrictAnonymous=1</code> &rarr; prevents SAM enumeration</li>
+      <li><code>nslookup -q=txt -class=CHAOS version.bind &lt;TARGET&gt;</code> &rarr; BIND version</li>
+      <li><code>MSBROWSE</code> &rarr; Master Browser identifier in NetBIOS</li>
+    </ul>
+    <h3>SMB Shares</h3>
+    <div class="two-col">
+      <div class="card">
+        <div class="card-title">Default Shares</div>
+        <code>SYSVOL</code> (domain public files)<br>
+        <code>netlogon</code> (logon scripts + GPOs)<br>
+        <code>Print$</code> &bull; <code>IPC$</code>
+      </div>
+      <div class="card">
+        <div class="card-title">Admin Shares</div>
+        <code>C$</code> &bull; <code>D$</code><br>
+        <code>Admin$</code> &bull; <code>Fax$</code><br>
+        <code>net share</code> = view local shares
+      </div>
+    </div>
+    <h3>Active Directory</h3>
+    <ul class="notes">
+      <li>Auth: <strong>Kerberos</strong> &bull; <strong>FSMO</strong> = Flexible Single Master Operations</li>
+      <li>Win 2008 password policy: <strong>3 out of 4</strong> complexity requirements</li>
+    </ul>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ 11. UNIX ═══ -->
+  <div class="section" id="unix">
+    <h2><span class="icon">🐧</span> 11. Unix/Linux Essentials</h2>
+    <h3>Password Files</h3>
+    <table>
+      <thead><tr><th>OS</th><th>Password File</th></tr></thead>
+      <tbody>
+        <tr><td>Linux / Solaris</td><td><code>/etc/shadow</code></td></tr>
+        <tr><td>FreeBSD</td><td><code>/etc/master.passwd</code></td></tr>
+        <tr><td>No shadow</td><td><code>/etc/passwd</code></td></tr>
+      </tbody>
+    </table>
+    <ul class="notes">
+      <li>Shadow detection: <code>/etc/passwd</code>, look for <code>x</code> or <code>!!</code> in 2nd field</li>
+      <li>Berkeley R services: <code>~/.rhosts</code> &bull; TTYPROMPT vuln: <strong>Solaris 8</strong></li>
+    </ul>
+    <h3>Key Services & Commands</h3>
+    <ul class="notes">
+      <li>TCP 111 open &rarr; <code>rpcinfo -p</code></li>
+      <li>Port 32000 ruserd &rarr; enumerate logged-in users</li>
+      <li>NFS v4 = strong security &bull; NFS Root Squash = root &rarr; nobody</li>
+      <li>NFS v2/v3 auth = AUTH_SYS (Unix UID/GID)</li>
+      <li>ONC/RPC: cmsd, kcms_server, sadmind, snmpXdmid</li>
+      <li><strong>rexec</strong> = port 512, password auth, config in <code>/etc</code>, <code>-l</code> for username</li>
+      <li><strong>Superuser</strong> = any user with <strong>UID 0</strong> (not necessarily "root")</li>
+      <li><code>/etc/ftpusers</code> = users <strong>NOT</strong> permitted to use FTP</li>
+      <li><code>/etc/crontab</code> mode 0666 = <span class="tag tag-red">privilege escalation</span></li>
+      <li><code>finger 0@host</code> (Solaris 8) = users with empty GCOS field</li>
+      <li><code>find / -perm -04000</code> &rarr; find setuid executables</li>
+      <li><strong>Solaris:</strong> <code>pkginfo</code> / <code>showrev -p</code> &bull; <strong>Red Hat:</strong> <code>rpm -qa</code> &bull; <strong>Debian:</strong> <code>dpkg -l</code></li>
+    </ul>
+
+    <h3>chmod Permissions<span class="tip" tabindex="0">💡<span class="tip-popup">
+      <strong>Mnemonic — "R-W-X = 4-2-1"</strong><br>
+      Add the bits to get the digit:<br>
+      <code>r = 4</code> &bull; <code>w = 2</code> &bull; <code>x = 1</code><br><br>
+      Three digits = <strong>owner / group / other</strong>.<br>
+      <em>Worked example — <code>chmod 455 file.txt</code>:</em><br>
+      • <code>4</code> = 4+0+0 → <strong>r--</strong> (owner)<br>
+      • <code>5</code> = 4+0+1 → <strong>r-x</strong> (group)<br>
+      • <code>5</code> = 4+0+1 → <strong>r-x</strong> (other)<br>
+      Result: <code>-r--r-xr-x</code><br><br>
+      <strong>umask</strong> = bits to <em>subtract</em> from default (777 dir / 666 file).
+    </span></span></h3>
+    <table>
+      <thead><tr><th>Digit</th><th>Binary</th><th>rwx</th><th>Meaning</th></tr></thead>
+      <tbody>
+        <tr><td class="code-num">0</td><td>000</td><td><code>---</code></td><td>No access</td></tr>
+        <tr><td class="code-num">1</td><td>001</td><td><code>--x</code></td><td>Execute only</td></tr>
+        <tr><td class="code-num">2</td><td>010</td><td><code>-w-</code></td><td>Write only</td></tr>
+        <tr><td class="code-num">3</td><td>011</td><td><code>-wx</code></td><td>Write + execute</td></tr>
+        <tr><td class="code-num">4</td><td>100</td><td><code>r--</code></td><td>Read only</td></tr>
+        <tr><td class="code-num">5</td><td>101</td><td><code>r-x</code></td><td>Read + execute</td></tr>
+        <tr><td class="code-num">6</td><td>110</td><td><code>rw-</code></td><td>Read + write</td></tr>
+        <tr><td class="code-num">7</td><td>111</td><td><code>rwx</code></td><td>Full access</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Common chmod Values</h3>
+    <table>
+      <thead><tr><th>Octal</th><th>Symbolic</th><th>Typical Use</th></tr></thead>
+      <tbody>
+        <tr><td class="code-num">644</td><td><code>rw-r--r--</code></td><td>Default file (owner writes, others read)</td></tr>
+        <tr><td class="code-num">755</td><td><code>rwxr-xr-x</code></td><td>Default executable / directory</td></tr>
+        <tr><td class="code-num">700</td><td><code>rwx------</code></td><td>Private (SSH keys, <code>~/.ssh</code>)</td></tr>
+        <tr><td class="code-num">600</td><td><code>rw-------</code></td><td>Private key files (<code>id_rsa</code>)</td></tr>
+        <tr><td class="code-num">640</td><td><code>rw-r-----</code></td><td>Shared-with-group read</td></tr>
+        <tr><td class="code-num">777</td><td><code>rwxrwxrwx</code></td><td><span class="tag tag-red">Everyone full access — avoid</span></td></tr>
+        <tr><td class="code-num">666</td><td><code>rw-rw-rw-</code></td><td><span class="tag tag-red">World-writable file</span></td></tr>
+        <tr><td class="code-num">4755</td><td><code>rwsr-xr-x</code></td><td><strong>SUID</strong> set (runs as owner)</td></tr>
+        <tr><td class="code-num">2755</td><td><code>rwxr-sr-x</code></td><td><strong>SGID</strong> set (runs as group)</td></tr>
+        <tr><td class="code-num">1777</td><td><code>rwxrwxrwt</code></td><td><strong>Sticky bit</strong> (<code>/tmp</code>)</td></tr>
+      </tbody>
+    </table>
+    <ul class="notes">
+      <li><strong>Leading digit</strong> = special bits: <code>4</code>=SUID, <code>2</code>=SGID, <code>1</code>=sticky (combine: <code>7</code>=all three)</li>
+      <li><code>find / -perm -4000</code> &rarr; locate SUID binaries (priv-esc hunting ground)</li>
+      <li><strong>umask 0027</strong> &rarr; new files = <code>640</code>, new dirs = <code>750</code></li>
+    </ul>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ 12. NMAP ═══ -->
+  <div class="section" id="nmap">
+    <h2><span class="icon">🔍</span> 12. Nmap Cheat Sheet</h2>
+    <table>
+      <thead><tr><th>Flag</th><th>Purpose</th></tr></thead>
+      <tbody>
+        <tr><td><code>-sS</code></td><td>SYN / half-open scan</td></tr>
+        <tr><td><code>-sU</code></td><td>UDP scan</td></tr>
+        <tr><td><code>-O</code></td><td>OS detection</td></tr>
+        <tr><td><code>-P0</code> / <code>-Pn</code></td><td>Skip host discovery (ICMP blocked)</td></tr>
+        <tr><td><code>-p-</code></td><td>Scan all ports</td></tr>
+        <tr><td><code>-sI</code></td><td>Idle / Zombie scan</td></tr>
+        <tr><td><code>-sC</code></td><td>Script engine</td></tr>
+        <tr><td><code>-f</code></td><td>Fragment packets</td></tr>
+        <tr><td><code>-v</code></td><td>Verbose</td></tr>
+        <tr><td><code>-n</code></td><td>No DNS resolution</td></tr>
+      </tbody>
+    </table>
+    <ul class="notes">
+      <li><strong>TCP open</strong> &rarr; target returns <code>SYN|ACK</code></li>
+      <li><strong>UDP closed</strong> &rarr; target returns <code>ICMP_PORT_UNREACHABLE</code></li>
+      <li><strong>open|filtered</strong> &rarr; UDP filtered or listening but not responding</li>
+      <li><strong>ACK scan</strong> &rarr; detect stateless firewall</li>
+      <li><strong>Passive fingerprinting:</strong> <code>p0f</code></li>
+    </ul>
+
+    <h3>Other Recon &amp; Enumeration Commands<span class="tip" tabindex="0">💡<span class="tip-popup">
+      <strong>Mnemonic — one tool per service</strong><br>
+      RPC → <code>rpcinfo</code> &bull; NFS → <code>showmount</code> &bull; SMB → <code>enum4linux</code> &bull; DNS/BIND → <code>dig</code> + <code>version.bind</code> trick &bull; Oracle → <code>tnscmd10g</code> &bull; SNMP → <code>snmpwalk</code>.
+    </span></span></h3>
+    <table>
+      <thead><tr><th>Service</th><th>Command</th></tr></thead>
+      <tbody>
+        <tr><td>RPC (TCP 111)</td><td><code>rpcinfo -p &lt;host&gt;</code></td></tr>
+        <tr><td>NFS exports</td><td><code>showmount -e &lt;host&gt;</code></td></tr>
+        <tr><td>BIND version (Linux)</td><td><code>dig @&lt;ns&gt; version.bind txt chaos</code></td></tr>
+        <tr><td>BIND version (Windows)</td><td><code>nslookup -q=txt -class=CHAOS version.bind &lt;target&gt;</code></td></tr>
+        <tr><td>DNS zone transfer</td><td><code>dig @&lt;ns&gt; &lt;domain&gt; axfr</code></td></tr>
+        <tr><td>Oracle TNS version</td><td><code>tnscmd10g version -h &lt;ip&gt;</code></td></tr>
+        <tr><td>MSSQL version</td><td><code>select @@version;</code></td></tr>
+        <tr><td>MySQL version</td><td><code>select version();</code></td></tr>
+        <tr><td>SMB enum (Linux)</td><td><code>enum4linux -a &lt;host&gt;</code> &bull; <code>smbclient -L //&lt;host&gt;</code></td></tr>
+        <tr><td>Null SMB session</td><td><code>net use \\\\&lt;host&gt;\IPC$ "" /u:""</code></td></tr>
+        <tr><td>RID cycling</td><td><code>rpcclient -U "" -N &lt;host&gt;</code> → <code>lookupsids</code></td></tr>
+        <tr><td>SNMP walk</td><td><code>snmpwalk -v2c -c public &lt;host&gt;</code></td></tr>
+        <tr><td>Windows users via SNMP</td><td><code>1.3.6.1.4.1.77.1.2.25</code> (MIB)</td></tr>
+        <tr><td>Find SUID binaries</td><td><code>find / -perm -4000 2&gt;/dev/null</code></td></tr>
+        <tr><td>Find logged-in users (UNIX)</td><td><code>finger 0@&lt;host&gt;</code> (Solaris) &bull; <code>rusers</code></td></tr>
+        <tr><td>Packet crafting</td><td><code>hping3</code>, <code>scapy</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ 13. OSI ═══ -->
+  <div class="section" id="osi">
+    <h2><span class="icon">📊</span> 13. OSI Model</h2>
+    <table>
+      <thead><tr><th>Layer</th><th>Name</th><th>Protocols / Notes</th></tr></thead>
+      <tbody>
+        <tr><td class="code-num">7</td><td>Application</td><td>HTTP, FTP, DNS, SNMP, SMTP</td></tr>
+        <tr><td class="code-num">6</td><td>Presentation</td><td>SSL/TLS, encryption</td></tr>
+        <tr><td class="code-num">5</td><td>Session</td><td>&mdash;</td></tr>
+        <tr><td class="code-num">4</td><td>Transport</td><td>TCP, UDP</td></tr>
+        <tr><td class="code-num">3</td><td>Network</td><td>IPv4, IPv6, ICMP</td></tr>
+        <tr><td class="code-num">2</td><td>Data Link</td><td>ARP, Ethernet, switches, MAC</td></tr>
+        <tr><td class="code-num">1</td><td>Physical</td><td>Cables, hubs</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ 14. ABBREVIATIONS ═══ -->
+  <div class="section" id="abbr">
+    <h2><span class="icon">📖</span> 14. Abbreviations<span class="tip" tabindex="0">💡<span class="tip-popup">
+      <strong>Mnemonic — group them, don't memorize them</strong><br><br>
+      <span class="key">Cipher modes</span> (all end in B/M/P): <code>ECB</code>, <code>CBC</code>, <code>CFB</code>, <code>GCM</code>, <code>CCMP</code>, <code>GCMP</code>.<br>
+      Trick: <em>C</em>-modes for chaining, <em>G</em>-modes for Galois (auth).<br><br>
+      <span class="key">WiFi auth family</span>: <code>EAP</code> → <code>PEAP</code> (Protected) / <code>LEAP</code> (Lightweight, Cisco). Crypto: <code>TKIP</code> (old WPA) → <code>CCMP</code> (WPA2) → <code>GCMP</code> (WPA3).<br><br>
+      <span class="key">VPN/IPSec</span>: <code>IKE</code> (key exchange) + <code>ESP</code> (encrypt) / <code>AH</code> (auth-only). Tunnels: <code>PPTP</code> &lt; <code>L2TP</code> &lt; <code>IPSec</code> &lt; <code>SSL/TLS</code>.<br><br>
+      <span class="key">Markup-Language family</span> (all "<em>ML</em>"): <code>XML</code>, <code>HTML</code>, <code>SAML</code> = <em>Security Assertion ML</em>. <code>AJAX</code> = "Async JS + XML".<br><br>
+      <span class="key">Email</span>: <code>SMTP</code> sends, <code>POP3</code>/<code>IMAP</code> receive, <code>S/MIME</code> + <code>PGP</code> encrypt.<br><br>
+      <span class="key">Routing</span>: <code>RIP</code> (hop count) &lt; <code>IGRP</code> &lt; <code>OSPF</code> (link-state) &lt; <code>BGP</code> (inter-AS).<br>
+      <span class="key">First-Hop Redundancy</span> (<code>FHRP</code>): <code>HSRP</code> (Cisco), <code>VRRP</code> (standard), <code>GLBP</code> (load-balance).<br><br>
+      <span class="key">Windows IDs</span>: <code>SID</code> = full id, <code>RID</code> = last chunk (RID 500 = Admin).<br><br>
+      <span class="key">DNS records</span>: <code>A</code>/<code>AAAA</code> (IP), <code>CNAME</code> (alias), <code>MX</code> (mail), <code>SOA</code> (zone authority), <code>NS</code> (nameserver), <code>PTR</code> (reverse).<br><br>
+      <span class="key">"Asymmetric" / PKI</span>: <code>RSA</code>, <code>PGP</code>, <code>PKI</code>, <code>X.509</code> all live together.
+    </span></span></h2>
+    <table>
+      <thead><tr><th>Abbr.</th><th>Full Name</th></tr></thead>
+      <tbody>
+        <tr><td><strong>AES</strong></td><td>Advanced Encryption Standard</td></tr>
+        <tr><td><strong>AJAX</strong></td><td>Asynchronous Javascript and XML</td></tr>
+        <tr><td><strong>ARP</strong></td><td>Address Resolution Protocol</td></tr>
+        <tr><td><strong>BGP</strong></td><td>Border Gateway Protocol</td></tr>
+        <tr><td><strong>BLE</strong></td><td>BlueTooth Low Energy</td></tr>
+        <tr><td><strong>CCMP</strong></td><td>Counter Mode with CBC-MAC Protocol</td></tr>
+        <tr><td><strong>CDP</strong></td><td>Cisco Discovery Protocol</td></tr>
+        <tr><td><strong>CFB</strong></td><td>Cipher Feedback (mode)</td></tr>
+        <tr><td><strong>CIDR</strong></td><td>Classless Inter-Domain Routing</td></tr>
+        <tr><td><strong>CRLF</strong></td><td>Carriage Return Line Feed</td></tr>
+        <tr><td><strong>CVE</strong></td><td>Common Vulnerabilities and Exposures</td></tr>
+        <tr><td><strong>DES</strong></td><td>Data Encryption Standard</td></tr>
+        <tr><td><strong>DHCP</strong></td><td>Dynamic Host Configuration Protocol</td></tr>
+        <tr><td><strong>DNS</strong></td><td>Domain Name System</td></tr>
+        <tr><td><strong>DTLS</strong></td><td>Datagram Transport Layer Security</td></tr>
+        <tr><td><strong>EAP</strong></td><td>Extensible Authentication Protocol</td></tr>
+        <tr><td><strong>ECB</strong></td><td>Electronic Codebook (mode)</td></tr>
+        <tr><td><strong>FHRP</strong></td><td>First Hop Redundancy Protocol</td></tr>
+        <tr><td><strong>FSMO</strong></td><td>Flexible Single Master Operations</td></tr>
+        <tr><td><strong>FTP</strong></td><td>File Transfer Protocol</td></tr>
+        <tr><td><strong>FTPS</strong></td><td>FTP over SSL/TLS</td></tr>
+        <tr><td><strong>GCM</strong></td><td>Galois/Counter Mode</td></tr>
+        <tr><td><strong>GCMP</strong></td><td>Galois/Counter Mode Protocol</td></tr>
+        <tr><td><strong>HMAC</strong></td><td>Hash-based Message Authentication Code</td></tr>
+        <tr><td><strong>HSRP</strong></td><td>Hot Standby Router Protocol</td></tr>
+        <tr><td><strong>HTTP</strong></td><td>Hypertext Transfer Protocol</td></tr>
+        <tr><td><strong>IANA</strong></td><td>Internet Assigned Numbers Authority</td></tr>
+        <tr><td><strong>ICMP</strong></td><td>Internet Control Message Protocol</td></tr>
+        <tr><td><strong>IGRP</strong></td><td>Interior Gateway Routing Protocol</td></tr>
+        <tr><td><strong>IKE</strong></td><td>Internet Key Exchange</td></tr>
+        <tr><td><strong>IMAP</strong></td><td>Internet Message Access Protocol</td></tr>
+        <tr><td><strong>IPSec</strong></td><td>Internet Protocol Security</td></tr>
+        <tr><td><strong>JSP</strong></td><td>Java Server Pages</td></tr>
+        <tr><td><strong>L2TP</strong></td><td>Layer 2 Tunnelling Protocol</td></tr>
+        <tr><td><strong>LAMP</strong></td><td>Linux Apache MySQL PHP</td></tr>
+        <tr><td><strong>LDAP</strong></td><td>Lightweight Directory Access Protocol</td></tr>
+        <tr><td><strong>LEAP</strong></td><td>Lightweight EAP</td></tr>
+        <tr><td><strong>MAC</strong></td><td>Media Access Control</td></tr>
+        <tr><td><strong>MTU</strong></td><td>Maximum Transmission Unit</td></tr>
+        <tr><td><strong>MX</strong></td><td>Mail Exchange (DNS record)</td></tr>
+        <tr><td><strong>NDP</strong></td><td>Neighbour Discovery Protocol</td></tr>
+        <tr><td><strong>NFS</strong></td><td>Network File System</td></tr>
+        <tr><td><strong>NNTP</strong></td><td>Network News Transfer Protocol</td></tr>
+        <tr><td><strong>NTP</strong></td><td>Network Time Protocol</td></tr>
+        <tr><td><strong>OSPF</strong></td><td>Open Shortest Path First</td></tr>
+        <tr><td><strong>OSINT</strong></td><td>Open Source Intelligence</td></tr>
+        <tr><td><strong>OUI</strong></td><td>Organizationally Unique Identifier</td></tr>
+        <tr><td><strong>PEAP</strong></td><td>Protected EAP</td></tr>
+        <tr><td><strong>PGP</strong></td><td>Pretty Good Privacy</td></tr>
+        <tr><td><strong>PKI</strong></td><td>Public Key Infrastructure</td></tr>
+        <tr><td><strong>POP3</strong></td><td>Post Office Protocol v3</td></tr>
+        <tr><td><strong>PPTP</strong></td><td>Point-to-Point Tunnelling Protocol</td></tr>
+        <tr><td><strong>PSK</strong></td><td>Pre-Shared Key</td></tr>
+        <tr><td><strong>QFE</strong></td><td>Quick Fix Engineering</td></tr>
+        <tr><td><strong>RADIUS</strong></td><td>Remote Authentication Dial-In User Service</td></tr>
+        <tr><td><strong>RDP</strong></td><td>Remote Desktop Protocol</td></tr>
+        <tr><td><strong>REST</strong></td><td>Representational State Transfer</td></tr>
+        <tr><td><strong>RID</strong></td><td>Relative Identifier</td></tr>
+        <tr><td><strong>RIP</strong></td><td>Routing Information Protocol</td></tr>
+        <tr><td><strong>RPC</strong></td><td>Remote Procedure Call</td></tr>
+        <tr><td><strong>RSA</strong></td><td>Rivest-Shamir-Adleman</td></tr>
+        <tr><td><strong>RTP</strong></td><td>Real-time Transport Protocol</td></tr>
+        <tr><td><strong>SAML</strong></td><td>Security Assertion Markup Language</td></tr>
+        <tr><td><strong>SCTP</strong></td><td>Stream Control Transmission Protocol</td></tr>
+        <tr><td><strong>SID</strong></td><td>Security Identifier</td></tr>
+        <tr><td><strong>SIP</strong></td><td>Session Initiation Protocol</td></tr>
+        <tr><td><strong>SMB</strong></td><td>Server Message Block</td></tr>
+        <tr><td><strong>S/MIME</strong></td><td>Secure/Multipurpose Internet Mail Extensions</td></tr>
+        <tr><td><strong>SNMP</strong></td><td>Simple Network Management Protocol</td></tr>
+        <tr><td><strong>SOA</strong></td><td>Start of Authority (DNS)</td></tr>
+        <tr><td><strong>SOAP</strong></td><td>Simple Object Access Protocol</td></tr>
+        <tr><td><strong>SSID</strong></td><td>Service Set Identifier</td></tr>
+        <tr><td><strong>SSH</strong></td><td>Secure Shell</td></tr>
+        <tr><td><strong>SSL</strong></td><td>Secure Sockets Layer</td></tr>
+        <tr><td><strong>TACACS</strong></td><td>Terminal Access Controller Access-Control System</td></tr>
+        <tr><td><strong>TCP</strong></td><td>Transmission Control Protocol</td></tr>
+        <tr><td><strong>TEMPEST</strong></td><td>(Electronic emanation security)</td></tr>
+        <tr><td><strong>TFTP</strong></td><td>Trivial File Transfer Protocol</td></tr>
+        <tr><td><strong>TKIP</strong></td><td>Temporal Key Integrity Protocol</td></tr>
+        <tr><td><strong>TLS</strong></td><td>Transport Layer Security</td></tr>
+        <tr><td><strong>UDP</strong></td><td>User Datagram Protocol</td></tr>
+        <tr><td><strong>URI</strong></td><td>Uniform Resource Identifier</td></tr>
+        <tr><td><strong>URL</strong></td><td>Uniform Resource Locator</td></tr>
+        <tr><td><strong>VoIP</strong></td><td>Voice over Internet Protocol</td></tr>
+        <tr><td><strong>VPN</strong></td><td>Virtual Private Network</td></tr>
+        <tr><td><strong>WEP</strong></td><td>Wired Equivalent Privacy</td></tr>
+        <tr><td><strong>WPA</strong></td><td>WiFi Protected Access</td></tr>
+        <tr><td><strong>WTLS</strong></td><td>Wireless Transport Layer Security</td></tr>
+        <tr><td><strong>XDMCP</strong></td><td>X Display Manager Control Protocol</td></tr>
+        <tr><td><strong>XML</strong></td><td>Extensible Markup Language</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ 15. MISC ═══ -->
+  <div class="section" id="misc">
+    <h2><span class="icon">⚡</span> 15. Misc High-Yield Facts</h2>
+    <ul class="notes">
+      <li><strong>Classless routing not supported by:</strong> IGRP + RIPv1 &bull; <strong>RIPv1 auth:</strong> None</li>
+      <li><strong>SNMP vuln:</strong> clear text community strings &bull; <strong>SNMP MIB (Win users):</strong> <code>1.3.6.1.4.1.77.1.2.25</code></li>
+      <li><strong>FTP PORT:</strong> <code>PORT 10,2,0,2,10,10</code> &rarr; IP 10.2.0.2, port 2570</li>
+      <li><strong>umask 0027</strong> &rarr; owner: rw-, group: r-x, other: --- &bull; <strong>Octet 640</strong> = <code>drw-r-----</code></li>
+      <li><strong>MAC flooding</strong> &rarr; switch forwards to all ports</li>
+      <li><strong>SYN flood</strong> &rarr; DoS via small connection queue</li>
+      <li><strong>Land attack</strong> &rarr; same source &amp; destination address</li>
+      <li><strong>Firewalking</strong> &rarr; discover firewall rules</li>
+      <li><strong>ARP scan</strong> &rarr; discover firewalls blocking all traffic</li>
+      <li><strong>NetBus</strong> = port 12345 &bull; <strong>Beast</strong> = port 6666</li>
+      <li><strong>Google hacking invalid:</strong> <code>infile:</code></li>
+      <li><strong>Security through obscurity</strong> = non-default ports</li>
+      <li><strong>RAID-1</strong> = disk mirroring &bull; <strong>Whaling</strong> = exec phishing</li>
+      <li><strong>Rootkit</strong> = kernel-level &bull; <strong>Worms</strong> = self-propagating</li>
+      <li><strong>Clickjacking</strong> = mouse control via compromised site</li>
+      <li><strong>Stored XSS</strong> = hardest for automated tools &bull; <strong>Tripwire</strong> = file integrity</li>
+      <li><strong>Cipher lock</strong> = keypad &bull; <strong>Warded lock</strong> = easiest to pick</li>
+      <li><strong>Defence in-depth</strong> = firewall + encryption together</li>
+      <li><strong>NCA</strong> = contact for insider trading/fraud &bull; <strong>Valid RIR:</strong> LACNIC &bull; <strong>Not valid:</strong> AFNIC</li>
+      <li><strong>Executive Summary</strong> = business impact &bull; <strong>Technical details</strong> = IT/InfoSec staff</li>
+      <li><strong>VPN Main Mode</strong> = protects identity &bull; <strong>Aggressive Mode</strong> = does not</li>
+      <li><strong>PSK + Main Mode</strong> = needs peer IP known (why remote VPNs use Aggressive)</li>
+      <li><strong>IKE Phase-1 (4):</strong> Encryption Algo, Hash Algo, Auth Method, DH Group</li>
+    </ul>
+
+    <h3>Network Attacks Quick Reference<span class="tip" tabindex="0">💡<span class="tip-popup">
+      <strong>Mnemonic — group by layer / target</strong><br>
+      <strong>Layer 2 (switch)</strong>: MAC flood, ARP poison, VLAN hop.<br>
+      <strong>Layer 3 (IP)</strong>: LAND, Teardrop, Ping of Death, Smurf, Fraggle.<br>
+      <strong>Layer 4 (TCP/UDP)</strong>: SYN flood, session hijack.<br>
+      <strong>Layer 7</strong>: DNS spoof, slowloris, XSS, SQLi.
+    </span></span></h3>
+    <table>
+      <thead><tr><th>Attack</th><th>How it Works</th><th>Layer / Target</th></tr></thead>
+      <tbody>
+        <tr><td><strong>SMURF</strong></td><td>ICMP echo to broadcast addr, spoofed src = victim → amplified flood</td><td>L3 / ICMP</td></tr>
+        <tr><td><strong>Fraggle</strong></td><td>Same as Smurf but with <strong>UDP</strong> echo (port 7)</td><td>L4 / UDP</td></tr>
+        <tr><td><strong>Teardrop</strong></td><td>Overlapping IP fragment offsets → kernel crash (old)</td><td>L3 / IP fragmentation</td></tr>
+        <tr><td><strong>LAND</strong></td><td>Packet with src = dst (same IP &amp; port) → infinite loop</td><td>L3 / TCP</td></tr>
+        <tr><td><strong>Ping of Death</strong></td><td>Oversized ICMP packet (&gt;65,535 B) crashes old stacks</td><td>L3 / ICMP</td></tr>
+        <tr><td><strong>SYN flood</strong></td><td>Half-open connections fill the SYN backlog → DoS</td><td>L4 / TCP</td></tr>
+        <tr><td><strong>MAC flooding</strong></td><td>Overflow CAM table → switch fails-open, forwards to all ports</td><td>L2 / switch</td></tr>
+        <tr><td><strong>ARP poisoning</strong></td><td>Forge ARP reply binding your MAC to victim's IP → MITM. Tool: <code>Cain</code>, <code>ettercap</code></td><td>L2 / ARP</td></tr>
+        <tr><td><strong>VLAN hopping</strong></td><td>Double-tag or DTP trick → jump to another VLAN</td><td>L2 / 802.1Q</td></tr>
+        <tr><td><strong>DNS spoofing</strong></td><td>Inject false records into resolver cache → MITM</td><td>L7 / DNS</td></tr>
+        <tr><td><strong>Session hijack</strong></td><td>Steal/predict session ID or sequence numbers</td><td>L4-L7</td></tr>
+        <tr><td><strong>Deauth attack</strong></td><td>Forge 802.11 deauth frames → reveal ESSID / capture handshake</td><td>L2 / WiFi</td></tr>
+        <tr><td><strong>Firewalking</strong></td><td>TTL-trick to map filter rules behind a firewall</td><td>L3 / recon</td></tr>
+      </tbody>
+    </table>
+    <ul class="notes">
+      <li><strong>ARP poisoning defence:</strong> VLAN segregation, dynamic ARP inspection (DAI), static ARP</li>
+      <li><strong>SMB null session</strong> defence: <code>RestrictAnonymous=1</code> on Windows NT/2000</li>
+      <li><strong>Wardriving</strong> = searching for WiFi by driving &bull; <strong>Wardialing</strong> = scanning phone-line modems</li>
+    </ul>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ 16. PENTEST ═══ -->
+  <div class="section" id="pentest">
+    <h2><span class="icon">🎯</span> 16. Pentesting Process & Law</h2>
+    <div class="highlight-box">
+      <strong>Pentest sequence:</strong> Scoping &rarr; Testing &rarr; Report Writing &rarr; Debrief
+    </div>
+    <ul class="notes">
+      <li><strong>UK 3 main laws:</strong> Computer Misuse Act, Human Rights Act, Data Protection Act</li>
+      <li><strong>Police and Justice Act 2006</strong> amended Computer Misuse Act 1990</li>
+      <li><strong>UK gov markings (low&rarr;high):</strong> NPM, PROTECT, RESTRICTED, CONFIDENTIAL, SECRET, TOP SECRET</li>
+      <li><strong>Four risk treatments:</strong> Avoid, Reduce, Accept, Transfer</li>
+      <li>Scope defined <strong>before</strong> testing starts</li>
+      <li>Personal data must be handled securely (Data Protection Act)</li>
+      <li>No disruption expected; client should report anomalous behaviour immediately</li>
+    </ul>
+
+    <h3>Risk Management<span class="tip" tabindex="0">💡<span class="tip-popup">
+      <strong>Mnemonic — "ARAT" 4 treatments</strong><br>
+      <code>A</code>void &bull; <code>R</code>educe &bull; <code>A</code>ccept &bull; <code>T</code>ransfer<br><br>
+      <strong>Primary objective:</strong> reduce risk to an <em>acceptable level</em> — NOT eliminate it entirely.<br><br>
+      <strong>Inherent risk</strong> = baked-in risk of an activity <em>before</em> any controls.<br>
+      <strong>Residual risk</strong> = what's left <em>after</em> controls are applied.<br>
+      Formula: <code>Risk = Likelihood &times; Impact</code>.
+    </span></span></h3>
+    <table>
+      <thead><tr><th>Treatment</th><th>Meaning</th><th>Example</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Avoid</strong></td><td>Stop doing the risky activity</td><td>Don't run the legacy service at all</td></tr>
+        <tr><td><strong>Reduce</strong></td><td>Apply controls to lower likelihood/impact</td><td>Patch, segment, harden</td></tr>
+        <tr><td><strong>Accept</strong></td><td>Acknowledge and live with it</td><td>Low-impact risk, sign-off by risk owner</td></tr>
+        <tr><td><strong>Transfer</strong></td><td>Shift to a third party</td><td>Cyber insurance, outsourcing</td></tr>
+      </tbody>
+    </table>
+    <ul class="notes">
+      <li><strong>Inherent risk</strong> = the risk implicitly associated with the activity itself</li>
+      <li><strong>Residual risk</strong> = remaining risk after controls (always &gt; 0)</li>
+      <li><strong>Risk register</strong> = living document tracking all identified risks + treatments</li>
+      <li><strong>Executive Summary</strong> &rarr; business audience (impact) &bull; <strong>Technical findings</strong> &rarr; IT/InfoSec</li>
+    </ul>
+
+    <h3>Authentication Factors &amp; Biometrics<span class="tip" tabindex="0">💡<span class="tip-popup">
+      <strong>Mnemonic — biometric accuracy</strong><br>
+      <code>FAR</code> = <strong>F</strong>alse <strong>A</strong>ccept Rate — impostor let in (security risk).<br>
+      <code>FRR</code> = <strong>F</strong>alse <strong>R</strong>eject Rate — legit user blocked (usability risk).<br>
+      <code>CER</code> = <strong>C</strong>rossover <strong>E</strong>rror Rate = point where FAR = FRR.<br><br>
+      <strong>Lower CER = better system.</strong><br><br>
+      The 3 MFA factor types: <em>something you</em> <strong>K</strong>now / <strong>H</strong>ave / <strong>A</strong>re (= K-H-A).
+    </span></span></h3>
+    <table>
+      <thead><tr><th>Factor</th><th>Type</th><th>Examples</th></tr></thead>
+      <tbody>
+        <tr><td>Something you <strong>know</strong></td><td>Knowledge</td><td>Password, PIN, security question</td></tr>
+        <tr><td>Something you <strong>have</strong></td><td>Possession</td><td>Smart card, TOTP token, FIDO2 key</td></tr>
+        <tr><td>Something you <strong>are</strong></td><td>Inherence (biometric)</td><td>Fingerprint, iris, face, voice</td></tr>
+        <tr><td>Somewhere you <strong>are</strong></td><td>Location</td><td>GPS, IP geolocation, network zone</td></tr>
+      </tbody>
+    </table>
+    <ul class="notes">
+      <li><strong>MFA</strong> = at least 2 <em>different</em> factor types (two passwords ≠ MFA)</li>
+      <li><strong>Iris scan</strong> = most accurate biometric &bull; <strong>Fingerprint</strong> = most common</li>
+      <li><strong>FAR vs FRR tradeoff:</strong> tightening one loosens the other; CER is the balance point</li>
+    </ul>
+
+    <h3>RAID Levels<span class="tip" tabindex="0">💡<span class="tip-popup">
+      <strong>Mnemonic — RAID at a glance</strong><br>
+      <code>0</code> = <strong>Z</strong>ero redundancy (stripe only) — speed, no safety.<br>
+      <code>1</code> = m<strong>1</strong>rror — pure copy, halves capacity.<br>
+      <code>5</code> = stripe + 1 parity — survives 1 disk loss (≥3 disks).<br>
+      <code>6</code> = stripe + 2 parity — survives 2 disk losses (≥4 disks).<br>
+      <code>10</code> (1+0) = mirror, then stripe — speed + safety, ≥4 disks.<br><br>
+      Memory: <strong>Even = no parity</strong> (0/10), <strong>5 = 1 parity</strong>, <strong>6 = 2 parity</strong>.
+    </span></span></h3>
+    <table>
+      <thead><tr><th>RAID</th><th>Technique</th><th>Min Disks</th><th>Fault Tolerance</th></tr></thead>
+      <tbody>
+        <tr><td><strong>0</strong></td><td>Striping</td><td>2</td><td><span class="tag tag-red">None</span> — any disk fails = data lost</td></tr>
+        <tr><td><strong>1</strong></td><td>Mirroring</td><td>2</td><td>Survives 1 disk loss; 50% capacity</td></tr>
+        <tr><td><strong>5</strong></td><td>Stripe + distributed parity</td><td>3</td><td>Survives 1 disk loss</td></tr>
+        <tr><td><strong>6</strong></td><td>Stripe + double parity</td><td>4</td><td>Survives 2 disk losses</td></tr>
+        <tr><td><strong>10</strong> (1+0)</td><td>Mirror, then stripe</td><td>4</td><td>Survives multiple losses (not in same mirror)</td></tr>
+      </tbody>
+    </table>
+    <ul class="notes">
+      <li><strong>RAID-1 = "disk mirroring"</strong> (classic exam phrasing for fault tolerance)</li>
+      <li><strong>RAID is for availability, NOT backup</strong> — ransomware/deletion replicates instantly</li>
+    </ul>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ 17. AUTHORITIES ═══ -->
+  <div class="section" id="auth">
+    <h2><span class="icon">🏛️</span> 17. Internet & Legal Authorities<span class="tip" tabindex="0">💡<span class="tip-popup">
+      <strong>Mnemonic — who governs what</strong><br>
+      <strong>Numbers</strong> (IPs, ports, ASNs) → <code>IANA</code> → delegates to <code>RIRs</code>.<br>
+      <strong>Names</strong> (DNS root, gTLDs) → <code>ICANN</code> (parent of IANA).<br>
+      <strong>Standards</strong> → <code>IETF</code> (RFCs) &bull; <code>IEEE</code> (802.x, MAC OUI) &bull; <code>W3C</code> (web) &bull; <code>ISO</code> (OSI) &bull; <code>NIST</code> (AES/SHA).<br>
+      <strong>UK reporting</strong> → <code>ICO</code> (data breaches) &bull; <code>NCA</code> (fraud/insider trading) &bull; <code>NCSC</code> (cyber).
+    </span></span></h2>
+
+    <h3>Regional Internet Registries (RIRs)<span class="tip" tabindex="0">💡<span class="tip-popup">
+      <strong>Mnemonic — 5 regions, "ARLA" + 2</strong><br>
+      <code>ARIN</code> = <strong>A</strong>merican (North America)<br>
+      <code>RIPE NCC</code> = Europe / Middle East / Central Asia<br>
+      <code>APNIC</code> = <strong>A</strong>sia-<strong>P</strong>acific<br>
+      <code>LACNIC</code> = <strong>L</strong>atin America &amp; Caribbean<br>
+      <code>AFRINIC</code> = <strong>AFRI</strong>ca<br><br>
+      <span class="tag tag-red">AFNIC is NOT an RIR</span> &mdash; it's France's <em>ccTLD</em> registry (don't confuse with AFRINIC).<br>
+      All 5 get IP blocks from <strong>IANA</strong>.
+    </span></span></h3>
+    <table>
+      <thead><tr><th>RIR</th><th>Region</th><th>Established</th></tr></thead>
+      <tbody>
+        <tr><td><strong>ARIN</strong></td><td>North America</td><td>1997</td></tr>
+        <tr><td><strong>RIPE NCC</strong></td><td>Europe, Middle East, Central Asia</td><td>1992</td></tr>
+        <tr><td><strong>APNIC</strong></td><td>Asia-Pacific</td><td>1993</td></tr>
+        <tr><td><strong>LACNIC</strong></td><td>Latin America &amp; Caribbean</td><td>2002</td></tr>
+        <tr><td><strong>AFRINIC</strong></td><td>Africa</td><td>2005</td></tr>
+        <tr><td><span class="tag tag-red">AFNIC</span></td><td><em>Not an RIR</em> &mdash; France ccTLD (.fr) registry</td><td>&mdash;</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Standards &amp; Numbering Bodies<span class="tip" tabindex="0">💡<span class="tip-popup">
+      <strong>Mnemonic — split by what they assign</strong><br>
+      <code>IANA</code> = numbers (port assignments, IP blocks → RIRs).<br>
+      <code>ICANN</code> = names (DNS root, gTLDs). Oversees IANA.<br>
+      <code>IETF</code> = protocols (publishes <strong>RFCs</strong>).<br>
+      <code>IEEE</code> = hardware standards (802.x, MAC <strong>OUI</strong> prefixes).<br>
+      <code>W3C</code> = web (HTML, CSS, DOM).<br>
+      <code>ISO</code> = international standards (OSI 7 layers, 27001).<br>
+      <code>NIST</code> = US crypto/standards (AES, SHA, NIST SP 800-series).
+    </span></span></h3>
+    <table>
+      <thead><tr><th>Authority</th><th>Full Name</th><th>Responsibility</th></tr></thead>
+      <tbody>
+        <tr><td><strong>IANA</strong></td><td>Internet Assigned Numbers Authority</td><td>Port numbers, IP/ASN allocation to RIRs, root DNS</td></tr>
+        <tr><td><strong>ICANN</strong></td><td>Internet Corporation for Assigned Names &amp; Numbers</td><td>DNS root zone, gTLDs; parent of IANA</td></tr>
+        <tr><td><strong>IETF</strong></td><td>Internet Engineering Task Force</td><td>Publishes <strong>RFCs</strong> (protocol standards)</td></tr>
+        <tr><td><strong>IEEE</strong></td><td>Institute of Electrical &amp; Electronics Engineers</td><td>802.x standards, MAC <strong>OUI</strong> assignments</td></tr>
+        <tr><td><strong>W3C</strong></td><td>World Wide Web Consortium</td><td>HTML, CSS, DOM, web standards</td></tr>
+        <tr><td><strong>ISO</strong></td><td>International Organization for Standardization</td><td>OSI 7-layer model, ISO 27001/27002</td></tr>
+        <tr><td><strong>NIST</strong></td><td>National Institute of Standards &amp; Technology (US)</td><td>AES, SHA, NIST SP 800 series</td></tr>
+        <tr><td><strong>ITU-T</strong></td><td>International Telecom Union (Telecom)</td><td>X.509 certs, V.xx modem, telephony</td></tr>
+      </tbody>
+    </table>
+
+    <h3>UK Reporting &amp; Legal Bodies<span class="tip" tabindex="0">💡<span class="tip-popup">
+      <strong>Mnemonic — who to call when X happens</strong><br>
+      <strong>Insider trading / fraud</strong> → <code>NCA</code> (National Crime Agency).<br>
+      <strong>Personal-data breach</strong> → <code>ICO</code> (Information Commissioner's Office).<br>
+      <strong>Cyber incident / nation-state</strong> → <code>NCSC</code> (National Cyber Security Centre).<br>
+      <strong>Financial misconduct</strong> → <code>FCA</code> (Financial Conduct Authority).<br>
+      <strong>Generic IR coordination</strong> → <code>CERT</code> (Computer Emergency Response Team).<br><br>
+      Memory: <em>Numbers crime → NCA, Information privacy → ICO, Cyber → NCSC.</em>
+    </span></span></h3>
+    <table>
+      <thead><tr><th>Body</th><th>Full Name</th><th>When to Contact</th></tr></thead>
+      <tbody>
+        <tr><td><strong>NCA</strong></td><td>National Crime Agency</td><td>Insider trading, fraud, serious cybercrime</td></tr>
+        <tr><td><strong>ICO</strong></td><td>Information Commissioner's Office</td><td>Personal-data breach (GDPR / DPA 2018)</td></tr>
+        <tr><td><strong>NCSC</strong></td><td>National Cyber Security Centre</td><td>Cyber incident affecting CNI / gov</td></tr>
+        <tr><td><strong>FCA</strong></td><td>Financial Conduct Authority</td><td>Financial-sector misconduct</td></tr>
+        <tr><td><strong>CERT</strong></td><td>Computer Emergency Response Team</td><td>Incident coordination / disclosure</td></tr>
+      </tbody>
+    </table>
+
+    <h3>UK Legislation Relevant to Pentesting</h3>
+    <ul class="notes">
+      <li><strong>Computer Misuse Act 1990</strong> &mdash; the primary law; <em>written permission</em> is required to avoid breaching it</li>
+      <li><strong>Police and Justice Act 2006</strong> &mdash; amended the CMA (added s.3A: making/supplying hacking tools)</li>
+      <li><strong>Data Protection Act 2018</strong> &mdash; UK-GDPR alignment; governs personal data handling</li>
+      <li><strong>Human Rights Act 1998</strong> &mdash; Article 8 (right to privacy)</li>
+      <li><strong>RIPA 2000</strong> &mdash; Regulation of Investigatory Powers (lawful interception)</li>
+      <li><strong>Wireless Telegraphy Act 2006</strong> &mdash; covers RF / WiFi capture</li>
+      <li>CMA &sect; 3 offences: <em>unauthorised access</em>, <em>access with intent</em>, <em>unauthorised modification</em></li>
+    </ul>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ 18. DATABASES ═══ -->
+  <div class="section" id="db">
+    <h2><span class="icon">🗄️</span> 18. Database Defaults</h2>
+    <table>
+      <thead><tr><th>Database</th><th>Detail</th></tr></thead>
+      <tbody>
+        <tr><td>Oracle SYS password</td><td><code>CHANGE_ON_INSTALL</code></td></tr>
+        <tr><td>Oracle DBSNMP password</td><td><code>DBSNMP</code></td></tr>
+        <tr><td>MSSQL admin account</td><td><code>sa</code></td></tr>
+        <tr><td>MSSQL version query</td><td><code>select @@version;</code></td></tr>
+        <tr><td>MSSQL priv escalation</td><td><code>xp_cmdshell</code></td></tr>
+      </tbody>
+    </table>
+
+    <h3>Database Default Ports</h3>
+    <table>
+      <thead><tr><th>Database</th><th>Port(s)</th></tr></thead>
+      <tbody>
+        <tr><td>MSSQL (SQL Server)</td><td><code>1433/tcp</code>, <code>1434/udp</code> (browser), <code>2433/tcp</code> (hidden mode)</td></tr>
+        <tr><td>Oracle TNS</td><td><code>1521/tcp</code></td></tr>
+        <tr><td>MySQL</td><td><code>3306/tcp</code></td></tr>
+        <tr><td>PostgreSQL</td><td><code>5432/tcp</code></td></tr>
+        <tr><td>MongoDB</td><td><code>27017/tcp</code></td></tr>
+        <tr><td>Redis</td><td><code>6379/tcp</code></td></tr>
+      </tbody>
+    </table>
+
+    <h3>Blind SQL Injection</h3>
+    <table>
+      <thead><tr><th>Database</th><th>Statement</th></tr></thead>
+      <tbody>
+        <tr><td>MSSQL / IIS</td><td><code>;WAITFOR DELAY '0:0:5'--</code></td></tr>
+        <tr><td>Oracle</td><td><code>dbms_lock.sleep(5)</code> or <code>dbms_session.sleep(5)</code></td></tr>
+        <tr><td>MySQL</td><td><code>sleep(5)</code> &mdash; also <code>BENCHMARK(N, expr)</code></td></tr>
+        <tr><td>PostgreSQL</td><td><code>pg_sleep(5)</code></td></tr>
+      </tbody>
+    </table>
+    <ul class="notes">
+      <li><strong>Blind SQLi detection:</strong> server <em>behaviour</em> changes on a successful injection (no errors, no visible output)</li>
+    </ul>
+
+    <h3>Injection Types (OWASP "Injection" family)</h3>
+    <ul class="notes">
+      <li><strong>SQL Injection (SQLi)</strong> — untrusted input into SQL query</li>
+      <li><strong>Blind SQL Injection</strong> — no errors/output; infer via behaviour or time delay</li>
+      <li><strong>Command Injection (OS)</strong> — shell metacharacters into system call</li>
+      <li><strong>Code Injection</strong> — umbrella term incl. SQLi, Command, HTML, XSS</li>
+      <li><strong>LDAP Injection</strong> — directory filter manipulation</li>
+      <li><strong>XPath Injection</strong> — XML query manipulation</li>
+      <li><strong>HTML Injection</strong> — markup injected into rendered page</li>
+      <li><strong>Cross-Site Scripting (XSS)</strong> — client-side script injection</li>
+      <li><strong>Packet Injection</strong> — crafted frames on the wire (e.g. <code>hping</code>, <code>scapy</code>)</li>
+    </ul>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ 18. MAC ═══ -->
+  <div class="section" id="mac">
+    <h2><span class="icon">🏷️</span> 19. MAC Address Facts</h2>
+    <ul class="notes">
+      <li><strong>48 bits</strong> / <strong>6 bytes</strong> &bull; <strong>2^48</strong> possible unique addresses</li>
+      <li><strong>OUI</strong> = first 3 bytes (e.g. <code>00:0B:46</code>)</li>
+      <li><strong>Ethernet multicast:</strong> <code>01:00:0c:cc:cc:cc</code></li>
+      <li><strong>MAC prefixes assigned by:</strong> IEEE</li>
+      <li><strong>MAC</strong> = Media Access Control</li>
+    </ul>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ 19. NET MISC ═══ -->
+  <div class="section" id="netmisc">
+    <h2><span class="icon">🔗</span> 20. Network Protocols & Misc</h2>
+    <ul class="notes">
+      <li><strong>HSRP:</strong> default priority=100, default group=1</li>
+      <li>v1 multicast: <code>224.0.0.2</code>, preemption disabled &bull; v2: <code>224.0.0.102</code>, preemption enabled, IPv6</li>
+      <li><strong>Default VLAN:</strong> VLAN 1</li>
+      <li><strong>OSPF</strong> = Open Shortest Path First &bull; <strong>CDP</strong> = Cisco Discovery Protocol</li>
+      <li><strong>CNAME</strong> = hostname &rarr; hostname &bull; <strong>MX</strong> = domain &rarr; email server</li>
+      <li><strong>NWS</strong> = <span class="tag tag-red">NOT a valid DNS type</span></li>
+      <li><strong>10/100/1000baseT</strong> = twisted-pair copper cables</li>
+      <li><strong>X.509</strong> = digital certificate structure</li>
+      <li><strong>Squid proxy:</strong> content filtering, port 3128, between ISP and client</li>
+      <li><strong>DNS zone transfer:</strong> <code>dig @server domain axfr</code></li>
+      <li><strong>Cisco password 7</strong> = reversible Vigen&egrave;re algorithm</li>
+      <li><strong>Cisco IOS banner:</strong> "User Access Verification, Password:"</li>
+    </ul>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ 20. TCP ═══ -->
+  <div class="section" id="tcp">
+    <h2><span class="icon">🤝</span> 21. TCP Handshake & Flags</h2>
+    <table>
+      <thead><tr><th>Flag</th><th>Meaning</th></tr></thead>
+      <tbody>
+        <tr><td><strong>SYN</strong></td><td>Synchronize</td></tr>
+        <tr><td><strong>ACK</strong></td><td>Acknowledge</td></tr>
+        <tr><td><strong>SYN-ACK</strong></td><td>Synchronize and Acknowledge</td></tr>
+        <tr><td><strong>FIN</strong></td><td>Finish (terminates connection)</td></tr>
+      </tbody>
+    </table>
+    <ul class="notes">
+      <li><strong>TCP</strong> = connection-oriented, 3-way handshake</li>
+      <li><strong>UDP</strong> = connectionless, for apps not needing reliable stream</li>
+      <li><strong>\r\n</strong> = Windows line ending (CR+LF) &bull; <strong>\n</strong> = Unix</li>
+      <li><strong>Carriage return</strong> = ASCII 13 &bull; <strong>Line feed</strong> = ASCII 10</li>
+      <li><strong>CRLF</strong> = Carriage Return Line Feed</li>
+    </ul>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ 21. WEB ═══ -->
+  <div class="section" id="web">
+    <h2><span class="icon">💻</span> 22. Web & Application</h2>
+    <ul class="notes">
+      <li><strong>AJAX</strong> = Asynchronous Javascript and XML</li>
+      <li><strong>SOAP</strong> = Simple Object Access Protocol</li>
+      <li><strong>JSP</strong> = Java Server Pages</li>
+      <li><strong>LAMP</strong> = Linux Apache MySQL PHP</li>
+      <li><strong>URI</strong> = Uniform Resource Identifier &bull; <strong>URL</strong> = Uniform Resource Locator</li>
+      <li><strong>Java Sandbox</strong> = security model limiting Java apps</li>
+      <li><strong>register_globals</strong> (PHP) = security risk if enabled</li>
+      <li><strong>Apache chunked encoding:</strong> fixed in 1.3.26 and 2.0.39</li>
+      <li><strong>Pure Java application</strong> = most secure web app technology</li>
+      <li><strong>Canary values</strong> = prevent buffer overflow in C compilers</li>
+      <li><strong>TEMPEST</strong> = electronic emanation security</li>
+      <li><strong>OSINT</strong> = collecting info from public sources</li>
+      <li><strong>Packet crafting:</strong> hping2, hping3, scapy</li>
+      <li><strong>Double encoding:</strong> <code>%252e</code> encodes <code>%2e</code> which encodes <code>.</code></li>
+      <li><strong>SEP</strong> (Cisco IP phone) = Selsius Ethernet Phone</li>
+      <li><strong>NetBIOS</strong> = Network Basic Input/Output System</li>
+      <li><strong>VoIP</strong> = Voice over Internet Protocol</li>
+      <li><strong>SMS</strong> (cyber) = Security Management System</li>
+    </ul>
+  </div>
+
+</main>
+
+<button class="to-top" id="toTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">&uarr;</button>
+
+<script>
+// Search functionality
+document.getElementById('search').addEventListener('input', function() {
+  const q = this.value.toLowerCase().trim();
+  document.querySelectorAll('.section').forEach(s => {
+    if (!q) { s.style.display = ''; return; }
+    s.style.display = s.textContent.toLowerCase().includes(q) ? '' : 'none';
+  });
+});
+
+// Scroll to top button
+window.addEventListener('scroll', () => {
+  document.getElementById('toTop').classList.toggle('show', window.scrollY > 400);
+});
+
+// Active nav highlighting
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
+      const link = document.querySelector(`nav a[href="#${e.target.id}"]`);
+      if (link) link.classList.add('active');
+    }
+  });
+}, { threshold: 0.15, rootMargin: '-80px 0px -60% 0px' });
+
+document.querySelectorAll('.section').forEach(s => observer.observe(s));
+
+// Close mobile nav on link click
+document.querySelectorAll('nav a').forEach(a => {
+  a.addEventListener('click', () => {
+    document.getElementById('nav-toggle').checked = false;
+  });
+});
+
+// "Learned" feature: tick each row/li to mark as known, hide globally with toggle
+(function() {
+  function hashStr(s) {
+    let h = 5381;
+    for (let i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) | 0;
+    return h.toString(36);
+  }
+  const STORAGE_KEY = 'crest-learned-v1';
+  const HIDE_KEY = 'crest-hide-learned';
+  let learned;
+  try { learned = new Set(JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]')); }
+  catch(e) { learned = new Set(); }
+
+  const hideBtn = document.getElementById('hide-learned-btn');
+  const resetBtn = document.getElementById('reset-learned-btn');
+
+  function persist() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify([...learned]));
+    updateUI();
+  }
+  function updateUI() {
+    const hiding = document.body.classList.contains('hide-learned');
+    hideBtn.textContent = `🎯 ${hiding ? 'Show' : 'Hide'} Learned (${learned.size})`;
+    hideBtn.classList.toggle('active', hiding);
+  }
+
+  // Inject a checkbox into every learnable row/list-item
+  document.querySelectorAll('tbody tr:not(.port-group), .notes > li').forEach(row => {
+    if (row.closest('.tip-popup')) return;
+    const text = row.textContent.replace(/\s+/g, ' ').trim().slice(0, 250);
+    if (!text) return;
+    const key = hashStr(text);
+    row.dataset.lkey = key;
+    if (learned.has(key)) row.classList.add('learned');
+    const cb = document.createElement('span');
+    cb.className = 'learn-check';
+    cb.setAttribute('title', 'Mark as learned');
+    cb.setAttribute('role', 'checkbox');
+    if (row.tagName === 'TR') {
+      const firstCell = row.firstElementChild;
+      if (firstCell) firstCell.prepend(cb);
+    } else {
+      row.prepend(cb);
+    }
+  });
+
+  // Toggle learned on checkbox click
+  document.addEventListener('click', e => {
+    const cb = e.target.closest('.learn-check');
+    if (!cb) return;
+    e.stopPropagation();
+    const row = cb.closest('tr, li');
+    if (!row || !row.dataset.lkey) return;
+    const key = row.dataset.lkey;
+    if (learned.has(key)) { learned.delete(key); row.classList.remove('learned'); }
+    else { learned.add(key); row.classList.add('learned'); }
+    persist();
+  });
+
+  // Global hide/show toggle
+  hideBtn.addEventListener('click', () => {
+    document.body.classList.toggle('hide-learned');
+    localStorage.setItem(HIDE_KEY, document.body.classList.contains('hide-learned') ? '1' : '0');
+    updateUI();
+  });
+
+  // Reset all
+  resetBtn.addEventListener('click', () => {
+    if (!confirm(`Clear all ${learned.size} learned marks?`)) return;
+    learned.clear();
+    document.querySelectorAll('.learned').forEach(r => r.classList.remove('learned'));
+    persist();
+  });
+
+  if (localStorage.getItem(HIDE_KEY) === '1') document.body.classList.add('hide-learned');
+  updateUI();
+})();
+
+// Mnemonic tooltips: tap-to-toggle on touch, hover handled by CSS
+document.addEventListener('click', e => {
+  const tip = e.target.closest('.tip');
+  document.querySelectorAll('.tip.active').forEach(t => {
+    if (t !== tip) t.classList.remove('active');
+  });
+  if (tip) {
+    e.stopPropagation();
+    tip.classList.toggle('active');
+  }
+});
+</script>
+
+</body>
+</html>

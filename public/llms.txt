@@ -1,0 +1,59 @@
+# xbz0n.sh
+
+> Personal website of Ivan Spiridonov (xbz0n) — Offensive Security Consultant specializing in penetration testing, red teaming, vulnerability research, and exploit development.
+
+## About
+
+Ivan Spiridonov is a professional penetration tester and security researcher based in Europe. He holds OSCP, OSEP, OSWE, OSED, and OSCE3 certifications from Offensive Security. He has published multiple CVEs and develops open-source security tools.
+
+- Website: https://xbz0n.sh
+- GitHub: https://github.com/xbz0n
+- Twitter: https://twitter.com/xbz0n
+- LinkedIn: https://www.linkedin.com/in/ivanspiridonov/
+
+## Pages
+
+- [Home](https://xbz0n.sh/)
+- [About](https://xbz0n.sh/about)
+- [Blog](https://xbz0n.sh/blog)
+- [Tools](https://xbz0n.sh/tools)
+- [CVEs](https://xbz0n.sh/cves)
+
+## Blog Posts
+
+- [Tracing a Smishing Triad Fake-Fine Campaign Targeting Bulgaria (МВР)](https://xbz0n.sh/blog/smishing-triad-mvr-bulgaria): This one didn't start as an engagement. It started when my girlfriend got a text message claiming she had an unpaid fine from МВР (the Bulgarian Ministry of Interior), with a link to "pay" it. It was...
+- [From /monaco to k8s Full Cluster Compromise](https://xbz0n.sh/blog/from-monaco-to-k8s-full-cluster-compromise): I've done a lot of web application assessments over the years, but this one stands out. The client pointed me at a single URL — https://www.target-platform.com/monaco — a browser-based code editor...
+- [Extracting a Dead Cult Leader's AI Mind](https://xbz0n.sh/blog/extracting-dead-cult-leaders-ai-mind): In February 2026, six people died across two crime scenes in Bulgaria's western mountains — three in a group suicide, three more in what prosecutors called two murders followed by a suicide — all...
+- [Living Off the Land: Windows Post-Exploitation Without Tools](https://xbz0n.sh/blog/living-off-the-land-windows): I'll never forget one of my first red team engagements where I learned this lesson the hard way. I'd spent two days carefully phishing my way into a financial services company, finally landing a...
+- [Finding and Exploiting CVE-2025-50674 in OpenMediaVault](https://xbz0n.sh/blog/CVE-2025-50674): Recently, I discovered a critical vulnerability in OpenMediaVault, a popular open-source network-attached storage solution. The vulnerability (published as CVE-2025-50674) allows authenticated users...
+- [Mythic C2 with EarlyBird Injection and Defender Evasion](https://xbz0n.sh/blog/mythic-c2-early-bird-defender-evasion): Let's talk about building C2 infrastructure that actually works in the real world. Most red teamers think they can just spin up a Cobalt Strike server and call it a day, but that's how you get burned...
+- [Breaking ADCS: ESC1 to ESC16 Attack Techniques](https://xbz0n.sh/blog/adcs-complete-attack-reference): Let's talk about Active Directory Certificate Services. If you've been doing red team work for any length of time, you've probably heard about ADCS attacks. What started as a convenient way to manage...
+- [From Zero Creds to Enterprise Admin](https://xbz0n.sh/blog/from-zero-creds-to-ea): Active Directory remains the backbone of most corporate network environments. Despite being a mature technology with decades of security research behind it, misconfigurations and default settings...
+- [XSS to Account Takeover & Data Exfiltration](https://xbz0n.sh/blog/XSS-to-Account-Takeover-and-Data-Exfiltration): Cross-Site Scripting (XSS) vulnerabilities continue to plague web applications despite being well-understood for decades. While they might seem simple on the surface, the impact of XSS can be...
+- [VirtualProtect DEP Bypass: Step-By-Step Exploit](https://xbz0n.sh/blog/virtualprotect_dep_bypass_guide): Data Execution Prevention (DEP) has been a game-changer in exploit development. The days of simply overflowing a buffer, jumping to your shellcode, and calling it a day are long gone. DEP enforces a...
+- [Social Engineering in Red Team Operations: Technical Setup and Tools](https://xbz0n.sh/blog/social-engineering-redteam): Let's talk about social engineering and OSINT in modern red team operations. Despite all the fancy security tech out there, humans still make decisions based on trust, authority, and urgency. That's...
+- [C2 Redirectors: Advanced Infrastructure for Modern Red Team Operations](https://xbz0n.sh/blog/c2-redirectors): Let's talk about Command and Control (C2) infrastructure. It's the backbone of any red team operation, letting you talk to your implants in target environments. But here's the problem - connecting...
+- [Mastering x86 Shellcode: A Deep Dive into Calculator-Launching Payload Development](https://xbz0n.sh/blog/calculator-shellcode-analysis): In the realm of cybersecurity, shellcode represents one of the most fundamental building blocks for both offensive security practitioners and defensive analysts. These compact machine code sequences,...
+- [Finding and Exploiting CVE-2023-0830 in EasyNas](https://xbz0n.sh/blog/cve-2023-0830): Recently, I discovered a vulnerability in a backup and restore script used in EasyNAS, a popular open-source network-attached storage solution. The vulnerability (published as CVE-2023-0830) allows...
+- [GraphQL PenTest Methodology and Exploitation Techniques](https://xbz0n.sh/blog/graphql-security-flaws): GraphQL has become the darling of modern API development, and for good reason. It solves many of the headaches that come with traditional REST APIs by letting clients ask for exactly what they need...
+
+## Published CVEs
+
+- CVE-2025-50674: Privilege escalation in OpenMediaVault 7.4.17
+- CVE-2024-32136: SQL injection vulnerability
+- CVE-2024-33911: Security configuration vulnerability
+- CVE-2024-31370: Injection vulnerability allowing arbitrary code execution
+- CVE-2024-30240: SQL injection allowing authentication bypass
+- CVE-2024-0566: SQL injection allowing data exfiltration
+- CVE-2024-0405: Input validation vulnerability leading to RCE
+- CVE-2024-0399: Data integrity and confidentiality vulnerability
+- CVE-2024-0365: Privilege escalation vulnerability
+- CVE-2023-0830: Command injection in EasyNAS
+
+## Open-Source Tools
+
+- [InterceptReady](https://github.com/xbz0n/InterceptReady): Automated toolkit for configuring Android emulators with Frida and Burp Suite for mobile security testing.
+- [AspXVenom](https://github.com/xbz0n/AspXVenom): Generates encoded shellcode and embeds it into ASPX webshells for penetration testing.
+- [MacroPhantom](https://github.com/xbz0n/MacroPhantom): Generates XOR+Caesar encrypted shellcode and embeds it into VBA macros for Office documents.
+- [GoPhish Deploy](https://github.com/xbz0n/gophish-deploy): Automates deployment and configuration of the GoPhish phishing framework.
+- [AutoMSF](https://github.com/xbz0n/AutoMSF): Automates generation of multiple reverse_https payloads using msfvenom with Metasploit handler setup.

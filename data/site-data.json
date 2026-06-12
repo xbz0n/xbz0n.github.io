@@ -1,0 +1,71 @@
+{
+  "recentPosts": [
+    {
+      "slug": "smishing-triad-mvr-bulgaria",
+      "title": "Tracing a Smishing Triad Fake-Fine Campaign Targeting Bulgaria (МВР)",
+      "date": "2026-06-08"
+    },
+    {
+      "slug": "from-monaco-to-k8s-full-cluster-compromise",
+      "title": "From /monaco to k8s Full Cluster Compromise",
+      "date": "2026-03-23"
+    },
+    {
+      "slug": "extracting-dead-cult-leaders-ai-mind",
+      "title": "Extracting a Dead Cult Leader's AI Mind",
+      "date": "2026-02-15"
+    },
+    {
+      "slug": "living-off-the-land-windows",
+      "title": "Living Off the Land: Windows Post-Exploitation Without Tools",
+      "date": "2025-11-28"
+    },
+    {
+      "slug": "CVE-2025-50674",
+      "title": "Finding and Exploiting CVE-2025-50674 in OpenMediaVault",
+      "date": "2025-08-24"
+    }
+  ],
+  "popularTags": [
+    {
+      "slug": "red-team",
+      "count": 5
+    },
+    {
+      "slug": "vulnerability-research",
+      "count": 4
+    },
+    {
+      "slug": "exploit-development",
+      "count": 3
+    },
+    {
+      "slug": "infrastructure",
+      "count": 3
+    },
+    {
+      "slug": "osint",
+      "count": 3
+    },
+    {
+      "slug": "penetration-testing",
+      "count": 3
+    },
+    {
+      "slug": "privilege-escalation",
+      "count": 3
+    },
+    {
+      "slug": "web-security",
+      "count": 3
+    },
+    {
+      "slug": "active-directory",
+      "count": 2
+    },
+    {
+      "slug": "c2",
+      "count": 2
+    }
+  ]
+}

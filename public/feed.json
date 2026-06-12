@@ -1,0 +1,359 @@
+{
+  "version": "https://jsonfeed.org/version/1.1",
+  "title": "xbz0n | Security Research Blog",
+  "home_page_url": "https://xbz0n.sh/blog",
+  "feed_url": "https://xbz0n.sh/feed.json",
+  "description": "Security research articles covering penetration testing, exploit development, red team operations, Active Directory attacks, and CVE disclosures by Ivan Spiridonov (xbz0n).",
+  "language": "en",
+  "authors": [
+    {
+      "name": "Ivan Spiridonov",
+      "url": "https://xbz0n.sh",
+      "avatar": "https://xbz0n.sh/apple-touch-icon.png"
+    }
+  ],
+  "items": [
+    {
+      "id": "https://xbz0n.sh/blog/smishing-triad-mvr-bulgaria",
+      "url": "https://xbz0n.sh/blog/smishing-triad-mvr-bulgaria",
+      "title": "Tracing a Smishing Triad Fake-Fine Campaign Targeting Bulgaria (МВР)",
+      "summary": "This one didn't start as an engagement. It started when my girlfriend got a text message claiming she had an unpaid fine from МВР (the Bulgarian Ministry of Interior), with a link to \"pay\" it. It was...",
+      "content_text": "This one didn't start as an engagement. It started when my girlfriend got a text message claiming she had an unpaid fine from МВР (the Bulgarian Ministry of Interior), with a link to \"pay\" it. It was...",
+      "date_published": "2026-06-08T00:00:00.000Z",
+      "tags": [
+        "OSINT",
+        "Threat Intelligence",
+        "Phishing",
+        "Smishing",
+        "Forensics",
+        "Smishing Triad",
+        "Incident Response"
+      ],
+      "authors": [
+        {
+          "name": "Ivan Spiridonov",
+          "url": "https://xbz0n.sh"
+        }
+      ]
+    },
+    {
+      "id": "https://xbz0n.sh/blog/from-monaco-to-k8s-full-cluster-compromise",
+      "url": "https://xbz0n.sh/blog/from-monaco-to-k8s-full-cluster-compromise",
+      "title": "From /monaco to k8s Full Cluster Compromise",
+      "summary": "I've done a lot of web application assessments over the years, but this one stands out. The client pointed me at a single URL — https://www.target-platform.com/monaco — a browser-based code editor...",
+      "content_text": "I've done a lot of web application assessments over the years, but this one stands out. The client pointed me at a single URL — https://www.target-platform.com/monaco — a browser-based code editor...",
+      "date_published": "2026-03-23T00:00:00.000Z",
+      "tags": [
+        "Penetration Testing",
+        "Web Security",
+        "GraphQL",
+        "Firebase",
+        "Kubernetes",
+        "Source Maps",
+        "IDOR",
+        "SSRF",
+        "IoT Security",
+        "Cloud Security"
+      ],
+      "authors": [
+        {
+          "name": "Ivan Spiridonov",
+          "url": "https://xbz0n.sh"
+        }
+      ]
+    },
+    {
+      "id": "https://xbz0n.sh/blog/extracting-dead-cult-leaders-ai-mind",
+      "url": "https://xbz0n.sh/blog/extracting-dead-cult-leaders-ai-mind",
+      "title": "Extracting a Dead Cult Leader's AI Mind",
+      "summary": "In February 2026, six people died across two crime scenes in Bulgaria's western mountains — three in a group suicide, three more in what prosecutors called two murders followed by a suicide — all...",
+      "content_text": "In February 2026, six people died across two crime scenes in Bulgaria's western mountains — three in a group suicide, three more in what prosecutors called two murders followed by a suicide — all...",
+      "date_published": "2026-02-15T00:00:00.000Z",
+      "tags": [
+        "OSINT",
+        "CTI",
+        "AI Security",
+        "Prompt Injection",
+        "LLM Security",
+        "Jailbreak",
+        "Custom GPT",
+        "Cult Intelligence"
+      ],
+      "authors": [
+        {
+          "name": "Ivan Spiridonov",
+          "url": "https://xbz0n.sh"
+        }
+      ]
+    },
+    {
+      "id": "https://xbz0n.sh/blog/living-off-the-land-windows",
+      "url": "https://xbz0n.sh/blog/living-off-the-land-windows",
+      "title": "Living Off the Land: Windows Post-Exploitation Without Tools",
+      "summary": "I'll never forget one of my first red team engagements where I learned this lesson the hard way. I'd spent two days carefully phishing my way into a financial services company, finally landing a...",
+      "content_text": "I'll never forget one of my first red team engagements where I learned this lesson the hard way. I'd spent two days carefully phishing my way into a financial services company, finally landing a...",
+      "date_published": "2025-11-28T00:00:00.000Z",
+      "tags": [
+        "Post-Exploitation",
+        "Windows",
+        "Red Team",
+        "PowerShell",
+        "LOLBins",
+        "Lateral Movement",
+        "Offensive Security"
+      ],
+      "authors": [
+        {
+          "name": "Ivan Spiridonov",
+          "url": "https://xbz0n.sh"
+        }
+      ]
+    },
+    {
+      "id": "https://xbz0n.sh/blog/CVE-2025-50674",
+      "url": "https://xbz0n.sh/blog/CVE-2025-50674",
+      "title": "Finding and Exploiting CVE-2025-50674 in OpenMediaVault",
+      "summary": "Recently, I discovered a critical vulnerability in OpenMediaVault, a popular open-source network-attached storage solution. The vulnerability (published as CVE-2025-50674) allows authenticated users...",
+      "content_text": "Recently, I discovered a critical vulnerability in OpenMediaVault, a popular open-source network-attached storage solution. The vulnerability (published as CVE-2025-50674) allows authenticated users...",
+      "date_published": "2025-08-24T00:00:00.000Z",
+      "tags": [
+        "Vulnerability Research",
+        "Privilege Escalation",
+        "CVE",
+        "OpenMediaVault",
+        "Newline Injection"
+      ],
+      "authors": [
+        {
+          "name": "Ivan Spiridonov",
+          "url": "https://xbz0n.sh"
+        }
+      ]
+    },
+    {
+      "id": "https://xbz0n.sh/blog/mythic-c2-early-bird-defender-evasion",
+      "url": "https://xbz0n.sh/blog/mythic-c2-early-bird-defender-evasion",
+      "title": "Mythic C2 with EarlyBird Injection and Defender Evasion",
+      "summary": "Let's talk about building C2 infrastructure that actually works in the real world. Most red teamers think they can just spin up a Cobalt Strike server and call it a day, but that's how you get burned...",
+      "content_text": "Let's talk about building C2 infrastructure that actually works in the real world. Most red teamers think they can just spin up a Cobalt Strike server and call it a day, but that's how you get burned...",
+      "date_published": "2025-06-23T00:00:00.000Z",
+      "tags": [
+        "Red Team",
+        "C2",
+        "Mythic",
+        "Infrastructure",
+        "Process Injection",
+        "EarlyBird",
+        "OPSEC",
+        "Malware Development"
+      ],
+      "authors": [
+        {
+          "name": "Ivan Spiridonov",
+          "url": "https://xbz0n.sh"
+        }
+      ]
+    },
+    {
+      "id": "https://xbz0n.sh/blog/adcs-complete-attack-reference",
+      "url": "https://xbz0n.sh/blog/adcs-complete-attack-reference",
+      "title": "Breaking ADCS: ESC1 to ESC16 Attack Techniques",
+      "summary": "Let's talk about Active Directory Certificate Services. If you've been doing red team work for any length of time, you've probably heard about ADCS attacks. What started as a convenient way to manage...",
+      "content_text": "Let's talk about Active Directory Certificate Services. If you've been doing red team work for any length of time, you've probably heard about ADCS attacks. What started as a convenient way to manage...",
+      "date_published": "2025-06-03T00:00:00.000Z",
+      "tags": [
+        "Active Directory",
+        "ADCS",
+        "PKI",
+        "Privilege Escalation",
+        "Red Team",
+        "Certificate Templates",
+        "ESC16"
+      ],
+      "authors": [
+        {
+          "name": "Ivan Spiridonov",
+          "url": "https://xbz0n.sh"
+        }
+      ]
+    },
+    {
+      "id": "https://xbz0n.sh/blog/from-zero-creds-to-ea",
+      "url": "https://xbz0n.sh/blog/from-zero-creds-to-ea",
+      "title": "From Zero Creds to Enterprise Admin",
+      "summary": "Active Directory remains the backbone of most corporate network environments. Despite being a mature technology with decades of security research behind it, misconfigurations and default settings...",
+      "content_text": "Active Directory remains the backbone of most corporate network environments. Despite being a mature technology with decades of security research behind it, misconfigurations and default settings...",
+      "date_published": "2025-05-20T00:00:00.000Z",
+      "tags": [
+        "Active Directory",
+        "Penetration Testing",
+        "NTLM Relay",
+        "SMB",
+        "DCSync",
+        "Domain Takeover",
+        "Network Security"
+      ],
+      "authors": [
+        {
+          "name": "Ivan Spiridonov",
+          "url": "https://xbz0n.sh"
+        }
+      ]
+    },
+    {
+      "id": "https://xbz0n.sh/blog/XSS-to-Account-Takeover-and-Data-Exfiltration",
+      "url": "https://xbz0n.sh/blog/XSS-to-Account-Takeover-and-Data-Exfiltration",
+      "title": "XSS to Account Takeover & Data Exfiltration",
+      "summary": "Cross-Site Scripting (XSS) vulnerabilities continue to plague web applications despite being well-understood for decades. While they might seem simple on the surface, the impact of XSS can be...",
+      "content_text": "Cross-Site Scripting (XSS) vulnerabilities continue to plague web applications despite being well-understood for decades. While they might seem simple on the surface, the impact of XSS can be...",
+      "date_published": "2025-04-24T00:00:00.000Z",
+      "tags": [
+        "Web Security",
+        "XSS",
+        "Account Takeover",
+        "CSRF",
+        "Session Riding",
+        "Data Exfiltration",
+        "Vulnerability Research"
+      ],
+      "authors": [
+        {
+          "name": "Ivan Spiridonov",
+          "url": "https://xbz0n.sh"
+        }
+      ]
+    },
+    {
+      "id": "https://xbz0n.sh/blog/virtualprotect_dep_bypass_guide",
+      "url": "https://xbz0n.sh/blog/virtualprotect_dep_bypass_guide",
+      "title": "VirtualProtect DEP Bypass: Step-By-Step Exploit",
+      "summary": "Data Execution Prevention (DEP) has been a game-changer in exploit development. The days of simply overflowing a buffer, jumping to your shellcode, and calling it a day are long gone. DEP enforces a...",
+      "content_text": "Data Execution Prevention (DEP) has been a game-changer in exploit development. The days of simply overflowing a buffer, jumping to your shellcode, and calling it a day are long gone. DEP enforces a...",
+      "date_published": "2025-04-08T00:00:00.000Z",
+      "tags": [
+        "Exploit Development",
+        "VulnServer",
+        "DEP Bypass",
+        "ROP",
+        "Buffer Overflow",
+        "Windows Exploitation"
+      ],
+      "authors": [
+        {
+          "name": "Ivan Spiridonov",
+          "url": "https://xbz0n.sh"
+        }
+      ]
+    },
+    {
+      "id": "https://xbz0n.sh/blog/social-engineering-redteam",
+      "url": "https://xbz0n.sh/blog/social-engineering-redteam",
+      "title": "Social Engineering in Red Team Operations: Technical Setup and Tools",
+      "summary": "Let's talk about social engineering and OSINT in modern red team operations. Despite all the fancy security tech out there, humans still make decisions based on trust, authority, and urgency. That's...",
+      "content_text": "Let's talk about social engineering and OSINT in modern red team operations. Despite all the fancy security tech out there, humans still make decisions based on trust, authority, and urgency. That's...",
+      "date_published": "2025-04-01T00:00:00.000Z",
+      "tags": [
+        "Red Team",
+        "Social Engineering",
+        "Phishing",
+        "OSINT",
+        "Infrastructure",
+        "Offensive Security"
+      ],
+      "authors": [
+        {
+          "name": "Ivan Spiridonov",
+          "url": "https://xbz0n.sh"
+        }
+      ]
+    },
+    {
+      "id": "https://xbz0n.sh/blog/c2-redirectors",
+      "url": "https://xbz0n.sh/blog/c2-redirectors",
+      "title": "C2 Redirectors: Advanced Infrastructure for Modern Red Team Operations",
+      "summary": "Let's talk about Command and Control (C2) infrastructure. It's the backbone of any red team operation, letting you talk to your implants in target environments. But here's the problem - connecting...",
+      "content_text": "Let's talk about Command and Control (C2) infrastructure. It's the backbone of any red team operation, letting you talk to your implants in target environments. But here's the problem - connecting...",
+      "date_published": "2025-03-25T00:00:00.000Z",
+      "tags": [
+        "Red Team",
+        "C2",
+        "Infrastructure",
+        "OPSEC",
+        "Network Security",
+        "Command and Control"
+      ],
+      "authors": [
+        {
+          "name": "Ivan Spiridonov",
+          "url": "https://xbz0n.sh"
+        }
+      ]
+    },
+    {
+      "id": "https://xbz0n.sh/blog/calculator-shellcode-analysis",
+      "url": "https://xbz0n.sh/blog/calculator-shellcode-analysis",
+      "title": "Mastering x86 Shellcode: A Deep Dive into Calculator-Launching Payload Development",
+      "summary": "In the realm of cybersecurity, shellcode represents one of the most fundamental building blocks for both offensive security practitioners and defensive analysts. These compact machine code sequences,...",
+      "content_text": "In the realm of cybersecurity, shellcode represents one of the most fundamental building blocks for both offensive security practitioners and defensive analysts. These compact machine code sequences,...",
+      "date_published": "2025-03-18T00:00:00.000Z",
+      "tags": [
+        "Shellcode",
+        "Assembly",
+        "Windows",
+        "Exploit Development",
+        "x86",
+        "Low-level Programming"
+      ],
+      "authors": [
+        {
+          "name": "Ivan Spiridonov",
+          "url": "https://xbz0n.sh"
+        }
+      ]
+    },
+    {
+      "id": "https://xbz0n.sh/blog/cve-2023-0830",
+      "url": "https://xbz0n.sh/blog/cve-2023-0830",
+      "title": "Finding and Exploiting CVE-2023-0830 in EasyNas",
+      "summary": "Recently, I discovered a vulnerability in a backup and restore script used in EasyNAS, a popular open-source network-attached storage solution. The vulnerability (published as CVE-2023-0830) allows...",
+      "content_text": "Recently, I discovered a vulnerability in a backup and restore script used in EasyNAS, a popular open-source network-attached storage solution. The vulnerability (published as CVE-2023-0830) allows...",
+      "date_published": "2023-03-18T00:00:00.000Z",
+      "tags": [
+        "Vulnerability Research",
+        "Command Injection",
+        "CVE",
+        "EasyNAS",
+        "Exploit Development",
+        "Privilege Escalation"
+      ],
+      "authors": [
+        {
+          "name": "Ivan Spiridonov",
+          "url": "https://xbz0n.sh"
+        }
+      ]
+    },
+    {
+      "id": "https://xbz0n.sh/blog/graphql-security-flaws",
+      "url": "https://xbz0n.sh/blog/graphql-security-flaws",
+      "title": "GraphQL PenTest Methodology and Exploitation Techniques",
+      "summary": "GraphQL has become the darling of modern API development, and for good reason. It solves many of the headaches that come with traditional REST APIs by letting clients ask for exactly what they need...",
+      "content_text": "GraphQL has become the darling of modern API development, and for good reason. It solves many of the headaches that come with traditional REST APIs by letting clients ask for exactly what they need...",
+      "date_published": "2023-03-18T00:00:00.000Z",
+      "tags": [
+        "Web Security",
+        "GraphQL",
+        "Penetration Testing",
+        "API Security",
+        "Vulnerability Research",
+        "Exploitation"
+      ],
+      "authors": [
+        {
+          "name": "Ivan Spiridonov",
+          "url": "https://xbz0n.sh"
+        }
+      ]
+    }
+  ]
+}
